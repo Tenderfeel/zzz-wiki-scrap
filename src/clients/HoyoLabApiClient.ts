@@ -31,6 +31,7 @@ export class HoyoLabApiClient {
         headers: {
           Accept: "application/json",
           "User-Agent": "Mozilla/5.0 (compatible; LycanDataGenerator/1.0)",
+          "x-rpc-wiki_app": "zzz",
         },
         signal: controller.signal,
       });

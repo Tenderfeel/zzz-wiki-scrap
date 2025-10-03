@@ -1,4 +1,4 @@
-import { FileLoader } from "./loaders/FileLoader";
+import { HoyoLabApiClient } from "./clients/HoyoLabApiClient";
 import { DataProcessor } from "./processors/DataProcessor";
 import { CharacterGenerator } from "./generators/CharacterGenerator";
 import { ProcessedData } from "./types/processing";
@@ -6,16 +6,17 @@ import { LycanDataGeneratorError } from "./errors";
 
 /**
  * メイン処理フロー
- * json/mock/lycaon.json ファイルからデータを読み込み、全処理ステップを順次実行し、character.ts ファイルを生成
+ * HoyoLab Wiki API からライカンのデータを取得し、全処理ステップを順次実行し、character.ts ファイルを生成
  * 要件: 1.1, 1.3, 5.5, 1.4, 6.5
  */
 export class LycanDataGenerator {
-  private fileLoader: FileLoader;
+  private apiClient: HoyoLabApiClient;
   private dataProcessor: DataProcessor;
   private characterGenerator: CharacterGenerator;
+  private readonly lycaonPageId = 28; // ライカンのページID
 
   constructor() {
-    this.fileLoader = new FileLoader();
+    this.apiClient = new HoyoLabApiClient();
     this.dataProcessor = new DataProcessor();
     this.characterGenerator = new CharacterGenerator();
   }
@@ -23,23 +24,13 @@ export class LycanDataGenerator {
   /**
    * メイン処理を実行
    * 各処理段階でのエラーキャッチと適切なメッセージ表示
-   * @param inputFilePath lycaon.jsonファイルのパス（デフォルト: "json/mock/lycaon.json"）
    * @param outputFilePath 出力ファイルのパス（デフォルト: "characters.ts"）
    */
-  async execute(
-    inputFilePath: string = "json/mock/lycaon.json",
-    outputFilePath: string = "data/characters.ts"
-  ): Promise<void> {
+  async execute(outputFilePath: string = "data/characters.ts"): Promise<void> {
     try {
       console.log("🚀 ライカンキャラクターデータ生成を開始します...");
 
-      // 入力パラメータの検証
-      if (!inputFilePath || inputFilePath.trim() === "") {
-        throw new LycanDataGeneratorError(
-          "VALIDATION",
-          "入力ファイルパスが無効です"
-        );
-      }
+      // 出力パラメータの検証
       if (!outputFilePath || outputFilePath.trim() === "") {
         throw new LycanDataGeneratorError(
           "VALIDATION",
@@ -47,26 +38,33 @@ export class LycanDataGenerator {
         );
       }
 
-      // ステップ1: json/mock/lycaon.jsonファイルからデータを読み込み
-      console.log(`📁 ${inputFilePath}ファイルを読み込み中...`);
-      let apiData;
+      // ステップ1: HoyoLab Wiki API からライカンのデータを取得
+      console.log(
+        `🌐 HoyoLab Wiki API からライカンのデータを取得中... (ページID: ${this.lycaonPageId})`
+      );
+      let jaApiData, enApiData;
       try {
-        apiData = await this.fileLoader.loadFromFile(inputFilePath);
-        console.log("✅ ファイル読み込み完了");
+        const bothLanguageData =
+          await this.apiClient.fetchCharacterDataBothLanguages(
+            this.lycaonPageId
+          );
+        jaApiData = bothLanguageData.ja;
+        enApiData = bothLanguageData.en;
+        console.log("✅ API データ取得完了");
       } catch (error) {
         throw new LycanDataGeneratorError(
-          "PARSING",
-          `ファイル読み込みに失敗しました: ${inputFilePath}`,
+          "API",
+          `API データの取得に失敗しました: ページID ${this.lycaonPageId}`,
           error as Error
         );
       }
 
-      // ステップ2: データ処理 - 基本情報、陣営情報、属性情報を抽出
+      // ステップ2: データ処理 - 基本情報、陣営情報、属性情報を抽出（日本語データから）
       console.log("🔍 データ処理中...");
       let basicInfo, factionInfo, attributesInfo;
 
       try {
-        basicInfo = this.dataProcessor.extractBasicInfo(apiData);
+        basicInfo = this.dataProcessor.extractBasicInfo(jaApiData);
       } catch (error) {
         throw new LycanDataGeneratorError(
           "PARSING",
@@ -76,7 +74,7 @@ export class LycanDataGenerator {
       }
 
       try {
-        factionInfo = this.dataProcessor.extractFactionInfo(apiData);
+        factionInfo = this.dataProcessor.extractFactionInfo(jaApiData);
       } catch (error) {
         throw new LycanDataGeneratorError(
           "PARSING",
@@ -86,7 +84,7 @@ export class LycanDataGenerator {
       }
 
       try {
-        attributesInfo = this.dataProcessor.extractAttributes(apiData);
+        attributesInfo = this.dataProcessor.extractAttributes(jaApiData);
       } catch (error) {
         throw new LycanDataGeneratorError(
           "PARSING",
@@ -95,15 +93,34 @@ export class LycanDataGenerator {
         );
       }
 
-      // 処理済みデータをまとめる
-      const processedData: ProcessedData = {
+      // 処理済みデータをまとめる（日本語）
+      const jaProcessedData: ProcessedData = {
         basicInfo,
         factionInfo,
         attributesInfo,
       };
 
+      // 英語データの処理
+      let enBasicInfo;
+      try {
+        enBasicInfo = this.dataProcessor.extractBasicInfo(enApiData);
+      } catch (error) {
+        throw new LycanDataGeneratorError(
+          "PARSING",
+          "英語基本キャラクター情報の抽出に失敗しました",
+          error as Error
+        );
+      }
+
+      const enProcessedData: ProcessedData = {
+        basicInfo: enBasicInfo,
+        factionInfo, // 陣営情報は日本語データを使用
+        attributesInfo, // 属性情報は日本語データを使用
+      };
+
       console.log("✅ データ処理完了");
-      console.log(`   - キャラクター名: ${basicInfo.name}`);
+      console.log(`   - キャラクター名（日本語）: ${basicInfo.name}`);
+      console.log(`   - キャラクター名（英語）: ${enBasicInfo.name}`);
       console.log(`   - 特性: ${basicInfo.specialty}`);
       console.log(`   - 属性: ${basicInfo.stats}`);
       console.log(`   - 陣営: ${factionInfo.name} (ID: ${factionInfo.id})`);
@@ -113,11 +130,10 @@ export class LycanDataGenerator {
 
       let character;
       try {
-        // 日本語データのみを使用（json/mock/lycaon.jsonは日本語データ）
-        // 英語データは同じデータを使用（実際のAPIでは別途取得が必要）
+        // 日本語と英語の両方のデータを使用
         character = this.characterGenerator.generateCharacter(
-          processedData,
-          processedData // 暫定的に同じデータを使用
+          jaProcessedData,
+          enProcessedData
         );
         console.log("✅ Characterオブジェクト生成完了");
       } catch (error) {

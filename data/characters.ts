@@ -3,8 +3,8 @@ import { Character } from "../src/types";
 export default [
   {
     id: "lycaon",
-    name: { ja: "フォン・ライカン", en: "フォン・ライカン" },
-    fullName: { ja: "フォン・ライカン", en: "フォン・ライカン" },
+    name: { ja: "フォン・ライカン", en: "Von Lycaon" },
+    fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
     specialty: "stun",
     stats: "ice",
     attackType: "strike",
