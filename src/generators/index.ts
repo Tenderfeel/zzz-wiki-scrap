@@ -1,0 +1,1 @@
+export { CharacterGenerator } from "./CharacterGenerator";
