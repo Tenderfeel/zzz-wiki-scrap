@@ -1,0 +1,273 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "filters": [
+      {
+        "key": "agent_rarity",
+        "text": "Rarity",
+        "values": [
+          {
+            "id": "2",
+            "value": "S",
+            "mi18n_key": "filter_custom_42",
+            "icon": "",
+            "enum_string": "s"
+          },
+          {
+            "id": "1",
+            "value": "A",
+            "mi18n_key": "filter_custom_41",
+            "icon": "",
+            "enum_string": "a"
+          }
+        ],
+        "mi18n_key": "menu_custom_29",
+        "is_multi_select": false,
+        "id": "1",
+        "is_hidden": false,
+        "updated_at": "1743408173"
+      },
+      {
+        "key": "agent_specialties",
+        "text": "Specialty",
+        "values": [
+          {
+            "id": "3",
+            "value": "Attack",
+            "mi18n_key": "filter_custom_50",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/78d407e2839038da13d26ad84b99a6b8_8151225937174652019.png",
+            "enum_string": "attack"
+          },
+          {
+            "id": "4",
+            "value": "Stun",
+            "mi18n_key": "filter_custom_51",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/a798cde5543596aae302d7fc037df2d5_4111998480888596222.png",
+            "enum_string": "breakthrough"
+          },
+          {
+            "id": "5",
+            "value": "Anomaly",
+            "mi18n_key": "filter_custom_52",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/55982d13c3284d382a9a59ce9f5e5d50_2052082579823154975.png",
+            "enum_string": "anomaly"
+          },
+          {
+            "id": "6",
+            "value": "Support",
+            "mi18n_key": "filter_custom_53",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/e1ce1ff7a8c3debf3235b2bbd94bd4c0_2060958246427347333.png",
+            "enum_string": "support"
+          },
+          {
+            "id": "7",
+            "value": "Defense",
+            "mi18n_key": "filter_custom_54",
+            "icon": "\thttps://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/ba974570d0627f78131b5c09ffb630f2_1224778078231447651.png",
+            "enum_string": "defensive"
+          },
+          {
+            "id": "121",
+            "value": "Rupture",
+            "mi18n_key": "filter_custom_89",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/05/26/c0757d3edb6fe9a706a2d0431def51e6_8085324341880460509.png",
+            "enum_string": "rupture"
+          }
+        ],
+        "mi18n_key": "menu_custom_28",
+        "is_multi_select": false,
+        "id": "2",
+        "is_hidden": false,
+        "updated_at": "1743408157"
+      },
+      {
+        "key": "agent_stats",
+        "text": "Stats",
+        "values": [
+          {
+            "id": "8",
+            "value": "Ether",
+            "mi18n_key": "filter_custom_3",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/4b33b2be46b732ab987c6b12903bc8c4_6165206938504838110.png",
+            "enum_string": "ether"
+          },
+          {
+            "id": "9",
+            "value": "Fire",
+            "mi18n_key": "filter_custom_4",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/f7bdcd7c6574c22e6c90f25cae025376_3782022421620830515.png",
+            "enum_string": "fire"
+          },
+          {
+            "id": "10",
+            "value": "Ice",
+            "mi18n_key": "filter_custom_5",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/a99ef1d28678ab2e82b25099416e2802_8886922862138996075.png",
+            "enum_string": "ice"
+          },
+          {
+            "id": "11",
+            "value": "Physical",
+            "mi18n_key": "filter_custom_7",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/b34f33a07ddfae7bbd014a5e36443ea4_127526883819084638.png",
+            "enum_string": "physical"
+          },
+          {
+            "id": "12",
+            "value": "Electric",
+            "mi18n_key": "filter_custom_8",
+            "icon": "\thttps://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/23f0846bd60219d09ab419b831ce2de7_2106359761671844521.png",
+            "enum_string": "electric"
+          },
+          {
+            "id": "85",
+            "value": "Frost Attribute",
+            "mi18n_key": "filter_custom_78",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/12/16/0f1f7248fb12dcc6dcd53bd5317de36a_1299839726293114756.png",
+            "enum_string": "frost"
+          },
+          {
+            "id": "123",
+            "value": "Auric Ink",
+            "mi18n_key": "filter_custom_91",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/05/28/6f078ae60e8befb6c81a1940b2d2f23e_7885190983294402190.png",
+            "enum_string": "auricink"
+          }
+        ],
+        "mi18n_key": "filter_custom_1",
+        "is_multi_select": false,
+        "id": "3",
+        "is_hidden": false,
+        "updated_at": "1715150447"
+      },
+      {
+        "key": "agent_attack_type",
+        "text": "Attack Type",
+        "values": [
+          {
+            "id": "13",
+            "value": "Slash",
+            "mi18n_key": "filter_custom_9",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
+            "enum_string": "slash"
+          },
+          {
+            "id": "14",
+            "value": "Pierce",
+            "mi18n_key": "filter_custom_10",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/8d73540a22fd463a1f70942fca93ee9b_5768967548377443146.png",
+            "enum_string": "pierce"
+          },
+          {
+            "id": "15",
+            "value": "Strike",
+            "mi18n_key": "filter_custom_11",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
+            "enum_string": "strike"
+          }
+        ],
+        "mi18n_key": "filter_custom_30",
+        "is_multi_select": true,
+        "id": "4",
+        "is_hidden": false,
+        "updated_at": "1750061840"
+      },
+      {
+        "key": "agent_faction",
+        "text": "Faction",
+        "values": [
+          {
+            "id": "16",
+            "value": "Cunning Hares",
+            "mi18n_key": "filter_custom_34",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/31645d75c2009b667abc29bfda9c4e0e_3135215487461325630.png",
+            "enum_string": "cunning_hares"
+          },
+          {
+            "id": "17",
+            "value": "Victoria Housekeeping Co.",
+            "mi18n_key": "filter_custom_35",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/19370e53b19310e8db22bec32a1a9fc5_6408236221122459240.png",
+            "enum_string": "victoria_housekeeping_co"
+          },
+          {
+            "id": "18",
+            "value": "Belobog Heavy Industries",
+            "mi18n_key": "filter_custom_36",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/f5ece26bc1228c006e6dc658a7a5de5c_770010439864217639.png",
+            "enum_string": "belobog_heavy_industries"
+          },
+          {
+            "id": "19",
+            "value": "Defense Force - Obol Squad",
+            "mi18n_key": "filter_custom_38",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5d8267a1f12bdb48fb4f8974ab755ffe_464325563450413858.png",
+            "enum_string": "obol_squad"
+          },
+          {
+            "id": "20",
+            "value": "Hollow Special Operations Section 6",
+            "mi18n_key": "filter_custom_39",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/01/21/ab5e2492e6327f2a049f58d1d88bb20d_906252755410101860.png",
+            "enum_string": "hollow_special_operations_section_6"
+          },
+          {
+            "id": "21",
+            "value": "Criminal Investigation Special Response Team",
+            "mi18n_key": "filter_custom_40",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/01/21/9bac29f5257c5b03706b85c0747f7436_1834534273445570528.png",
+            "enum_string": "new_eridu_public_security"
+          },
+          {
+            "id": "77",
+            "value": "Sons of Calydon",
+            "mi18n_key": "filter_custom_37",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/01/21/fb813eecc6365d0938fa2bb07506b1c0_2456787248097726466.png",
+            "enum_string": "sons_of_calydon"
+          },
+          {
+            "id": "86",
+            "value": "Stars of Lyra",
+            "mi18n_key": "filter_custom_79",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/01/21/5fcf72ce37090f2e6661fb3448fb4f39_4341270331890131564.png",
+            "enum_string": "stars_of_lyra"
+          },
+          {
+            "id": "87",
+            "value": "Defense Force - Silver Squad",
+            "mi18n_key": "filter_custom_80",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/03/11/13b6e37bc18e22b77b652d82065730bc_31606747865052695.png",
+            "enum_string": "silver_squad"
+          },
+          {
+            "id": "113",
+            "value": "Mockingbird",
+            "mi18n_key": "filter_custom_88",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/04/23/c7e3cbe8d8a2d2b8f5612ecccf863870_6303397998609998358.png",
+            "enum_string": "mocking_bird"
+          },
+          {
+            "id": "122",
+            "value": "Yunkui Summit",
+            "mi18n_key": "filter_custom_90",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/05/26/d8403daf6d7d07d2fd024651b2ce5cc8_5629357280864609873.png",
+            "enum_string": "yunkui_summit"
+          },
+          {
+            "id": "126",
+            "value": "Spook Shack",
+            "mi18n_key": "filter_custom_92",
+            "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/07/15/199c7c03ea3f0a84ff593d5c3a475d89_402696562446580722.png",
+            "enum_string": "spook_shack"
+          }
+        ],
+        "mi18n_key": "filter_custom_32",
+        "is_multi_select": false,
+        "id": "5",
+        "is_hidden": false,
+        "updated_at": "1715150449"
+      }
+    ]
+  }
+}
