@@ -59,6 +59,61 @@ export type CharacterEntry = {
   wikiUrl: string; // wiki URL
 };
 
+// list.json用の型定義
+export interface AttackTypeValueType {
+  id: string;
+  value: string;
+  mi18n_key: string;
+  icon: string;
+  enum_string: string;
+}
+
+export interface CharacterListItem {
+  entry_page_id: string;
+  name: string;
+  icon_url: string;
+  display_field: {
+    materials: string;
+    [key: string]: string; // attr_level_1, attr_level_10 など
+  };
+  filter_values: {
+    agent_attack_type?: {
+      values: string[];
+      value_types: AttackTypeValueType[];
+      key: null;
+    };
+    agent_stats?: {
+      values: string[];
+      value_types: AttackTypeValueType[];
+      key: null;
+    };
+    agent_faction?: {
+      values: string[];
+      value_types: AttackTypeValueType[];
+      key: null;
+    };
+    agent_rarity?: {
+      values: string[];
+      value_types: AttackTypeValueType[];
+      key: null;
+    };
+    agent_specialties?: {
+      values: string[];
+      value_types: AttackTypeValueType[];
+      key: null;
+    };
+  };
+  desc: string;
+}
+
+export interface ListJsonData {
+  retcode: number;
+  message: string;
+  data: {
+    list: CharacterListItem[];
+  };
+}
+
 // キャラクター
 export type Character = {
   id: string; // Scraping.mdのリンクテキストと同じ

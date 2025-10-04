@@ -1,8 +1,9 @@
-import { Character } from "../types";
+import { Character, AttackTypes } from "../types";
 import { ProcessedData, ValidationResult } from "../types/processing";
 import { DataMapper } from "../mappers/DataMapper";
 import { AttributesProcessor } from "../processors/AttributesProcessor";
 import { ValidationError, ParsingError } from "../errors";
+import { logger, LogMessages } from "../utils/Logger.js";
 import * as fs from "fs";
 
 /**
@@ -24,8 +25,13 @@ export class CharacterGenerator {
    * id フィールドに Scraping.md のリンクテキスト（"lycaon"）を設定
    * 要件: 5.1, 5.3, 5.4
    */
-  generateCharacter(jaData: ProcessedData, enData: ProcessedData): Character {
+  generateCharacter(
+    jaData: ProcessedData,
+    enData: ProcessedData,
+    pageId?: string
+  ): Character {
     try {
+      logger.debug(LogMessages.CHARACTER_GENERATION_START, { pageId });
       // 入力データの検証
       if (!jaData) {
         throw new ValidationError("日本語データが存在しません");
@@ -51,9 +57,55 @@ export class CharacterGenerator {
         jaData.basicInfo.specialty
       );
       const stats = this.dataMapper.mapStats(jaData.basicInfo.stats);
-      const attackType = this.dataMapper.mapAttackType(
-        jaData.basicInfo.attackType
-      );
+
+      // 攻撃タイプのマッピング（フォールバック機能付き）
+      let attackType: AttackTypes;
+      try {
+        // attackTypeが配列の場合は最初の要素を使用、文字列の場合はそのまま使用
+        const rawAttackType = Array.isArray(jaData.basicInfo.attackType)
+          ? jaData.basicInfo.attackType[0] || ""
+          : jaData.basicInfo.attackType || "";
+
+        const mappedAttackType = this.dataMapper.mapAttackType(
+          rawAttackType,
+          pageId
+        );
+        attackType = [mappedAttackType]; // 単一の攻撃タイプを配列に変換
+
+        // 攻撃タイプ取得方法をログに記録
+        const hasValidWikiData =
+          jaData.basicInfo.attackType &&
+          ((typeof jaData.basicInfo.attackType === "string" &&
+            jaData.basicInfo.attackType.trim() !== "") ||
+            (Array.isArray(jaData.basicInfo.attackType) &&
+              jaData.basicInfo.attackType.length > 0));
+
+        if (hasValidWikiData) {
+          logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
+            pageId,
+            method: "wiki",
+            attackType: mappedAttackType,
+          });
+        } else if (pageId) {
+          logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
+            pageId,
+            method: "fallback",
+            attackType: mappedAttackType,
+          });
+        }
+      } catch (error) {
+        logger.warn("Attack type retrieval failed", {
+          pageId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
+          pageId,
+          method: "default",
+          attackType: "strike",
+        });
+        attackType = ["strike"]; // デフォルト値を配列として使用して処理を継続
+      }
+
       const rarity = this.dataMapper.mapRarity(jaData.basicInfo.rarity);
 
       // 多言語名オブジェクトの生成
@@ -84,8 +136,16 @@ export class CharacterGenerator {
         attr: attributes,
       };
 
+      logger.debug(LogMessages.CHARACTER_GENERATION_SUCCESS, {
+        pageId,
+        characterId: character.id,
+      });
       return character;
     } catch (error) {
+      logger.error(LogMessages.CHARACTER_GENERATION_ERROR, {
+        pageId,
+        error: error instanceof Error ? error.message : String(error),
+      });
       if (error instanceof ValidationError) {
         throw error;
       }
@@ -255,7 +315,7 @@ export class CharacterGenerator {
 
     // 検証失敗時の詳細ログ
     if (!result.isValid) {
-      console.warn("Character検証エラー:", errors);
+      logger.warn("Character validation failed", { errors });
     }
 
     return result;

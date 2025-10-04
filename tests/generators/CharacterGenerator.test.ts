@@ -2,15 +2,33 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CharacterGenerator } from "../../src/generators/CharacterGenerator";
 import { ProcessedData } from "../../src/types/processing";
 import { ValidationError, ParsingError } from "../../src/errors";
+import { DataMapper } from "../../src/mappers/DataMapper";
+import { AttackType } from "../../src/types";
 import * as fs from "fs";
 
 // fsモジュールをモック
 vi.mock("fs");
 
+// DataMapperをモック
+vi.mock("../../src/mappers/DataMapper");
+
 describe("CharacterGenerator", () => {
   let generator: CharacterGenerator;
+  let mockDataMapper: any;
 
   beforeEach(() => {
+    // DataMapperのモックを作成
+    mockDataMapper = {
+      mapAttackType: vi.fn(),
+      mapSpecialty: vi.fn(),
+      mapStats: vi.fn(),
+      mapRarity: vi.fn(),
+      createMultiLangName: vi.fn(),
+    };
+
+    // DataMapperのコンストラクタをモック
+    vi.mocked(DataMapper).mockImplementation(() => mockDataMapper);
+
     generator = new CharacterGenerator();
     vi.clearAllMocks();
   });
@@ -118,6 +136,18 @@ describe("CharacterGenerator", () => {
   };
 
   describe("generateCharacter", () => {
+    beforeEach(() => {
+      // デフォルトのモック戻り値を設定
+      mockDataMapper.mapSpecialty.mockReturnValue("stun");
+      mockDataMapper.mapStats.mockReturnValue("ice");
+      mockDataMapper.mapAttackType.mockReturnValue("strike");
+      mockDataMapper.mapRarity.mockReturnValue("S");
+      mockDataMapper.createMultiLangName.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+    });
+
     it("正常なCharacterオブジェクトを生成できる", () => {
       const result = generator.generateCharacter(mockJaData, mockEnData);
 
@@ -143,6 +173,169 @@ describe("CharacterGenerator", () => {
           energy: 1.2,
         },
       });
+
+      // mapAttackTypeがpageIdなしで呼ばれることを確認
+      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith(
+        "打撃",
+        undefined
+      );
+    });
+
+    it("pageIdパラメータを含むCharacterオブジェクトを生成できる", () => {
+      const pageId = "28";
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        pageId
+      );
+
+      expect(result).toEqual({
+        id: "lycaon",
+        name: { ja: "フォン・ライカン", en: "Von Lycaon" },
+        fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
+        specialty: "stun",
+        stats: "ice",
+        attackType: ["strike"],
+        faction: 2,
+        rarity: "S",
+        attr: {
+          hp: [677, 1967, 3350, 4732, 6114, 7498, 8416],
+          atk: [105, 197, 296, 394, 494, 592, 653],
+          def: [49, 141, 241, 340, 441, 540, 606],
+          impact: 119,
+          critRate: 5,
+          critDmg: 50,
+          anomalyMastery: 91,
+          anomalyProficiency: 90,
+          penRatio: 0,
+          energy: 1.2,
+        },
+      });
+
+      // mapAttackTypeがpageIdと共に呼ばれることを確認
+      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith("打撃", pageId);
+    });
+
+    it("フォールバック機能を使用してCharacterオブジェクトを生成できる", () => {
+      // wikiデータに攻撃タイプがない場合のテストデータ
+      const mockJaDataWithoutAttackType = {
+        ...mockJaData,
+        basicInfo: {
+          ...mockJaData.basicInfo,
+          attackType: "", // 空の攻撃タイプ
+        },
+      };
+
+      // フォールバック機能で"pierce"を返すようにモック
+      mockDataMapper.mapAttackType.mockReturnValue("pierce");
+
+      const pageId = "28";
+      const result = generator.generateCharacter(
+        mockJaDataWithoutAttackType,
+        mockEnData,
+        pageId
+      );
+
+      expect(result.attackType).toEqual(["pierce"]);
+      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith("", pageId);
+    });
+
+    it("攻撃タイプが配列の場合は最初の要素を使用する", () => {
+      const mockJaDataWithArrayAttackType = {
+        ...mockJaData,
+        basicInfo: {
+          ...mockJaData.basicInfo,
+          attackType: ["打撃", "斬撃"], // 配列の攻撃タイプ
+        },
+      };
+
+      const result = generator.generateCharacter(
+        mockJaDataWithArrayAttackType,
+        mockEnData
+      );
+
+      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith(
+        "打撃",
+        undefined
+      );
+    });
+
+    it("攻撃タイプ取得でエラーが発生した場合はデフォルト値を使用する", () => {
+      // mapAttackTypeがエラーを投げるようにモック
+      mockDataMapper.mapAttackType.mockImplementation(() => {
+        throw new Error("攻撃タイプマッピングエラー");
+      });
+
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleInfoSpy = vi
+        .spyOn(console, "info")
+        .mockImplementation(() => {});
+
+      const pageId = "28";
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        pageId
+      );
+
+      expect(result.attackType).toEqual(["strike"]); // デフォルト値
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("攻撃タイプ取得に失敗")
+      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining('デフォルト攻撃タイプ "strike" を使用')
+      );
+
+      consoleSpy.mockRestore();
+      consoleInfoSpy.mockRestore();
+    });
+
+    it("wikiデータから攻撃タイプを取得した場合は適切なログを出力する", () => {
+      const consoleInfoSpy = vi
+        .spyOn(console, "info")
+        .mockImplementation(() => {});
+
+      const pageId = "28";
+      generator.generateCharacter(mockJaData, mockEnData, pageId);
+
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining("攻撃タイプをwikiデータから取得")
+      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining(`pageId=${pageId}`)
+      );
+
+      consoleInfoSpy.mockRestore();
+    });
+
+    it("フォールバック機能を使用した場合は適切なログを出力する", () => {
+      const mockJaDataWithoutAttackType = {
+        ...mockJaData,
+        basicInfo: {
+          ...mockJaData.basicInfo,
+          attackType: "", // 空の攻撃タイプ
+        },
+      };
+
+      const consoleInfoSpy = vi
+        .spyOn(console, "info")
+        .mockImplementation(() => {});
+
+      const pageId = "28";
+      generator.generateCharacter(
+        mockJaDataWithoutAttackType,
+        mockEnData,
+        pageId
+      );
+
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining("攻撃タイプをlist.jsonからフォールバック取得")
+      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining(`pageId=${pageId}`)
+      );
+
+      consoleInfoSpy.mockRestore();
     });
 
     it("日本語データが存在しない場合はValidationErrorを投げる", () => {
@@ -173,6 +366,53 @@ describe("CharacterGenerator", () => {
         generator.generateCharacter(incompleteJaData, mockEnData)
       ).toThrow("日本語の基本情報が存在しません");
     });
+
+    it("英語の基本情報が不足している場合はValidationErrorを投げる", () => {
+      const incompleteEnData = { ...mockEnData, basicInfo: null as any };
+
+      expect(() =>
+        generator.generateCharacter(mockJaData, incompleteEnData)
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(mockJaData, incompleteEnData)
+      ).toThrow("英語の基本情報が存在しません");
+    });
+
+    it("陣営情報が不足している場合はValidationErrorを投げる", () => {
+      const incompleteJaData = { ...mockJaData, factionInfo: null as any };
+
+      expect(() =>
+        generator.generateCharacter(incompleteJaData, mockEnData)
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(incompleteJaData, mockEnData)
+      ).toThrow("陣営情報が存在しません");
+    });
+
+    it("属性情報が不足している場合はValidationErrorを投げる", () => {
+      const incompleteJaData = { ...mockJaData, attributesInfo: null as any };
+
+      expect(() =>
+        generator.generateCharacter(incompleteJaData, mockEnData)
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(incompleteJaData, mockEnData)
+      ).toThrow("属性情報が存在しません");
+    });
+
+    it("DataMapperでエラーが発生した場合はValidationErrorを投げる", () => {
+      // mapSpecialtyがエラーを投げるようにモック
+      mockDataMapper.mapSpecialty.mockImplementation(() => {
+        throw new Error("Specialty mapping error");
+      });
+
+      expect(() => generator.generateCharacter(mockJaData, mockEnData)).toThrow(
+        ValidationError
+      );
+      expect(() => generator.generateCharacter(mockJaData, mockEnData)).toThrow(
+        "Characterオブジェクトの生成に失敗しました"
+      );
+    });
   });
 
   describe("validateCharacter", () => {
@@ -182,7 +422,7 @@ describe("CharacterGenerator", () => {
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
       stats: "ice" as const,
-      attackType: "strike" as const,
+      attackType: ["strike" as AttackType],
       faction: 2,
       rarity: "S" as const,
       attr: {
@@ -257,6 +497,69 @@ describe("CharacterGenerator", () => {
         'specialty "invalid" は有効な値ではありません'
       );
     });
+
+    it("attackTypeが配列でない場合は検証エラーを返す", () => {
+      const invalidCharacter = {
+        ...validCharacter,
+        attackType: "strike" as any, // 配列ではなく文字列
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "attackType フィールドが存在しないか、空の配列です"
+      );
+    });
+
+    it("attackTypeが空配列の場合は検証エラーを返す", () => {
+      const invalidCharacter = {
+        ...validCharacter,
+        attackType: [], // 空の配列
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "attackType フィールドが存在しないか、空の配列です"
+      );
+    });
+
+    it("attackTypeに無効な値が含まれる場合は検証エラーを返す", () => {
+      const invalidCharacter = {
+        ...validCharacter,
+        attackType: ["strike" as AttackType, "invalid"] as any,
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        'attackType "invalid" は有効な値ではありません'
+      );
+    });
+
+    it("検証失敗時は警告ログを出力する", () => {
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
+
+      const invalidCharacter = {
+        ...validCharacter,
+        id: "", // 無効なID
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "Character検証エラー:",
+        expect.arrayContaining(["id フィールドが空または存在しません"])
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
   });
 
   describe("outputCharacterFile", () => {
@@ -266,7 +569,7 @@ describe("CharacterGenerator", () => {
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
       stats: "ice" as const,
-      attackType: "strike" as const,
+      attackType: ["strike" as AttackType],
       faction: 2,
       rarity: "S" as const,
       attr: {
@@ -298,6 +601,11 @@ describe("CharacterGenerator", () => {
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         "data/test-characters.ts",
         expect.stringContaining('id: "lycaon"'),
+        "utf-8"
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        "data/test-characters.ts",
+        expect.stringContaining('attackType: ["strike"]'),
         "utf-8"
       );
       expect(fs.writeFileSync).toHaveBeenCalledWith(
@@ -336,6 +644,20 @@ describe("CharacterGenerator", () => {
       expect(() =>
         generator.outputCharacterFile(mockCharacter, "test.ts")
       ).toThrow('ファイル "test.ts" の書き込みに失敗しました');
+    });
+
+    it("ディレクトリ作成に失敗した場合はParsingErrorを投げる", () => {
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+      vi.mocked(fs.mkdirSync).mockImplementation(() => {
+        throw new Error("Permission denied");
+      });
+
+      expect(() =>
+        generator.outputCharacterFile(mockCharacter, "data/test.ts")
+      ).toThrow(ParsingError);
+      expect(() =>
+        generator.outputCharacterFile(mockCharacter, "data/test.ts")
+      ).toThrow("ファイル出力に失敗しました");
     });
   });
 });

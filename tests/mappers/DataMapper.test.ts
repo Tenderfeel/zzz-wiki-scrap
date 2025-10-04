@@ -1,12 +1,71 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { DataMapper } from "../../src/mappers/DataMapper";
 import { MappingError } from "../../src/errors";
+import { AttackTypeFallbackService } from "../../src/services/AttackTypeFallbackService";
+
+// AttackTypeFallbackServiceをモック化
+vi.mock("../../src/services/AttackTypeFallbackService");
 
 describe("DataMapper", () => {
   let dataMapper: DataMapper;
+  let mockAttackTypeFallbackService: any;
+  let consoleDebugSpy: any;
+  let consoleInfoSpy: any;
+  let consoleWarnSpy: any;
+  let consoleErrorSpy: any;
 
   beforeEach(() => {
+    // コンソールメソッドをスパイ化
+    consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+    consoleInfoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    // AttackTypeFallbackServiceのモックを作成
+    mockAttackTypeFallbackService = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      getAttackTypeByPageId: vi.fn(),
+    };
+
+    // モックされたクラスのインスタンスを返すように設定
+    vi.mocked(AttackTypeFallbackService).mockImplementation(
+      () => mockAttackTypeFallbackService
+    );
+
     dataMapper = new DataMapper();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetAllMocks();
+  });
+
+  describe("constructor", () => {
+    it("AttackTypeFallbackServiceを正しく初期化する", () => {
+      // Act
+      const mapper = new DataMapper();
+
+      // Assert
+      expect(AttackTypeFallbackService).toHaveBeenCalledTimes(2); // beforeEachで1回、このテストで1回
+      expect(mockAttackTypeFallbackService.initialize).toHaveBeenCalled();
+    });
+
+    it("AttackTypeFallbackServiceの初期化が失敗してもエラーを投げない", async () => {
+      // Arrange
+      const initializeError = new Error("Initialization failed");
+      mockAttackTypeFallbackService.initialize.mockRejectedValue(
+        initializeError
+      );
+
+      // Act & Assert - コンストラクタでエラーが投げられないことを確認
+      expect(() => new DataMapper()).not.toThrow();
+
+      // 少し待ってからエラーログが出力されることを確認
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[ERROR] Failed to initialize AttackTypeFallbackService in DataMapper: Error: Initialization failed"
+      );
+    });
   });
 
   describe("mapSpecialty", () => {
@@ -47,19 +106,250 @@ describe("DataMapper", () => {
   });
 
   describe("mapAttackType", () => {
-    it("正常な攻撃タイプマッピング", () => {
-      expect(dataMapper.mapAttackType("打撃")).toBe("strike");
-      expect(dataMapper.mapAttackType("斬撃")).toBe("slash");
-      expect(dataMapper.mapAttackType("刺突")).toBe("pierce");
+    describe("既存機能の互換性テスト", () => {
+      it("正常な攻撃タイプマッピング（pageIdなし）", () => {
+        expect(dataMapper.mapAttackType("打撃")).toBe("strike");
+        expect(dataMapper.mapAttackType("斬撃")).toBe("slash");
+        expect(dataMapper.mapAttackType("刺突")).toBe("pierce");
+
+        // デバッグログが出力されることを確認
+        expect(consoleDebugSpy).toHaveBeenCalledWith(
+          "[DEBUG] Attack type mapped from wiki data: 打撃 -> strike"
+        );
+        expect(consoleDebugSpy).toHaveBeenCalledWith(
+          "[DEBUG] Attack type mapped from wiki data: 斬撃 -> slash"
+        );
+        expect(consoleDebugSpy).toHaveBeenCalledWith(
+          "[DEBUG] Attack type mapped from wiki data: 刺突 -> pierce"
+        );
+      });
+
+      it("正常な攻撃タイプマッピング（pageId付き、wikiデータ優先）", () => {
+        const result = dataMapper.mapAttackType("打撃", "28");
+
+        expect(result).toBe("strike");
+        expect(consoleDebugSpy).toHaveBeenCalledWith(
+          "[DEBUG] Attack type mapped from wiki data: 打撃 -> strike"
+        );
+        // フォールバックサービスは呼び出されない
+        expect(
+          mockAttackTypeFallbackService.getAttackTypeByPageId
+        ).not.toHaveBeenCalled();
+      });
+
+      it("未知の攻撃タイプ値でpageIdがない場合はMappingErrorを投げる", () => {
+        expect(() => dataMapper.mapAttackType("未知の攻撃タイプ")).toThrow(
+          MappingError
+        );
+        expect(() => dataMapper.mapAttackType("未知の攻撃タイプ")).toThrow(
+          '未知の攻撃タイプ値です: "未知の攻撃タイプ"'
+        );
+      });
     });
 
-    it("未知の攻撃タイプ値の場合はMappingErrorを投げる", () => {
-      expect(() => dataMapper.mapAttackType("未知の攻撃タイプ")).toThrow(
-        MappingError
-      );
-      expect(() => dataMapper.mapAttackType("未知の攻撃タイプ")).toThrow(
-        '未知の攻撃タイプ値です: "未知の攻撃タイプ"'
-      );
+    describe("フォールバック機能付きマッピングのテスト", () => {
+      it("wikiデータ失敗時にフォールバック機能を使用して成功", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          "slash"
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "28");
+
+        // Assert
+        expect(result).toBe("slash");
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] Wiki data mapping failed for "未知の攻撃タイプ", trying fallback for pageId: 28'
+        );
+        expect(
+          mockAttackTypeFallbackService.getAttackTypeByPageId
+        ).toHaveBeenCalledWith("28");
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          "[INFO] list.json から攻撃タイプをフォールバック取得: pageId=28, result=slash"
+        );
+      });
+
+      it("フォールバック機能でnullが返された場合はデフォルト値を使用", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          null
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "999");
+
+        // Assert
+        expect(result).toBe("strike");
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] Wiki data mapping failed for "未知の攻撃タイプ", trying fallback for pageId: 999'
+        );
+        expect(
+          mockAttackTypeFallbackService.getAttackTypeByPageId
+        ).toHaveBeenCalledWith("999");
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+          '[WARN] フォールバック取得も失敗しました。デフォルト値を使用: pageId=999, rawAttackType="未知の攻撃タイプ", default="strike"'
+        );
+      });
+
+      it("フォールバック処理中にエラーが発生した場合はデフォルト値を使用", () => {
+        // Arrange
+        const error = new Error("Fallback service error");
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockImplementation(
+          () => {
+            throw error;
+          }
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "28");
+
+        // Assert
+        expect(result).toBe("strike");
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] Wiki data mapping failed for "未知の攻撃タイプ", trying fallback for pageId: 28'
+        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "[ERROR] フォールバック処理中にエラーが発生: pageId=28, error=Fallback service error"
+        );
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] エラー回復のためデフォルト値を使用: pageId=28, default="strike"'
+        );
+      });
+
+      it("フォールバック処理中に非Errorオブジェクトが投げられた場合も適切に処理", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockImplementation(
+          () => {
+            throw "String error";
+          }
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "28");
+
+        // Assert
+        expect(result).toBe("strike");
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "[ERROR] フォールバック処理中にエラーが発生: pageId=28, error=String error"
+        );
+      });
+    });
+
+    describe("エラーハンドリングのテスト", () => {
+      it("空文字列のpageIdでもフォールバック機能を試行", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          "pierce"
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "");
+
+        // Assert
+        expect(result).toBe("pierce");
+        expect(
+          mockAttackTypeFallbackService.getAttackTypeByPageId
+        ).toHaveBeenCalledWith("");
+      });
+
+      it("数値のpageIdも文字列として正しく処理", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          "strike"
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("未知の攻撃タイプ", "123");
+
+        // Assert
+        expect(result).toBe("strike");
+        expect(
+          mockAttackTypeFallbackService.getAttackTypeByPageId
+        ).toHaveBeenCalledWith("123");
+      });
+
+      it("空文字列の攻撃タイプでもフォールバック機能を試行", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          "slash"
+        );
+
+        // Act
+        const result = dataMapper.mapAttackType("", "28");
+
+        // Assert
+        expect(result).toBe("slash");
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] Wiki data mapping failed for "", trying fallback for pageId: 28'
+        );
+      });
+    });
+
+    describe("ログ出力の検証", () => {
+      it("wikiデータから正常取得時は適切なデバッグログを出力", () => {
+        // Act
+        dataMapper.mapAttackType("打撃");
+
+        // Assert
+        expect(consoleDebugSpy).toHaveBeenCalledWith(
+          "[DEBUG] Attack type mapped from wiki data: 打撃 -> strike"
+        );
+      });
+
+      it("フォールバック機能使用時は適切な情報ログを出力", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          "slash"
+        );
+
+        // Act
+        dataMapper.mapAttackType("未知の攻撃タイプ", "28");
+
+        // Assert
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] Wiki data mapping failed for "未知の攻撃タイプ", trying fallback for pageId: 28'
+        );
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          "[INFO] list.json から攻撃タイプをフォールバック取得: pageId=28, result=slash"
+        );
+      });
+
+      it("フォールバック失敗時は適切な警告ログを出力", () => {
+        // Arrange
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockReturnValue(
+          null
+        );
+
+        // Act
+        dataMapper.mapAttackType("未知の攻撃タイプ", "999");
+
+        // Assert
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+          '[WARN] フォールバック取得も失敗しました。デフォルト値を使用: pageId=999, rawAttackType="未知の攻撃タイプ", default="strike"'
+        );
+      });
+
+      it("エラー発生時は適切なエラーログを出力", () => {
+        // Arrange
+        const error = new Error("Test error");
+        mockAttackTypeFallbackService.getAttackTypeByPageId.mockImplementation(
+          () => {
+            throw error;
+          }
+        );
+
+        // Act
+        dataMapper.mapAttackType("未知の攻撃タイプ", "28");
+
+        // Assert
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "[ERROR] フォールバック処理中にエラーが発生: pageId=28, error=Test error"
+        );
+        expect(consoleInfoSpy).toHaveBeenCalledWith(
+          '[INFO] エラー回復のためデフォルト値を使用: pageId=28, default="strike"'
+        );
+      });
     });
   });
 
