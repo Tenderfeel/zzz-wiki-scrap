@@ -128,8 +128,12 @@ export class CharacterGenerator {
       errors.push("stats フィールドが存在しません");
     }
 
-    if (!character.attackType) {
-      errors.push("attackType フィールドが存在しません");
+    if (
+      !character.attackType ||
+      !Array.isArray(character.attackType) ||
+      character.attackType.length === 0
+    ) {
+      errors.push("attackType フィールドが存在しないか、空の配列です");
     }
 
     if (character.faction === undefined || character.faction === null) {
@@ -231,13 +235,12 @@ export class CharacterGenerator {
     }
 
     const validAttackTypes = ["slash", "pierce", "strike"];
-    if (
-      character.attackType &&
-      !validAttackTypes.includes(character.attackType)
-    ) {
-      errors.push(
-        `attackType "${character.attackType}" は有効な値ではありません`
-      );
+    if (character.attackType && Array.isArray(character.attackType)) {
+      for (const attackType of character.attackType) {
+        if (!validAttackTypes.includes(attackType)) {
+          errors.push(`attackType "${attackType}" は有効な値ではありません`);
+        }
+      }
     }
 
     const validRarities = ["A", "S"];
@@ -331,7 +334,9 @@ ${indent}  fullName: { ja: "${character.fullName.ja}", en: "${
     }" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
-${indent}  attackType: "${character.attackType}",
+${indent}  attackType: [${character.attackType
+      .map((type) => `"${type}"`)
+      .join(", ")}],
 ${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
 ${indent}  attr: {

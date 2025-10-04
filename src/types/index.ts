@@ -20,11 +20,14 @@ export type Stats =
   | "frostAttribute" // 霜烈
   | "auricInk"; // 玄墨
 
-// 攻撃タイプ
+// 攻撃タイプ（単一）
 export type AttackType =
   | "slash" // 斬撃
   | "pierce" // 刺突
   | "strike"; // 打撃
+
+// 攻撃タイプ（複数対応）
+export type AttackTypes = AttackType[];
 
 // レア度
 export type Rarity = "A" | "S";
@@ -49,6 +52,13 @@ export type Faction = {
   name: { [key in Lang]: string };
 };
 
+// キャラクターエントリー（Scraping.mdから抽出される情報）
+export type CharacterEntry = {
+  id: string; // リンクテキスト（例: "lycaon"）
+  pageId: number; // API用ページID（例: 28）
+  wikiUrl: string; // wiki URL
+};
+
 // キャラクター
 export type Character = {
   id: string; // Scraping.mdのリンクテキストと同じ
@@ -56,7 +66,7 @@ export type Character = {
   fullName: { [key in Lang]: string }; // 多言語フルネーム
   specialty: Specialty; // 特性
   stats: Stats; // 属性
-  attackType: AttackType; // 攻撃タイプ
+  attackType: AttackTypes; // 攻撃タイプ（複数対応）
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス

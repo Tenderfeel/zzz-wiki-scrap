@@ -4,6 +4,9 @@
   "description": "HoyoLab ZZZ Wiki APIからキャラクターデータを取得するプロジェクト",
   "scripts": {
     "generate": "ts-node src/main.ts",
+    "generate:configurable": "ts-node src/main-configurable.ts",
+    "generate:enhanced": "ts-node src/main-pipeline-enhanced.ts",
+    "generate:config": "ts-node src/main-configurable.ts --generate-config",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

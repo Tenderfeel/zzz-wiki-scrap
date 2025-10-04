@@ -5,7 +5,7 @@ export interface BasicCharacterInfo {
   name: string;
   specialty: string;
   stats: string;
-  attackType: string;
+  attackType: string | string[]; // 単一または複数の攻撃タイプに対応
   rarity: string;
 }
 
@@ -40,7 +40,35 @@ export interface FixedStats {
   energy: number;
 }
 
+// バッチ処理用の型定義
+export interface BilingualApiData {
+  ja: import("./api").ApiResponse;
+  en: import("./api").ApiResponse;
+}
+
+export interface ApiDataResult {
+  entry: import("./index").CharacterEntry;
+  data: BilingualApiData | null;
+  error?: string;
+}
+
+export interface BatchProcessingOptions {
+  batchSize?: number;
+  delayMs?: number;
+  maxRetries?: number;
+}
+
+export interface ProcessingStatistics {
+  total: number;
+  successful: number;
+  failed: number;
+  processingTime: number;
+  startTime: Date;
+  endTime?: Date;
+}
+
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
+  warnings?: string[];
 }

@@ -95,3 +95,15 @@ public
 # Temporary files
 *.tmp
 *.temp
+
+# Report files
+report/
+reports/
+*.report
+*.report.*
+report.*
+*-report.*
+*_report.*
+test-report.*
+coverage-report.*
+performance-report.*

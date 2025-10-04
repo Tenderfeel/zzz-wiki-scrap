@@ -105,7 +105,7 @@ describe("CharacterGenerator", () => {
       name: "Von Lycaon",
       specialty: "stun",
       stats: "ice",
-      attackType: "strike",
+      attackType: ["strike"],
       rarity: "S",
     },
     factionInfo: {
@@ -127,7 +127,7 @@ describe("CharacterGenerator", () => {
         fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
         specialty: "stun",
         stats: "ice",
-        attackType: "strike",
+        attackType: ["strike"],
         faction: 2,
         rarity: "S",
         attr: {

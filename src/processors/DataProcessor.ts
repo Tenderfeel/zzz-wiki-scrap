@@ -33,7 +33,8 @@ export class DataProcessor {
       // 必須フィールドの存在確認
       const specialty = filterValues?.agent_specialties?.values?.[0];
       const stats = filterValues?.agent_stats?.values?.[0];
-      const attackType = filterValues?.agent_attack_type?.values?.[0];
+      // 攻撃タイプは複数の場合があるため、全ての値を取得
+      const attackTypeValues = filterValues?.agent_attack_type?.values;
       const rarity = filterValues?.agent_rarity?.values?.[0];
 
       if (!specialty) {
@@ -42,10 +43,28 @@ export class DataProcessor {
       if (!stats) {
         throw new ParsingError("属性データ(agent_stats)が見つかりません");
       }
-      if (!attackType) {
-        throw new ParsingError(
-          "攻撃タイプデータ(agent_attack_type)が見つかりません"
+      if (!attackTypeValues || attackTypeValues.length === 0) {
+        // デバッグ情報を追加
+        console.warn(
+          `攻撃タイプデータが見つかりません。利用可能なfilter_values:`,
+          Object.keys(filterValues)
         );
+
+        // 代替手段として、他の場所から攻撃タイプを探す
+        const alternativeAttackType = this.findAlternativeAttackType(apiData);
+        if (!alternativeAttackType) {
+          throw new ParsingError(
+            "攻撃タイプデータ(agent_attack_type)が見つかりません"
+          );
+        }
+        return {
+          id: page.id,
+          name: page.name,
+          specialty,
+          stats,
+          attackType: [alternativeAttackType], // 配列として返す
+          rarity,
+        };
       }
       if (!rarity) {
         throw new ParsingError("レア度データ(agent_rarity)が見つかりません");
@@ -56,7 +75,7 @@ export class DataProcessor {
         name: page.name,
         specialty,
         stats,
-        attackType,
+        attackType: attackTypeValues, // 複数の攻撃タイプを配列として返す
         rarity,
       };
     } catch (error) {
@@ -167,6 +186,47 @@ export class DataProcessor {
         throw error;
       }
       throw new MappingError("陣営IDの解決に失敗しました", error as Error);
+    }
+  }
+
+  /**
+   * 代替手段で攻撃タイプを検索
+   */
+  private findAlternativeAttackType(apiData: ApiResponse): string | null {
+    try {
+      const page = apiData.data.page;
+
+      // 1. modulesから攻撃タイプ情報を探す
+      if (page.modules && Array.isArray(page.modules)) {
+        for (const module of page.modules) {
+          if (module.components && Array.isArray(module.components)) {
+            for (const component of module.components) {
+              if (component.data) {
+                try {
+                  const componentData = JSON.parse(component.data);
+                  // 攻撃タイプに関連する可能性のあるフィールドを探す
+                  if (componentData.attack_type || componentData.attackType) {
+                    return (
+                      componentData.attack_type || componentData.attackType
+                    );
+                  }
+                } catch (e) {
+                  // JSON解析に失敗した場合は無視
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // 2. デフォルト値を返す（最後の手段）
+      console.warn(
+        `攻撃タイプが見つからないため、デフォルト値 "strike" を使用します`
+      );
+      return "strike"; // デフォルトとして打撃を使用
+    } catch (error) {
+      console.warn(`代替攻撃タイプ検索中にエラー:`, error);
+      return "strike"; // エラー時もデフォルト値
     }
   }
 
