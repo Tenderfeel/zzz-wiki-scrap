@@ -2,7 +2,6 @@
 
 export * from "./types";
 export * from "./errors";
-export * from "./constants/mappings";
 
 // API クライアントとファイルローダー
 export * from "./clients";

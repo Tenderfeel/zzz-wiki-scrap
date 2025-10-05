@@ -7,6 +7,7 @@ export default [
     fullName: { ja: "アンビー・デマラ", en: "Anby Demara" },
     specialty: "stun",
     stats: "electric",
+
     faction: 1,
     rarity: "A",
     attr: {
@@ -28,6 +29,7 @@ export default [
     fullName: { ja: "ビリー・キッド", en: "Billy Kid" },
     specialty: "attack",
     stats: "physical",
+
     faction: 1,
     rarity: "A",
     attr: {
@@ -878,6 +880,7 @@ export default [
     },
     specialty: "attack",
     stats: "fire",
+
     faction: 4,
     rarity: "S",
     attr: {

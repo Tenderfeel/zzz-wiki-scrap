@@ -259,8 +259,8 @@ export class BatchProcessor {
 
     try {
       if (this.workerPool) {
-        await this.workerPool.start();
-        await this.workerPool.waitForCompletion();
+        await this.workerPool!.start();
+        await this.workerPool!.waitForCompletion();
       }
     } finally {
       clearInterval(statsInterval);
@@ -294,7 +294,7 @@ export class BatchProcessor {
     // ワーカープール統計を表示
     if (this.workerPool) {
       log(`\n📊 ワーカープール統計:`);
-      log(this.workerPool.generateStatisticsReport());
+      log(this.workerPool!.generateStatisticsReport());
     }
 
     return { successful, failed };

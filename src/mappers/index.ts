@@ -1,1 +1,1 @@
-export { DataMapper } from "./DataMapper.js";
+export { DataMapper } from "./DataMapper";

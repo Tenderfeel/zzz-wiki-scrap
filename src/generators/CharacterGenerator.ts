@@ -3,7 +3,7 @@ import { ProcessedData, ValidationResult } from "../types/processing";
 import { DataMapper } from "../mappers/DataMapper";
 import { AttributesProcessor } from "../processors/AttributesProcessor";
 import { ValidationError, ParsingError } from "../errors";
-import { logger, LogMessages } from "../utils/Logger.js";
+import { logger, LogMessages } from "../utils/Logger";
 import * as fs from "fs";
 
 /**
