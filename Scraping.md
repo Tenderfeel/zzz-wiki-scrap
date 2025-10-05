@@ -61,6 +61,53 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - [seed](https://wiki.hoyolab.com/pc/zzz/entry/901) - pageId: 901
 - [orphie](https://wiki.hoyolab.com/pc/zzz/entry/902) - pageId: 902
 
+## name リスト
+
+短縮名リスト
+
+```
+- anby: { ja: "アンビー", en: "Anby" }
+- billy: {ja: "ビリー", en: "Billy" }
+- nicole: { ja: "ニコ", en: "Nicole" }
+- nekomata: { ja: "猫又", en: "Necomata"}
+- soldier11: { ja: "11号", en: "Soldier 11" }
+- corin: { ja: "カリン", en: "Corin"}
+- anton: { ja: "アンドー", en: "Anton"}
+- ben: { ja: "ベン", en: "Ben"}
+- koreda: {ja: "クレタ", en: "Koleda"}
+- grace: {ja: "グレース", en: "Grace"}
+- lycaon: {ja: "ライカン", en: "Lycaon"}
+- ellen: {ja: "エレン", en: "Ellen" }
+- rina: { ja: "リナ", en: "Rina"}
+- zhuyuan: {ja "朱鳶", en: "Zhu Yuan"}
+- soukaku: { ja: "蒼角", en: "Soukaku"}
+- lucy: {ja: "ルーシー", en: "Lucy"}
+- piper: { ja: "パイパー", en: "Piper"}
+- qingyi: {ja: "青衣", en: "Qingyi"}
+- jane: {ja:"ジェーン", en: "Jane"}
+- seth:  {ja: "セス", en: "Seth"}
+- caesar: {ja: "シーザー", en: "Caesar"}
+- burnice: {ja: "バーニス", en: "Burnice"}
+- yanagi: {ja: "柳", en: "Yanagi"}
+- lighter: { ja: "ライト", en: "Lighter"}
+- miyabi: { ja: "雅", en: "Miyabi"}
+- harumasa: { ja: "悠真", en: "Harumasa"}
+- astra: { ja: "アストラ", en: "Astra"}
+- evelyn: { ja: "イヴリン", en: "Evelyn"}
+- soldier0anby: { ja: "0号アンビー", en: "0-Anby"}
+- pulchra: { ja: "プルクラ", en: "Pulchra"}
+- trigger: {ja: "トリガー", en: "Trigger"}
+- vivian: {ja: "ビビアン", en: "Vivian"}
+- hugo: {ja:"ヒューゴ", en: "Hugo"}
+- jufufu: {ja: "橘福福", en: "Ju Fufu"}
+- pan: {ja: "潘引壺", en: "Pan"}
+- yixuan: { ja: "儀玄", en: "Yixuan"}
+- yuzuha: {ja: "柚葉", en: "Yuzuha"}
+- alice: {ja: "アリス", en: "Alice"}
+- seed: {ja: "シード", en: "Seed"}
+- orphie: {ja: "オルペウス", en: "Orphie"}
+```
+
 ## 作成するデータ
 
 ### 1.characters.ts

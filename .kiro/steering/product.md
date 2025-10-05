@@ -2,52 +2,78 @@
 inclusion: always
 ---
 
-# データマッピング・型定義
+# Data Mapping & Type Definitions
 
-## データ変換マッピング
+## Core Data Transformation Rules
 
-### API フィールド → 内部型変換
+### API Response → TypeScript Object Mapping
 
-| 出力フィールド | API パス                                | 変換ルール             |
-| -------------- | --------------------------------------- | ---------------------- |
-| `id`           | `data.page.id`                          | 数値変換               |
-| `name`         | `data.page.name`                        | 多言語オブジェクト     |
-| `specialty`    | `data.page.agent_specialties.values[0]` | 日本語 → 英語 enum     |
-| `stats`        | `data.page.agent_stats.values[0]`       | 属性名 → 英語 enum     |
-| `attackType`   | `data.page.agent_attack_type.values[0]` | 攻撃タイプ → 英語 enum |
-| `faction`      | `data.page.agent_faction.values[0]`     | 陣営 ID 参照           |
-| `rarity`       | `data.page.agent_rarity.values[0]`      | そのまま使用           |
+When processing HoyoLab API responses, extract data using these exact paths:
 
-### 日本語 → 英語 enum 変換
+- **Character ID**: `data.page.id` (convert to number)
+- **Names**: `data.page.name` (preserve as multilingual object)
+- **Specialty**: `data.page.agent_specialties.values[0]` (map Japanese → English enum)
+- **Element**: `data.page.agent_stats.values[0]` (map Japanese → English enum)
+- **Attack Type**: `data.page.agent_attack_type.values[0]` (map Japanese → English enum)
+- **Faction**: `data.page.agent_faction.values[0]` (reference faction ID)
+- **Rarity**: `data.page.agent_rarity.values[0]` (use as-is: "A" or "S")
 
-**Specialty (特性)**:
+### Required Japanese → English Enum Mappings
 
-- `"撃破"` → `"stun"` | `"強攻"` → `"attack"` | `"異常"` → `"anomaly"`
-- `"支援"` → `"support"` | `"防護"` → `"defense"` | `"命破"` → `"rupture"`
+**Specialty Mappings** (agent_specialties):
 
-**Stats (属性)**:
+```
+"撃破" → "stun"
+"強攻" → "attack"
+"異常" → "anomaly"
+"支援" → "support"
+"防護" → "defense"
+"命破" → "rupture"
+```
 
-- `"氷属性"` → `"ice"` | `"炎属性"` → `"fire"` | `"電気属性"` → `"electric"`
-- `"物理属性"` → `"physical"` | `"エーテル属性"` → `"ether"`
+**Element Mappings** (agent_stats):
 
-**AttackType (攻撃タイプ)**:
+```
+"氷属性" → "ice"
+"炎属性" → "fire"
+"電気属性" → "electric"
+"物理属性" → "physical"
+"エーテル属性" → "ether"
+```
 
-- `"打撃"` → `"strike"` | `"斬撃"` → `"slash"` | `"刺突"` → `"pierce"`
+**Attack Type Mappings** (agent_attack_type):
 
-## Attributes (ステータス) 抽出
+```
+"打撃" → "strike"
+"斬撃" → "slash"
+"刺突" → "pierce"
+```
 
-### データ場所
+## Character Attributes Extraction
 
-`data.page.modules` → `ascension`コンポーネント → `data` (JSON 文字列)
+### Data Location & Processing
 
-### 処理ルール
+Extract attributes from: `data.page.modules` → find `ascension` component → parse `data` (JSON string)
 
-- **レベル別配列** (7 レベル: 1,10,20,30,40,50,60): `hp[]`, `atk[]`, `def[]`
-- **固定値** (レベル 1 のみ): `impact`, `critRate`, `critDmg`, `anomalyMastery`, `anomalyProficiency`, `penRatio`, `energy`
-- **値取得**: `combatList` → `values[1]` (強化後値)
-- **変換**: `"-"` → `0`, `"50%"` → `50` (パーセンテージ除去)
+### Attribute Processing Rules
 
-## TypeScript 型定義
+**Level-Based Arrays** (7 levels: 1,10,20,30,40,50,60):
+
+- `hp[]`, `atk[]`, `def[]` - extract from `combatList` → `values[1]` (enhanced values)
+
+**Fixed Values** (level 1 only):
+
+- `impact`, `critRate`, `critDmg`, `anomalyMastery`, `anomalyProficiency`, `penRatio`, `energy`
+
+**Value Conversion Rules**:
+
+- `"-"` → `0` (missing/null values)
+- `"50%"` → `50` (remove percentage symbols)
+- Always use `values[1]` from combatList (enhanced stats, not base)
+
+## Required TypeScript Types
+
+Use these exact type definitions when working with character data:
 
 ```typescript
 type Lang = "en" | "ja";
@@ -59,27 +85,20 @@ type Specialty =
   | "support"
   | "defense"
   | "rupture";
-type Stats =
-  | "ether"
-  | "fire"
-  | "ice"
-  | "physical"
-  | "electric"
-  | "frostAttribute"
-  | "auricInk";
+type Stats = "ether" | "fire" | "ice" | "physical" | "electric";
 type AttackType = "slash" | "pierce" | "strike";
 type Rarity = "A" | "S";
 
 type Attributes = {
-  hp: number[]; // [1,10,20,30,40,50,60]レベル別
-  atk: number[]; // [1,10,20,30,40,50,60]レベル別
-  def: number[]; // [1,10,20,30,40,50,60]レベル別
-  impact: number; // 固定値
-  critRate: number; // 固定値 (% 除去済み)
-  critDmg: number; // 固定値 (% 除去済み)
+  hp: number[]; // 7-element array [lv1,10,20,30,40,50,60]
+  atk: number[]; // 7-element array [lv1,10,20,30,40,50,60]
+  def: number[]; // 7-element array [lv1,10,20,30,40,50,60]
+  impact: number;
+  critRate: number; // percentage as number (no % symbol)
+  critDmg: number; // percentage as number (no % symbol)
   anomalyMastery: number;
   anomalyProficiency: number;
-  penRatio: number; // 固定値 (% 除去済み)
+  penRatio: number; // percentage as number (no % symbol)
   energy: number;
 };
 
@@ -101,13 +120,24 @@ type Character = {
 };
 ```
 
-## 出力ファイル仕様
+## Output File Requirements
 
-- **`data/characters.ts`**: `export default Character[]`
-- **`data/factions.ts`**: `export default Faction[]`
+Generate these exact files with proper TypeScript exports:
 
-## 重要な処理規約
+- **`data/characters.ts`**: `export default Character[]` (array of all characters)
+- **`data/factions.ts`**: `export default Faction[]` (array of all factions)
 
-- **言語優先順位**: 日本語 (`ja-jp`) → 英語 (`en-us`) フォールバック
-- **エラーハンドリング**: `"-"` 値・欠損データの適切な処理
-- **型安全性**: 厳密な TypeScript 型定義準拠
+## Critical Processing Rules
+
+**Language Priority**: Always request Japanese (`ja-jp`) first, fallback to English (`en-us`) if needed
+
+**Data Validation**:
+
+- Convert `"-"` strings to `0` for numeric fields
+- Remove `%` symbols from percentage values
+- Ensure all arrays have exactly 7 elements for level-based stats
+- Validate all enum mappings exist before assignment
+
+**Type Safety**: All generated data must strictly conform to the TypeScript types above
+
+**Error Handling**: Log missing mappings but continue processing with fallback values

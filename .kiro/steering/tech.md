@@ -2,55 +2,88 @@
 inclusion: always
 ---
 
-# 技術スタック・開発規約
+# Technical Standards & Development Guidelines
 
-## プロジェクト概要
+## Project Overview
 
-Zenless Zone Zero (ZZZ) wiki キャラクター情報のデータスクレイピング・API 統合プロジェクト
+TypeScript-based data scraping system for Zenless Zone Zero (ZZZ) character information from HoyoLab API.
 
-## 技術スタック
+## Technology Stack
 
-- **言語**: TypeScript (Node.js)
-- **テスト**: Vitest
-- **ビルド**: TypeScript Compiler (tsc)
-- **パッケージ管理**: npm
+- **Language**: TypeScript (Node.js runtime)
+- **Testing**: Vitest framework
+- **Build**: TypeScript Compiler (tsc)
+- **Package Manager**: npm
 
-## API 仕様
+## API Integration Rules
 
-- **エンドポイント**: `https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page`
-- **認証**: 不要
-- **レート制限**: 実装必須（適切な間隔でリクエスト）
-- **パラメータ**:
-  - `entry_page_id`: 2-902 の範囲のキャラクターページ ID
-  - `lang`: `ja-jp` (日本語) または `en-us` (英語)
+### HoyoLab API Specifications
 
-## 言語・ローカライゼーション
+- **Base URL**: `https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page`
+- **Authentication**: None required
+- **Rate Limiting**: MUST implement delays between requests
+- **Required Parameters**:
+  - `entry_page_id`: Character page ID (range: 2-902)
+  - `lang`: Language code (`ja-jp` or `en-us`)
 
-- **プライマリ**: 日本語 (`ja-jp`)
-- **フォールバック**: 英語 (`en-us`)
-- **コード内コメント**: 日本語
-- **ドキュメント**: 日本語
-- **変数名・関数名**: 英語 (PascalCase/camelCase)
+### Request Pattern Requirements
 
-## データ処理パターン
+1. **Primary Request**: Always use `ja-jp` (Japanese) first
+2. **Fallback Request**: Use `en-us` (English) if Japanese fails
+3. **Error Handling**: Continue processing on partial failures
+4. **Rate Limiting**: Implement appropriate delays between API calls
 
-### 必須処理フロー
+## Code Style & Conventions
 
-1. 日本語 API リクエスト → 英語 API リクエスト (フォールバック)
-2. JSON 解析 → ネストされた JSON 文字列の再解析
-3. 日本語値 → 英語 enum 値へのマッピング
-4. 数値変換 (`"-"` → `0`, `"50%"` → `50`)
-5. 型安全性検証 → TypeScript 型への適合
+### Naming Standards
 
-### エラーハンドリング規約
+- **Files**: `PascalCase.ts` (e.g., `CharacterGenerator.ts`)
+- **Classes**: `PascalCase` (e.g., `DataProcessor`)
+- **Functions**: `camelCase` (e.g., `processCharacterData`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
+- **Character IDs**: lowercase (e.g., `lycaon`, `soldier11`)
 
-- カスタムエラークラス使用 (`src/errors/`)
-- 詳細ログ出力 (処理状況・エラー詳細)
-- グレースフルデグラデーション (部分的失敗でも継続)
-- 必須フィールド検証・デフォルト値設定
+### Language Usage
 
-## コード品質基準
+- **Code Comments**: Japanese preferred
+- **Documentation**: Japanese
+- **Variable/Function Names**: English only
+- **API Language Codes**: `ja-jp` (primary), `en-us` (fallback)
 
-- **型安全性**: 厳密な TypeScript 型定義必須
-- **テストカバレッジ**: 単体・統合・パフォーマンステスト
-- **設定管理**: `processing-config.json`による設定外部化
+## Data Processing Requirements
+
+### Mandatory Processing Pipeline
+
+1. **API Request**: Japanese → English fallback
+2. **JSON Parsing**: Handle nested JSON strings within responses
+3. **Value Mapping**: Japanese text → English enum values
+4. **Data Conversion**: `"-"` → `0`, `"50%"` → `50`
+5. **Type Validation**: Ensure TypeScript type compliance
+
+### Error Handling Standards
+
+- **Custom Errors**: Use classes from `src/errors/`
+- **Logging**: Detailed process status and error information
+- **Graceful Degradation**: Continue processing despite partial failures
+- **Validation**: Check required fields, provide default values
+
+## Quality Assurance
+
+### Type Safety Requirements
+
+- **Strict TypeScript**: All code must use strict type definitions
+- **No `any` Types**: Avoid implicit or explicit `any` usage
+- **Interface Compliance**: All data must conform to defined interfaces
+
+### Testing Standards
+
+- **Unit Tests**: Test individual functions and classes
+- **Integration Tests**: Test complete data processing workflows
+- **Performance Tests**: Validate processing speed and memory usage
+- **Coverage**: Maintain comprehensive test coverage
+
+### Configuration Management
+
+- **External Config**: Use `processing-config.json` for parameters
+- **Environment Support**: Support different configuration environments
+- **Validation**: Validate configuration values with defaults
