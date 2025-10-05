@@ -26,7 +26,6 @@ const mockApiResponse: ApiResponse = {
       name: "テストキャラクター",
       agent_specialties: { values: ["撃破"] },
       agent_stats: { values: ["氷属性"] },
-      agent_attack_type: { values: ["斬撃"] },
       agent_rarity: { values: ["S"] },
       agent_faction: { values: ["邪兎屋"] },
       modules: [
@@ -92,7 +91,6 @@ const mockCharacter: Character = {
   fullName: { ja: "テストキャラクター", en: "Test Character" },
   specialty: "stun",
   stats: "ice",
-  attackType: "slash",
   faction: 1,
   rarity: "S",
   attr: {
@@ -194,12 +192,20 @@ describe("BatchProcessor", () => {
         ja: mockApiResponse,
         en: mockApiResponse,
       });
-      mockDataProcessor.processCharacterData
-        .mockRejectedValueOnce(new Error("データ処理エラー"))
-        .mockResolvedValueOnce(mockCharacter);
+      // 特定のキャラクターでエラーを発生させる
+      mockDataProcessor.processCharacterData.mockImplementation(
+        (jaData, enData, entry) => {
+          if (entry.id === "test-character") {
+            throw new Error("データ処理エラー");
+          }
+          return Promise.resolve(mockCharacter);
+        }
+      );
 
       // Act
       const result = await batchProcessor.processAllCharacters(entries);
+
+      // 結果を確認
 
       // Assert
       expect(result.successful).toHaveLength(1);

@@ -5,7 +5,6 @@ export interface BasicCharacterInfo {
   name: string;
   specialty: string;
   stats: string;
-  attackType: string | string[]; // 単一または複数の攻撃タイプに対応
   rarity: string;
 }
 

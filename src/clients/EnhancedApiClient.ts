@@ -43,12 +43,18 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     const opts = { ...this.defaultOptions, ...options };
     const results: ApiDataResult[] = [];
 
-    console.log(`\n=== バッチAPI取得開始 ===`);
-    console.log(`対象キャラクター数: ${entries.length}`);
-    console.log(`バッチサイズ: ${opts.batchSize}`);
-    console.log(`リクエスト間隔: ${opts.delayMs}ms`);
-    console.log(`最大リトライ回数: ${opts.maxRetries}`);
-    console.log(`========================\n`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n=== バッチAPI取得開始 ===`);
+      console.log(`対象キャラクター数: ${entries.length}`);
+      console.log(`バッチサイズ: ${opts.batchSize}`);
+      console.log(`リクエスト間隔: ${opts.delayMs}ms`);
+      console.log(`最大リトライ回数: ${opts.maxRetries}`);
+      console.log(`========================\n`);
+    }
 
     // バッチ単位で処理
     for (let i = 0; i < entries.length; i += opts.batchSize) {
@@ -56,7 +62,13 @@ export class EnhancedApiClient extends HoyoLabApiClient {
       const batchNumber = Math.floor(i / opts.batchSize) + 1;
       const totalBatches = Math.ceil(entries.length / opts.batchSize);
 
-      console.log(`バッチ ${batchNumber}/${totalBatches} 処理中...`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`バッチ ${batchNumber}/${totalBatches} 処理中...`);
+      }
 
       // バッチ内の並行処理
       const batchPromises = batch.map((entry) =>
@@ -67,16 +79,28 @@ export class EnhancedApiClient extends HoyoLabApiClient {
       results.push(...batchResults);
 
       // 進捗表示
-      const processed = Math.min(i + opts.batchSize, entries.length);
-      console.log(
-        `進捗: ${processed}/${entries.length} (${Math.round(
-          (processed / entries.length) * 100
-        )}%)`
-      );
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        const processed = Math.min(i + opts.batchSize, entries.length);
+        console.log(
+          `進捗: ${processed}/${entries.length} (${Math.round(
+            (processed / entries.length) * 100
+          )}%)`
+        );
+      }
 
       // 最後のバッチでない場合は遅延
       if (i + opts.batchSize < entries.length) {
-        console.log(`${opts.delayMs}ms 待機中...`);
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.log(`${opts.delayMs}ms 待機中...`);
+        }
         await this.delay(opts.delayMs);
       }
     }
@@ -103,9 +127,15 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     // 1分間のリクエスト数制限チェック
     if (this.requestCount >= this.maxRequestsPerMinute) {
       const waitTime = 60000; // 1分待機
-      console.log(
-        `⚠ レート制限に達しました。${waitTime / 1000}秒待機します...`
-      );
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(
+          `⚠ レート制限に達しました。${waitTime / 1000}秒待機します...`
+        );
+      }
       await this.delay(waitTime);
       this.requestCount = 0;
     }
@@ -125,19 +155,33 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     maxRetries: number
   ): Promise<ApiDataResult> {
     let lastError: Error | null = null;
+    let attemptCount = 0;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      attemptCount++;
       try {
-        console.log(
-          `  ${entry.id} (pageId: ${entry.pageId}) 取得中... (試行 ${attempt}/${maxRetries})`
-        );
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.log(
+            `  ${entry.id} (pageId: ${entry.pageId}) 取得中... (試行 ${attempt}/${maxRetries})`
+          );
+        }
 
         // レート制限チェック
         await this.checkRateLimit();
 
         const data = await this.fetchBothLanguages(entry.pageId);
 
-        console.log(`  ✓ ${entry.id} 取得成功`);
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.log(`  ✓ ${entry.id} 取得成功`);
+        }
         return {
           entry,
           data,
@@ -149,17 +193,35 @@ export class EnhancedApiClient extends HoyoLabApiClient {
         const errorResult = this.handleApiError(lastError, entry, attempt);
 
         if (attempt < maxRetries && errorResult.shouldRetry) {
-          console.log(`  ${errorResult.waitTime}ms 後にリトライします...`);
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(`  ${errorResult.waitTime}ms 後にリトライします...`);
+          }
           await this.delay(errorResult.waitTime);
         } else if (!errorResult.shouldRetry) {
-          console.log(
-            `  ✗ ${entry.id} リトライ不可能なエラー: ${lastError.message}`
-          );
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(
+              `  ✗ ${entry.id} リトライ不可能なエラー: ${lastError.message}`
+            );
+          }
           break;
         } else {
-          console.log(
-            `  ✗ ${entry.id} 取得失敗 (全試行終了): ${lastError.message}`
-          );
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(
+              `  ✗ ${entry.id} 取得失敗 (全試行終了): ${lastError.message}`
+            );
+          }
         }
       }
     }
@@ -217,7 +279,13 @@ export class EnhancedApiClient extends HoyoLabApiClient {
 
     // エラータイプの判定
     if (error.message.includes("429") || error.message.includes("rate limit")) {
-      console.warn(`⚠ レート制限エラー [${entry.id}]:`, errorInfo);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.warn(`⚠ レート制限エラー [${entry.id}]:`, errorInfo);
+      }
       return {
         shouldRetry: true,
         waitTime: Math.min(attempt * 2000, 10000), // 最大10秒
@@ -229,7 +297,13 @@ export class EnhancedApiClient extends HoyoLabApiClient {
       error.message.includes("timeout") ||
       error.message.includes("TIMEOUT")
     ) {
-      console.warn(`⚠ タイムアウトエラー [${entry.id}]:`, errorInfo);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.warn(`⚠ タイムアウトエラー [${entry.id}]:`, errorInfo);
+      }
       return {
         shouldRetry: true,
         waitTime: attempt * 1000,
@@ -242,7 +316,13 @@ export class EnhancedApiClient extends HoyoLabApiClient {
       error.message.includes("502") ||
       error.message.includes("503")
     ) {
-      console.warn(`⚠ サーバーエラー [${entry.id}]:`, errorInfo);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.warn(`⚠ サーバーエラー [${entry.id}]:`, errorInfo);
+      }
       return {
         shouldRetry: true,
         waitTime: attempt * 2000,
@@ -251,7 +331,16 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     }
 
     if (error.message.includes("404")) {
-      console.error(`✗ キャラクターが見つかりません [${entry.id}]:`, errorInfo);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.error(
+          `✗ キャラクターが見つかりません [${entry.id}]:`,
+          errorInfo
+        );
+      }
       return {
         shouldRetry: false,
         waitTime: 0,
@@ -260,7 +349,13 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     }
 
     // その他のエラー
-    console.error(`✗ 予期しないエラー [${entry.id}]:`, errorInfo);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.error(`✗ 予期しないエラー [${entry.id}]:`, errorInfo);
+    }
     return {
       shouldRetry: true,
       waitTime: attempt * 1000,
@@ -276,24 +371,32 @@ export class EnhancedApiClient extends HoyoLabApiClient {
     const successful = results.filter((r) => r.data !== null).length;
     const failed = results.filter((r) => r.data === null).length;
 
-    console.log(`\n=== バッチ処理統計 ===`);
-    console.log(`総キャラクター数: ${results.length}`);
-    console.log(`成功: ${successful}`);
-    console.log(`失敗: ${failed}`);
-    console.log(`成功率: ${Math.round((successful / results.length) * 100)}%`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n=== バッチ処理統計 ===`);
+      console.log(`総キャラクター数: ${results.length}`);
+      console.log(`成功: ${successful}`);
+      console.log(`失敗: ${failed}`);
+      console.log(
+        `成功率: ${Math.round((successful / results.length) * 100)}%`
+      );
 
-    if (failed > 0) {
-      console.log(`\n失敗したキャラクター:`);
-      results
-        .filter((r) => r.data === null)
-        .forEach((r) => {
-          console.log(
-            `  - ${r.entry.id} (pageId: ${r.entry.pageId}): ${r.error}`
-          );
-        });
+      if (failed > 0) {
+        console.log(`\n失敗したキャラクター:`);
+        results
+          .filter((r) => r.data === null)
+          .forEach((r) => {
+            console.log(
+              `  - ${r.entry.id} (pageId: ${r.entry.pageId}): ${r.error}`
+            );
+          });
+      }
+
+      console.log(`=====================\n`);
     }
-
-    console.log(`=====================\n`);
   }
 
   /**
@@ -347,12 +450,24 @@ export class EnhancedApiClient extends HoyoLabApiClient {
       .map((r) => r.entry);
 
     if (failedEntries.length === 0) {
-      console.log("再処理が必要なキャラクターはありません。");
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log("再処理が必要なキャラクターはありません。");
+      }
       return [];
     }
 
-    console.log(`\n=== 失敗キャラクターの再処理 ===`);
-    console.log(`対象キャラクター数: ${failedEntries.length}`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n=== 失敗キャラクターの再処理 ===`);
+      console.log(`対象キャラクター数: ${failedEntries.length}`);
+    }
 
     return await this.fetchCharacterDataBatch(failedEntries, options);
   }

@@ -11,7 +11,7 @@ import {
   ValidationError,
   BatchProcessingError,
 } from "./errors";
-import { Character } from "./types";
+import { Character, CharacterEntry } from "./types";
 import { ProcessingResult } from "./processors/BatchProcessor";
 
 /**
@@ -75,16 +75,22 @@ export class EnhancedMainPipeline {
     const opts = { ...this.defaultOptions, ...options };
     const startTime = Date.now();
 
-    console.log(`\n🚀 === 拡張メイン処理パイプライン開始 ===`);
-    console.log(`開始時刻: ${new Date().toLocaleString()}`);
-    console.log(`設定:`);
-    console.log(`  - Scraping.mdファイル: ${opts.scrapingFilePath}`);
-    console.log(`  - 出力ファイル: ${opts.outputFilePath}`);
-    console.log(`  - バッチサイズ: ${opts.batchSize}`);
-    console.log(`  - 遅延時間: ${opts.delayMs}ms`);
-    console.log(`  - 最大リトライ回数: ${opts.maxRetries}`);
-    console.log(`  - 最小成功率: ${Math.round(opts.minSuccessRate * 100)}%`);
-    console.log(`==========================================\n`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n🚀 === 拡張メイン処理パイプライン開始 ===`);
+      console.log(`開始時刻: ${new Date().toLocaleString()}`);
+      console.log(`設定:`);
+      console.log(`  - Scraping.mdファイル: ${opts.scrapingFilePath}`);
+      console.log(`  - 出力ファイル: ${opts.outputFilePath}`);
+      console.log(`  - バッチサイズ: ${opts.batchSize}`);
+      console.log(`  - 遅延時間: ${opts.delayMs}ms`);
+      console.log(`  - 最大リトライ回数: ${opts.maxRetries}`);
+      console.log(`  - 最小成功率: ${Math.round(opts.minSuccessRate * 100)}%`);
+      console.log(`==========================================\n`);
+    }
 
     let characterEntries: any[] = [];
     let processingResult: ProcessingResult | null = null;
@@ -92,7 +98,13 @@ export class EnhancedMainPipeline {
 
     try {
       // ステップ1: Scraping.md解析
-      console.log(`📋 ステップ1: Scraping.md解析`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`📋 ステップ1: Scraping.md解析`);
+      }
       try {
         characterEntries = await this.parser.parseScrapingFile(
           opts.scrapingFilePath
@@ -108,7 +120,13 @@ export class EnhancedMainPipeline {
       }
 
       // ステップ2: バッチ処理（API取得 + データ処理）
-      console.log(`🔄 ステップ2: バッチ処理開始`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`🔄 ステップ2: バッチ処理開始`);
+      }
       try {
         processingResult = await this.batchProcessor.processAllCharacters(
           characterEntries,
@@ -134,7 +152,13 @@ export class EnhancedMainPipeline {
       }
 
       // ステップ3: Character配列生成
-      console.log(`🏗️  ステップ3: Character配列生成`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`🏗️  ステップ3: Character配列生成`);
+      }
       try {
         characters = await this.generator.generateAllCharacters(
           processingResult.successful
@@ -149,7 +173,13 @@ export class EnhancedMainPipeline {
       }
 
       // ステップ4: 配列検証
-      console.log(`🔍 ステップ4: Character配列検証`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`🔍 ステップ4: Character配列検証`);
+      }
       try {
         const validationResult =
           this.generator.validateCharacterArray(characters);
@@ -173,7 +203,13 @@ export class EnhancedMainPipeline {
       }
 
       // ステップ5: ファイル出力
-      console.log(`📝 ステップ5: ファイル出力`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`📝 ステップ5: ファイル出力`);
+      }
       try {
         this.generator.outputCharactersFile(characters, opts.outputFilePath);
       } catch (error) {
@@ -217,30 +253,55 @@ export class EnhancedMainPipeline {
         options: opts,
       });
 
-      console.error(`\n❌ === パイプライン実行失敗 ===`);
-      console.error(
-        `エラー: ${error instanceof Error ? error.message : String(error)}`
-      );
-      console.error(`実行時間: ${this.formatDuration(executionTime)}`);
-      console.error(`==============================`);
-      console.error(errorReport);
-      console.error(`==============================\n`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.error(`\n❌ === パイプライン実行失敗 ===`);
+        console.error(
+          `エラー: ${error instanceof Error ? error.message : String(error)}`
+        );
+        console.error(`実行時間: ${this.formatDuration(executionTime)}`);
+      }
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.error(`==============================`);
+        console.error(errorReport);
+      }
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.error(`==============================\n`);
+      }
 
       // 部分的な結果があれば保存を試みる
       await this.handlePartialResults(
         error,
         processingResult,
         characters,
-        opts.outputFilePath
+        opts.outputFilePath,
+        characterEntries
       );
 
       // エラー復旧を試行（オプション）
       if (error instanceof AllCharactersError) {
         const recoveryAttempted = await this.attemptErrorRecovery(error, opts);
         if (recoveryAttempted) {
-          console.log(
-            `🔧 エラー復旧を試行しましたが、手動での確認が必要です。`
-          );
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(
+              `🔧 エラー復旧を試行しましたが、手動での確認が必要です。`
+            );
+          }
         }
       }
 
@@ -413,7 +474,8 @@ export class EnhancedMainPipeline {
     error: unknown,
     processingResult: ProcessingResult | null,
     characters: Character[],
-    outputFilePath: string
+    outputFilePath: string,
+    characterEntries: CharacterEntry[] = []
   ): Promise<void> {
     try {
       // 部分的な結果があるかチェック
@@ -423,11 +485,23 @@ export class EnhancedMainPipeline {
         (characters && characters.length > 0);
 
       if (!hasPartialResults) {
-        console.log(`⚠️  保存可能な部分的結果がありません。`);
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.log(`⚠️  保存可能な部分的結果がありません。`);
+        }
         return;
       }
 
-      console.log(`⚠️  部分的な結果の保存を試みます...`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`⚠️  部分的な結果の保存を試みます...`);
+      }
 
       // 成功したキャラクターがある場合
       if (
@@ -454,10 +528,18 @@ export class EnhancedMainPipeline {
               partialOutputPath
             );
 
-            console.log(`✅ 部分的な結果を保存しました: ${partialOutputPath}`);
-            console.log(
-              `📊 保存されたキャラクター数: ${partialCharacters.length}`
-            );
+            if (
+              process.env.NODE_ENV !== "test" &&
+              process.env.VITEST !== "true" &&
+              !process.env.SUPPRESS_LOGS
+            ) {
+              console.log(
+                `✅ 部分的な結果を保存しました: ${partialOutputPath}`
+              );
+              console.log(
+                `📊 保存されたキャラクター数: ${partialCharacters.length}`
+              );
+            }
 
             // 部分的な結果のレポートも生成
             const partialReportPath = "partial-processing-report.md";
@@ -472,18 +554,30 @@ export class EnhancedMainPipeline {
               partialReportPath
             );
 
-            console.log(
-              `📄 部分的な結果のレポートを生成: ${partialReportPath}`
-            );
+            if (
+              process.env.NODE_ENV !== "test" &&
+              process.env.VITEST !== "true" &&
+              !process.env.SUPPRESS_LOGS
+            ) {
+              console.log(
+                `📄 部分的な結果のレポートを生成: ${partialReportPath}`
+              );
+            }
           }
         } catch (partialError) {
-          console.error(
-            `❌ 部分的な結果の保存に失敗: ${
-              partialError instanceof Error
-                ? partialError.message
-                : String(partialError)
-            }`
-          );
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.error(
+              `❌ 部分的な結果の保存に失敗: ${
+                partialError instanceof Error
+                  ? partialError.message
+                  : String(partialError)
+              }`
+            );
+          }
         }
       }
 
@@ -491,7 +585,7 @@ export class EnhancedMainPipeline {
       try {
         const errorReportPath = "error-report.md";
         const errorReport = this.generateErrorReport(error, {
-          characterEntries: [],
+          characterEntries,
           processingResult,
           characters,
           executionTime: 0,
@@ -500,24 +594,42 @@ export class EnhancedMainPipeline {
 
         const fs = await import("fs");
         fs.writeFileSync(errorReportPath, errorReport, "utf-8");
-        console.log(`📄 エラーレポートを生成: ${errorReportPath}`);
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.log(`📄 エラーレポートを生成: ${errorReportPath}`);
+        }
       } catch (reportError) {
+        if (
+          process.env.NODE_ENV !== "test" &&
+          process.env.VITEST !== "true" &&
+          !process.env.SUPPRESS_LOGS
+        ) {
+          console.error(
+            `❌ エラーレポートの生成に失敗: ${
+              reportError instanceof Error
+                ? reportError.message
+                : String(reportError)
+            }`
+          );
+        }
+      }
+    } catch (handlingError) {
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
         console.error(
-          `❌ エラーレポートの生成に失敗: ${
-            reportError instanceof Error
-              ? reportError.message
-              : String(reportError)
+          `❌ 部分的結果の処理中にエラー: ${
+            handlingError instanceof Error
+              ? handlingError.message
+              : String(handlingError)
           }`
         );
       }
-    } catch (handlingError) {
-      console.error(
-        `❌ 部分的結果の処理中にエラー: ${
-          handlingError instanceof Error
-            ? handlingError.message
-            : String(handlingError)
-        }`
-      );
     }
   }
 
@@ -532,19 +644,39 @@ export class EnhancedMainPipeline {
     error: AllCharactersError,
     options: PipelineOptions
   ): Promise<boolean> {
-    console.log(`🔧 エラー復旧を試行中: ${error.stage}`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`🔧 エラー復旧を試行中: ${error.stage}`);
+    }
 
     try {
       switch (error.stage) {
         case ProcessingStage.API_FETCH:
           // API エラーの場合、遅延時間を増やして再試行
-          console.log(`⏳ API エラー復旧: 遅延時間を増加して再試行`);
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(`⏳ API エラー復旧: 遅延時間を増加して再試行`);
+          }
           const increasedDelay = (options.delayMs || 200) * 2;
           return await this.retryWithIncreasedDelay(increasedDelay);
 
         case ProcessingStage.BATCH_PROCESSING:
           // バッチ処理エラーの場合、バッチサイズを減らして再試行
-          console.log(`📦 バッチ処理エラー復旧: バッチサイズを減少して再試行`);
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(
+              `📦 バッチ処理エラー復旧: バッチサイズを減少して再試行`
+            );
+          }
           const reducedBatchSize = Math.max(
             1,
             Math.floor((options.batchSize || 5) / 2)
@@ -553,23 +685,41 @@ export class EnhancedMainPipeline {
 
         case ProcessingStage.VALIDATION:
           // 検証エラーの場合、問題のあるキャラクターを除外して再試行
-          console.log(
-            `🔍 検証エラー復旧: 問題のあるキャラクターを除外して再試行`
-          );
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(
+              `🔍 検証エラー復旧: 問題のあるキャラクターを除外して再試行`
+            );
+          }
           return await this.retryWithValidationFix();
 
         default:
-          console.log(`❌ ${error.stage} に対する自動復旧方法がありません`);
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true" &&
+            !process.env.SUPPRESS_LOGS
+          ) {
+            console.log(`❌ ${error.stage} に対する自動復旧方法がありません`);
+          }
           return false;
       }
     } catch (recoveryError) {
-      console.error(
-        `❌ エラー復旧に失敗: ${
-          recoveryError instanceof Error
-            ? recoveryError.message
-            : String(recoveryError)
-        }`
-      );
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.error(
+          `❌ エラー復旧に失敗: ${
+            recoveryError instanceof Error
+              ? recoveryError.message
+              : String(recoveryError)
+          }`
+        );
+      }
       return false;
     }
   }
@@ -581,7 +731,13 @@ export class EnhancedMainPipeline {
    */
   private async retryWithIncreasedDelay(delayMs: number): Promise<boolean> {
     // 実装は簡略化 - 実際の再試行ロジックは複雑になるため
-    console.log(`⏳ 遅延時間を ${delayMs}ms に増加`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`⏳ 遅延時間を ${delayMs}ms に増加`);
+    }
     return false; // 実際の実装では再試行を行う
   }
 
@@ -592,7 +748,13 @@ export class EnhancedMainPipeline {
    */
   private async retryWithReducedBatchSize(batchSize: number): Promise<boolean> {
     // 実装は簡略化 - 実際の再試行ロジックは複雑になるため
-    console.log(`📦 バッチサイズを ${batchSize} に減少`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`📦 バッチサイズを ${batchSize} に減少`);
+    }
     return false; // 実際の実装では再試行を行う
   }
 
@@ -602,7 +764,13 @@ export class EnhancedMainPipeline {
    */
   private async retryWithValidationFix(): Promise<boolean> {
     // 実装は簡略化 - 実際の修正ロジックは複雑になるため
-    console.log(`🔍 検証問題の修正を試行`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`🔍 検証問題の修正を試行`);
+    }
     return false; // 実際の実装では修正を行う
   }
 
@@ -618,16 +786,22 @@ export class EnhancedMainPipeline {
         processingResult.statistics.total) *
       100;
 
-    console.log(`\n🎉 === パイプライン実行完了 ===`);
-    console.log(`完了時刻: ${new Date().toLocaleString()}`);
-    console.log(`総実行時間: ${this.formatDuration(executionTime)}`);
-    console.log(`==============================`);
-    console.log(`📊 最終結果:`);
-    console.log(`  総キャラクター数: ${processingResult.statistics.total}`);
-    console.log(`  処理成功: ${processingResult.statistics.successful}`);
-    console.log(`  処理失敗: ${processingResult.statistics.failed}`);
-    console.log(`  成功率: ${Math.round(successRate)}%`);
-    console.log(`  生成されたCharacter数: ${characters.length}`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n🎉 === パイプライン実行完了 ===`);
+      console.log(`完了時刻: ${new Date().toLocaleString()}`);
+      console.log(`総実行時間: ${this.formatDuration(executionTime)}`);
+      console.log(`==============================`);
+      console.log(`📊 最終結果:`);
+      console.log(`  総キャラクター数: ${processingResult.statistics.total}`);
+      console.log(`  処理成功: ${processingResult.statistics.successful}`);
+      console.log(`  処理失敗: ${processingResult.statistics.failed}`);
+      console.log(`  成功率: ${Math.round(successRate)}%`);
+      console.log(`  生成されたCharacter数: ${characters.length}`);
+    }
     console.log(`  出力ファイル: ${outputFilePath}`);
     console.log(`==============================`);
 
@@ -671,9 +845,7 @@ export class EnhancedMainPipeline {
 ${result.characters
   .map(
     (c, index) =>
-      `${index + 1}. ${c.id} (${c.name.ja}) - ${c.specialty}/${c.stats}/${
-        c.attackType
-      }`
+      `${index + 1}. ${c.id} (${c.name.ja}) - ${c.specialty}/${c.stats}`
   )
   .join("\n")}
 `;

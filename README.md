@@ -106,7 +106,6 @@ export default [
     fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
     specialty: "stun", // 撃破
     stats: "ice", // 氷属性
-    attackType: "strike", // 打撃
     faction: 2, // ヴィクトリア家政
     rarity: "S",
     attr: {

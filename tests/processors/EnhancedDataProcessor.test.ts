@@ -6,6 +6,7 @@ import {
   ValidationError,
   AllCharactersError,
   ProcessingStage,
+  MappingError,
 } from "../../src/errors";
 
 // モックデータ
@@ -24,7 +25,6 @@ const mockJaApiResponse: ApiResponse = {
       name: "フォン・ライカン",
       agent_specialties: { values: ["撃破"] },
       agent_stats: { values: ["氷属性"] },
-      agent_attack_type: { values: ["斬撃"] },
       agent_rarity: { values: ["S"] },
       agent_faction: { values: ["ヴィクトリア家政"] },
       modules: [
@@ -116,7 +116,6 @@ const mockEnApiResponse: ApiResponse = {
       name: "Von Lycaon",
       agent_specialties: { values: ["Stun"] },
       agent_stats: { values: ["Ice"] },
-      agent_attack_type: { values: ["Strike"] },
       agent_rarity: { values: ["S"] },
       agent_faction: { values: ["Victoria Housekeeping Co."] },
       modules: [],
@@ -128,7 +127,6 @@ const mockEnApiResponse: ApiResponse = {
 (mockJaApiResponse.data.page as any).filter_values = {
   agent_specialties: { values: ["撃破"] },
   agent_stats: { values: ["氷属性"] },
-  agent_attack_type: { values: ["斬撃"] },
   agent_rarity: { values: ["S"] },
   agent_faction: { values: ["ヴィクトリア家政"] },
 };
@@ -136,7 +134,6 @@ const mockEnApiResponse: ApiResponse = {
 (mockEnApiResponse.data.page as any).filter_values = {
   agent_specialties: { values: ["Stun"] },
   agent_stats: { values: ["Ice"] },
-  agent_attack_type: { values: ["Strike"] },
   agent_rarity: { values: ["S"] },
   agent_faction: { values: ["Victoria Housekeeping Co."] },
 };
@@ -170,7 +167,6 @@ describe("EnhancedDataProcessor", () => {
         },
         specialty: "stun",
         stats: "ice",
-        attackType: "slash",
         faction: 2, // ヴィクトリア家政のID
         rarity: "S",
       });
@@ -277,9 +273,14 @@ describe("EnhancedDataProcessor", () => {
       };
 
       // Act & Assert
-      await expect(
-        processor.resolveFactionFromData(invalidApiResponse)
-      ).rejects.toThrow("未知の陣営名");
+      try {
+        await processor.resolveFactionFromData(invalidApiResponse);
+        expect.fail("エラーが投げられませんでした");
+      } catch (error) {
+        expect(error).toBeInstanceOf(MappingError);
+        expect((error as Error).message).toContain("未知の陣営名");
+        expect((error as Error).message).toContain("存在しない陣営");
+      }
     });
   });
 
@@ -290,7 +291,6 @@ describe("EnhancedDataProcessor", () => {
       fullName: { ja: "テストキャラクター", en: "Test Character" },
       specialty: "stun",
       stats: "ice",
-      attackType: "slash",
       faction: 1,
       rarity: "S",
       attr: {
@@ -516,38 +516,6 @@ describe("EnhancedDataProcessor", () => {
         );
 
         expect(result.stats).toBe(testCase.expected);
-      }
-    });
-
-    it("攻撃タイプの日本語名を正しくマッピングする", async () => {
-      // 各攻撃タイプをテスト
-      const testCases = [
-        { ja: "打撃", expected: "strike" },
-        { ja: "斬撃", expected: "slash" },
-        { ja: "刺突", expected: "pierce" },
-      ];
-
-      for (const testCase of testCases) {
-        const apiResponse = {
-          ...mockJaApiResponse,
-          data: {
-            page: {
-              ...mockJaApiResponse.data.page,
-              filter_values: {
-                ...(mockJaApiResponse.data.page as any).filter_values,
-                agent_attack_type: { values: [testCase.ja] },
-              },
-            },
-          },
-        };
-
-        const result = await processor.processCharacterData(
-          apiResponse,
-          mockEnApiResponse,
-          mockCharacterEntry
-        );
-
-        expect(result.attackType).toBe(testCase.expected);
       }
     });
 

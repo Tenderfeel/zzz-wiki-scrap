@@ -12,27 +12,10 @@ export enum LogLevel {
  * ログメッセージテンプレート
  */
 export const LogMessages = {
-  // AttackTypeFallbackService関連
-  FALLBACK_SERVICE_INITIALIZED:
-    "AttackTypeFallbackService initialized successfully",
-  FALLBACK_SERVICE_INIT_ERROR: "Failed to initialize AttackTypeFallbackService",
-  LIST_JSON_NOT_FOUND: "list.json file not found, fallback service disabled",
-  LIST_JSON_PARSE_ERROR: "Failed to parse list.json file",
-  CHARACTER_FOUND_IN_LIST: "Character found in list.json",
-  CHARACTER_NOT_FOUND_IN_LIST: "Character not found in list.json",
-  ATTACK_TYPE_MAPPED: "Attack type mapped from English to enum",
-  UNKNOWN_ATTACK_TYPE: "Unknown attack type value, using default",
-
-  // DataMapper関連
-  FALLBACK_USED: "AttackType fallback used for character",
-  WIKI_DATA_USED: "AttackType obtained from wiki data",
-  MAPPING_FALLBACK_TO_DEFAULT: "Mapping fallback to default attack type",
-
   // CharacterGenerator関連
   CHARACTER_GENERATION_START: "Starting character generation",
   CHARACTER_GENERATION_SUCCESS: "Character generation completed successfully",
   CHARACTER_GENERATION_ERROR: "Error during character generation",
-  ATTACK_TYPE_RETRIEVAL_METHOD: "Attack type retrieval method",
 } as const;
 
 /**
@@ -84,19 +67,31 @@ export class Logger {
   }
 
   public info(message: string, context?: Record<string, any>): void {
-    if (this.shouldLog(LogLevel.INFO)) {
+    if (
+      this.shouldLog(LogLevel.INFO) &&
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true"
+    ) {
       console.info(this.formatMessage(LogLevel.INFO, message, context));
     }
   }
 
   public warn(message: string, context?: Record<string, any>): void {
-    if (this.shouldLog(LogLevel.WARN)) {
+    if (
+      this.shouldLog(LogLevel.WARN) &&
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true"
+    ) {
       console.warn(this.formatMessage(LogLevel.WARN, message, context));
     }
   }
 
   public error(message: string, context?: Record<string, any>): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
+    if (
+      this.shouldLog(LogLevel.ERROR) &&
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true"
+    ) {
       console.error(this.formatMessage(LogLevel.ERROR, message, context));
     }
   }

@@ -57,7 +57,9 @@ export class CharacterListParser {
       throw new Error("Scraping.mdからキャラクター情報を抽出できませんでした");
     }
 
-    console.log(`${entries.length}個のキャラクターエントリーを抽出しました`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`${entries.length}個のキャラクターエントリーを抽出しました`);
+    }
     return entries;
   }
 
@@ -68,23 +70,26 @@ export class CharacterListParser {
   public displayStatistics(entries: CharacterEntry[]): void {
     console.log("\n=== キャラクターリスト統計 ===");
     console.log(`総キャラクター数: ${entries.length}`);
-    console.log(
-      `ページID範囲: ${Math.min(...entries.map((e) => e.pageId))} - ${Math.max(
-        ...entries.map((e) => e.pageId)
-      )}`
-    );
 
-    // 最初の5個と最後の5個を表示
-    console.log("\n最初の5キャラクター:");
-    entries.slice(0, 5).forEach((entry) => {
-      console.log(`  - ${entry.id} (pageId: ${entry.pageId})`);
-    });
+    if (entries.length > 0) {
+      console.log(
+        `ページID範囲: ${Math.min(
+          ...entries.map((e) => e.pageId)
+        )} - ${Math.max(...entries.map((e) => e.pageId))}`
+      );
 
-    if (entries.length > 10) {
-      console.log("\n最後の5キャラクター:");
-      entries.slice(-5).forEach((entry) => {
+      // 最初の5個と最後の5個を表示
+      console.log("\n最初の5キャラクター:");
+      entries.slice(0, 5).forEach((entry) => {
         console.log(`  - ${entry.id} (pageId: ${entry.pageId})`);
       });
+
+      if (entries.length > 10) {
+        console.log("\n最後の5キャラクター:");
+        entries.slice(-5).forEach((entry) => {
+          console.log(`  - ${entry.id} (pageId: ${entry.pageId})`);
+        });
+      }
     }
     console.log("========================\n");
   }

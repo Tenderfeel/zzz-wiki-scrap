@@ -244,9 +244,7 @@ export class MainPipeline {
 ${result.characters
   .map(
     (c, index) =>
-      `${index + 1}. ${c.id} (${c.name.ja}) - ${c.specialty}/${c.stats}/${
-        c.attackType
-      }`
+      `${index + 1}. ${c.id} (${c.name.ja}) - ${c.specialty}/${c.stats}`
   )
   .join("\n")}
 `;
@@ -332,7 +330,9 @@ ${result.characters
       ];
 
       if (allSuccessful.length > 0) {
-        const characters = await this.generator.generateAllCharacters(allSuccessful);
+        const characters = await this.generator.generateAllCharacters(
+          allSuccessful
+        );
         const validationResult =
           this.generator.validateCharacterArray(characters);
 
@@ -412,7 +412,7 @@ ${result.characters
       return `${seconds}秒`;
     }
   }
-}
+
   /**
    * エラーハンドリング機能
    * 各処理段階でのエラーキャッチ
@@ -450,7 +450,12 @@ ${result.characters
       errorMessage = `${contextMessage}: 不明なエラー - ${String(error)}`;
     }
 
-    return new AllCharactersError(stage, characterId, errorMessage, originalError);
+    return new AllCharactersError(
+      stage,
+      characterId,
+      errorMessage,
+      originalError
+    );
   }
 
   /**
@@ -462,20 +467,32 @@ ${result.characters
     const details: string[] = [];
 
     if (validationResult.duplicateIds.length > 0) {
-      details.push(`重複ID ${validationResult.duplicateIds.length}件: ${validationResult.duplicateIds.join(', ')}`);
+      details.push(
+        `重複ID ${
+          validationResult.duplicateIds.length
+        }件: ${validationResult.duplicateIds.join(", ")}`
+      );
     }
 
     if (validationResult.invalidCharacters.length > 0) {
-      details.push(`無効キャラクター ${validationResult.invalidCharacters.length}件`);
+      details.push(
+        `無効キャラクター ${validationResult.invalidCharacters.length}件`
+      );
       validationResult.invalidCharacters.slice(0, 3).forEach((invalid: any) => {
-        details.push(`  - インデックス ${invalid.index}: ${invalid.errors.slice(0, 2).join(', ')}`);
+        details.push(
+          `  - インデックス ${invalid.index}: ${invalid.errors
+            .slice(0, 2)
+            .join(", ")}`
+        );
       });
       if (validationResult.invalidCharacters.length > 3) {
-        details.push(`  - その他 ${validationResult.invalidCharacters.length - 3}件...`);
+        details.push(
+          `  - その他 ${validationResult.invalidCharacters.length - 3}件...`
+        );
       }
     }
 
-    return details.join('; ');
+    return details.join("; ");
   }
 
   /**
@@ -485,17 +502,23 @@ ${result.characters
    * @returns エラーレポート文字列
    */
   private generateErrorReport(error: unknown, context: any): string {
-    const { characterEntries, processingResult, characters, executionTime, options } = context;
+    const {
+      characterEntries,
+      processingResult,
+      characters,
+      executionTime,
+      options,
+    } = context;
 
     let report = `\n📋 エラーレポート\n`;
     report += `================\n`;
     report += `発生時刻: ${new Date().toLocaleString()}\n`;
     report += `実行時間: ${this.formatDuration(executionTime)}\n`;
-    
+
     if (error instanceof AllCharactersError) {
       report += `エラータイプ: AllCharactersError\n`;
       report += `処理段階: ${error.stage}\n`;
-      report += `キャラクターID: ${error.characterId || 'N/A'}\n`;
+      report += `キャラクターID: ${error.characterId || "N/A"}\n`;
       report += `詳細: ${error.details}\n`;
       if (error.originalError) {
         report += `元のエラー: ${error.originalError.message}\n`;
@@ -510,15 +533,19 @@ ${result.characters
 
     report += `\n📊 実行状況:\n`;
     report += `- 解析されたキャラクター数: ${characterEntries?.length || 0}\n`;
-    
+
     if (processingResult) {
       report += `- API取得成功: ${processingResult.statistics.successful}\n`;
       report += `- API取得失敗: ${processingResult.statistics.failed}\n`;
-      report += `- 処理成功率: ${Math.round((processingResult.statistics.successful / processingResult.statistics.total) * 100)}%\n`;
+      report += `- 処理成功率: ${Math.round(
+        (processingResult.statistics.successful /
+          processingResult.statistics.total) *
+          100
+      )}%\n`;
     }
-    
+
     report += `- 生成されたCharacter数: ${characters?.length || 0}\n`;
-    
+
     report += `\n⚙️  設定:\n`;
     report += `- バッチサイズ: ${options.batchSize}\n`;
     report += `- 遅延時間: ${options.delayMs}ms\n`;
@@ -555,10 +582,10 @@ ${result.characters
   ): Promise<void> {
     try {
       // 部分的な結果があるかチェック
-      const hasPartialResults = (
-        (processingResult?.successful && processingResult.successful.length > 0) ||
-        (characters && characters.length > 0)
-      );
+      const hasPartialResults =
+        (processingResult?.successful &&
+          processingResult.successful.length > 0) ||
+        (characters && characters.length > 0);
 
       if (!hasPartialResults) {
         console.log(`⚠️  保存可能な部分的結果がありません。`);
@@ -568,41 +595,66 @@ ${result.characters
       console.log(`⚠️  部分的な結果の保存を試みます...`);
 
       // 成功したキャラクターがある場合
-      if (processingResult?.successful && processingResult.successful.length > 0) {
+      if (
+        processingResult?.successful &&
+        processingResult.successful.length > 0
+      ) {
         try {
-          const partialCharacters = characters.length > 0 
-            ? characters 
-            : await this.generator.generateAllCharacters(processingResult.successful);
+          const partialCharacters =
+            characters.length > 0
+              ? characters
+              : await this.generator.generateAllCharacters(
+                  processingResult.successful
+                );
 
           if (partialCharacters.length > 0) {
             // 部分的な結果用のファイル名を生成
-            const partialOutputPath = outputFilePath.replace('.ts', '-partial.ts');
-            
-            this.generator.outputCharactersFile(partialCharacters, partialOutputPath);
-            
+            const partialOutputPath = outputFilePath.replace(
+              ".ts",
+              "-partial.ts"
+            );
+
+            this.generator.outputCharactersFile(
+              partialCharacters,
+              partialOutputPath
+            );
+
             console.log(`✅ 部分的な結果を保存しました: ${partialOutputPath}`);
-            console.log(`📊 保存されたキャラクター数: ${partialCharacters.length}`);
-            
+            console.log(
+              `📊 保存されたキャラクター数: ${partialCharacters.length}`
+            );
+
             // 部分的な結果のレポートも生成
-            const partialReportPath = 'partial-processing-report.md';
-            await this.generateReport({
-              characters: partialCharacters,
-              processingResult,
-              outputFilePath: partialOutputPath,
-              executionTime: 0,
-              success: false,
-            }, partialReportPath);
-            
-            console.log(`📄 部分的な結果のレポートを生成: ${partialReportPath}`);
+            const partialReportPath = "partial-processing-report.md";
+            await this.generateReport(
+              {
+                characters: partialCharacters,
+                processingResult,
+                outputFilePath: partialOutputPath,
+                executionTime: 0,
+                success: false,
+              },
+              partialReportPath
+            );
+
+            console.log(
+              `📄 部分的な結果のレポートを生成: ${partialReportPath}`
+            );
           }
         } catch (partialError) {
-          console.error(`❌ 部分的な結果の保存に失敗: ${partialError instanceof Error ? partialError.message : String(partialError)}`);
+          console.error(
+            `❌ 部分的な結果の保存に失敗: ${
+              partialError instanceof Error
+                ? partialError.message
+                : String(partialError)
+            }`
+          );
         }
       }
 
       // エラーレポートを生成
       try {
-        const errorReportPath = 'error-report.md';
+        const errorReportPath = "error-report.md";
         const errorReport = this.generateErrorReport(error, {
           characterEntries: [],
           processingResult,
@@ -611,15 +663,26 @@ ${result.characters
           options: this.defaultOptions,
         });
 
-        const fs = await import('fs');
-        fs.writeFileSync(errorReportPath, errorReport, 'utf-8');
+        const fs = await import("fs");
+        fs.writeFileSync(errorReportPath, errorReport, "utf-8");
         console.log(`📄 エラーレポートを生成: ${errorReportPath}`);
       } catch (reportError) {
-        console.error(`❌ エラーレポートの生成に失敗: ${reportError instanceof Error ? reportError.message : String(reportError)}`);
+        console.error(
+          `❌ エラーレポートの生成に失敗: ${
+            reportError instanceof Error
+              ? reportError.message
+              : String(reportError)
+          }`
+        );
       }
-
     } catch (handlingError) {
-      console.error(`❌ 部分的結果の処理中にエラー: ${handlingError instanceof Error ? handlingError.message : String(handlingError)}`);
+      console.error(
+        `❌ 部分的結果の処理中にエラー: ${
+          handlingError instanceof Error
+            ? handlingError.message
+            : String(handlingError)
+        }`
+      );
     }
   }
 
@@ -647,12 +710,17 @@ ${result.characters
         case ProcessingStage.BATCH_PROCESSING:
           // バッチ処理エラーの場合、バッチサイズを減らして再試行
           console.log(`📦 バッチ処理エラー復旧: バッチサイズを減少して再試行`);
-          const reducedBatchSize = Math.max(1, Math.floor((options.batchSize || 5) / 2));
+          const reducedBatchSize = Math.max(
+            1,
+            Math.floor((options.batchSize || 5) / 2)
+          );
           return await this.retryWithReducedBatchSize(reducedBatchSize);
 
         case ProcessingStage.VALIDATION:
           // 検証エラーの場合、問題のあるキャラクターを除外して再試行
-          console.log(`🔍 検証エラー復旧: 問題のあるキャラクターを除外して再試行`);
+          console.log(
+            `🔍 検証エラー復旧: 問題のあるキャラクターを除外して再試行`
+          );
           return await this.retryWithValidationFix();
 
         default:
@@ -660,7 +728,13 @@ ${result.characters
           return false;
       }
     } catch (recoveryError) {
-      console.error(`❌ エラー復旧に失敗: ${recoveryError instanceof Error ? recoveryError.message : String(recoveryError)}`);
+      console.error(
+        `❌ エラー復旧に失敗: ${
+          recoveryError instanceof Error
+            ? recoveryError.message
+            : String(recoveryError)
+        }`
+      );
       return false;
     }
   }
@@ -696,3 +770,4 @@ ${result.characters
     console.log(`🔍 検証問題の修正を試行`);
     return false; // 実際の実装では修正を行う
   }
+}

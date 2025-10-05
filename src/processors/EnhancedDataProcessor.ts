@@ -5,30 +5,41 @@ import {
   Lang,
   Specialty,
   Stats,
-  AttackType,
-  AttackTypes,
   Rarity,
   Attributes,
 } from "../types";
 import { BilingualApiData, ValidationResult } from "../types/processing";
 import { DataProcessor } from "./DataProcessor";
+import { DataMapper } from "../mappers/DataMapper";
 import factions from "../../data/factions";
-import { ParsingError, MappingError } from "../errors";
+import {
+  ParsingError,
+  MappingError,
+  AllCharactersError,
+  ProcessingStage,
+} from "../errors";
 
 /**
  * 拡張データプロセッサー - 複数キャラクターのデータ処理と陣営解決
  * 要件: 2.1-2.7, 3.1-3.5, 4.1-4.7
  */
 export class EnhancedDataProcessor extends DataProcessor {
+  private dataMapper: DataMapper;
+
+  constructor() {
+    super();
+    this.dataMapper = new DataMapper();
+  }
+
   /**
    * 複数キャラクターの基本情報抽出機能を拡張
    * 要件: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
    */
-  processCharacterData(
+  async processCharacterData(
     jaData: ApiResponse,
     enData: ApiResponse,
     entry: CharacterEntry
-  ): Character {
+  ): Promise<Character> {
     try {
       // 基本情報を日本語データから抽出
       const basicInfo = this.extractBasicInfo(jaData);
@@ -58,7 +69,6 @@ export class EnhancedDataProcessor extends DataProcessor {
         },
         specialty: this.mapSpecialty(basicInfo.specialty),
         stats: this.mapStats(basicInfo.stats),
-        attackType: this.mapAttackType(basicInfo.attackType),
         faction: factionInfo.id,
         rarity: this.mapRarity(basicInfo.rarity),
         attr: processedAttributes,
@@ -67,9 +77,17 @@ export class EnhancedDataProcessor extends DataProcessor {
       return character;
     } catch (error) {
       if (error instanceof ParsingError || error instanceof MappingError) {
-        throw error;
+        // 元のエラーをAllCharactersErrorでラップ
+        throw new AllCharactersError(
+          ProcessingStage.DATA_PROCESSING,
+          entry.id,
+          `データ処理エラー: ${error.message}`,
+          error
+        );
       }
-      throw new ParsingError(
+      throw new AllCharactersError(
+        ProcessingStage.DATA_PROCESSING,
+        entry.id,
         `キャラクター "${entry.id}" のデータ処理に失敗しました`,
         error as Error
       );
@@ -142,52 +160,6 @@ export class EnhancedDataProcessor extends DataProcessor {
       );
     }
     return mapped;
-  }
-
-  /**
-   * attackType（攻撃タイプ）のマッピング（複数対応）
-   * 要件: 2.6
-   */
-  private mapAttackType(attackType: string | string[]): AttackTypes {
-    const attackTypeMap: Record<string, AttackType> = {
-      // 日本語バージョン
-      打撃: "strike",
-      斬撃: "slash",
-      刺突: "pierce",
-      // 英語バージョン（念のため）
-      strike: "strike",
-      slash: "slash",
-      pierce: "pierce",
-    };
-
-    // 単一の攻撃タイプの場合
-    if (typeof attackType === "string") {
-      const mapped = attackTypeMap[attackType];
-      if (!mapped) {
-        throw new MappingError(
-          `未知の攻撃タイプ: "${attackType}". 利用可能な攻撃タイプ: ${Object.keys(
-            attackTypeMap
-          ).join(", ")}`
-        );
-      }
-      return [mapped];
-    }
-
-    // 複数の攻撃タイプの場合
-    const mappedTypes: AttackType[] = [];
-    for (const type of attackType) {
-      const mapped = attackTypeMap[type];
-      if (!mapped) {
-        throw new MappingError(
-          `未知の攻撃タイプ: "${type}". 利用可能な攻撃タイプ: ${Object.keys(
-            attackTypeMap
-          ).join(", ")}`
-        );
-      }
-      mappedTypes.push(mapped);
-    }
-
-    return mappedTypes;
   }
 
   /**
@@ -436,23 +408,23 @@ export class EnhancedDataProcessor extends DataProcessor {
 
     // 必須フィールドの存在確認
     if (!character.id || character.id.trim() === "") {
-      errors.push("Character.id が空です");
+      errors.push("IDが空です");
     }
 
     if (!character.name?.ja || character.name.ja.trim() === "") {
-      errors.push("Character.name.ja が空です");
+      errors.push("日本語名が空です");
     }
 
     if (!character.name?.en || character.name.en.trim() === "") {
-      errors.push("Character.name.en が空です");
+      errors.push("英語名が空です");
     }
 
     if (!character.fullName?.ja || character.fullName.ja.trim() === "") {
-      errors.push("Character.fullName.ja が空です");
+      errors.push("日本語フルネームが空です");
     }
 
     if (!character.fullName?.en || character.fullName.en.trim() === "") {
-      errors.push("Character.fullName.en が空です");
+      errors.push("英語フルネームが空です");
     }
 
     // 列挙値の検証
@@ -465,7 +437,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       "rupture",
     ];
     if (!validSpecialties.includes(character.specialty)) {
-      errors.push(`無効な specialty: ${character.specialty}`);
+      errors.push(`無効な特性: ${character.specialty}`);
     }
 
     const validStats: Stats[] = [
@@ -481,21 +453,6 @@ export class EnhancedDataProcessor extends DataProcessor {
       errors.push(`無効な stats: ${character.stats}`);
     }
 
-    const validAttackTypes: AttackType[] = ["slash", "pierce", "strike"];
-    // 攻撃タイプ配列の検証
-    if (
-      !Array.isArray(character.attackType) ||
-      character.attackType.length === 0
-    ) {
-      errors.push(`attackType は空でない配列である必要があります`);
-    } else {
-      for (const attackType of character.attackType) {
-        if (!validAttackTypes.includes(attackType)) {
-          errors.push(`無効な attackType: ${attackType}`);
-        }
-      }
-    }
-
     const validRarities: Rarity[] = ["A", "S"];
     if (!validRarities.includes(character.rarity)) {
       errors.push(`無効な rarity: ${character.rarity}`);
@@ -509,11 +466,7 @@ export class EnhancedDataProcessor extends DataProcessor {
 
     // 数値配列の長さ検証
     if (!character.attr.hp || character.attr.hp.length !== 7) {
-      errors.push(
-        `HP配列の長さが不正です。期待値: 7, 実際: ${
-          character.attr.hp?.length || 0
-        }`
-      );
+      errors.push(`HP配列の長さが不正です: ${character.attr.hp?.length || 0}`);
     }
 
     if (!character.attr.atk || character.attr.atk.length !== 7) {
@@ -532,17 +485,61 @@ export class EnhancedDataProcessor extends DataProcessor {
       );
     }
 
-    // 数値の妥当性確認
-    if (character.attr.hp && character.attr.hp.some((val) => val < 0)) {
-      warnings.push("HP配列に負の値が含まれています");
+    // 数値フィールドの型検証
+    const numericFields = [
+      "impact",
+      "critRate",
+      "critDmg",
+      "anomalyMastery",
+      "anomalyProficiency",
+      "penRatio",
+      "energy",
+    ];
+
+    for (const field of numericFields) {
+      const value = character.attr[field as keyof typeof character.attr];
+      if (typeof value !== "number" || isNaN(value)) {
+        errors.push(`${field}が数値ではありません: ${value}`);
+      }
     }
 
-    if (character.attr.atk && character.attr.atk.some((val) => val < 0)) {
-      warnings.push("ATK配列に負の値が含まれています");
+    // 配列内の数値検証
+    if (character.attr.hp) {
+      character.attr.hp.forEach((val, index) => {
+        if (typeof val !== "number" || isNaN(val)) {
+          errors.push(`hp[${index}]が数値ではありません: ${val}`);
+        } else if (val < 0) {
+          warnings.push(`hp[${index}]が負の値です: ${val}`);
+        }
+      });
     }
 
-    if (character.attr.def && character.attr.def.some((val) => val < 0)) {
-      warnings.push("DEF配列に負の値が含まれています");
+    if (character.attr.atk) {
+      character.attr.atk.forEach((val, index) => {
+        if (typeof val !== "number" || isNaN(val)) {
+          errors.push(`atk[${index}]が数値ではありません: ${val}`);
+        } else if (val < 0) {
+          warnings.push(`atk[${index}]が負の値です: ${val}`);
+        }
+      });
+    }
+
+    if (character.attr.def) {
+      character.attr.def.forEach((val, index) => {
+        if (typeof val !== "number" || isNaN(val)) {
+          errors.push(`def[${index}]が数値ではありません: ${val}`);
+        } else if (val < 0) {
+          warnings.push(`def[${index}]が負の値です: ${val}`);
+        }
+      });
+    }
+
+    // 範囲チェック（会心率など）
+    if (
+      typeof character.attr.critRate === "number" &&
+      (character.attr.critRate < 0 || character.attr.critRate > 100)
+    ) {
+      warnings.push(`会心率が範囲外です: ${character.attr.critRate}%`);
     }
 
     return {

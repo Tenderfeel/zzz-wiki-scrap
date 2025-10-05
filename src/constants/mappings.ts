@@ -1,6 +1,6 @@
 // マッピング定数
 
-import { Specialty, Stats, AttackType, Rarity } from "../types";
+import { Specialty, Stats, Rarity } from "../types";
 
 // 特性マッピング（日本語 → 英語列挙値）
 export const SPECIALTY_MAPPING: Record<string, Specialty> = {
@@ -21,13 +21,6 @@ export const STATS_MAPPING: Record<string, Stats> = {
   エーテル属性: "ether",
   霜烈属性: "frostAttribute",
   玄墨属性: "auricInk",
-};
-
-// 攻撃タイプマッピング（日本語 → 英語列挙値）
-export const ATTACK_TYPE_MAPPING: Record<string, AttackType> = {
-  打撃: "strike",
-  斬撃: "slash",
-  刺突: "pierce",
 };
 
 // レア度マッピング

@@ -20,15 +20,6 @@ export type Stats =
   | "frostAttribute" // 霜烈
   | "auricInk"; // 玄墨
 
-// 攻撃タイプ（単一）
-export type AttackType =
-  | "slash" // 斬撃
-  | "pierce" // 刺突
-  | "strike"; // 打撃
-
-// 攻撃タイプ（複数対応）
-export type AttackTypes = AttackType[];
-
 // レア度
 export type Rarity = "A" | "S";
 
@@ -60,7 +51,7 @@ export type CharacterEntry = {
 };
 
 // list.json用の型定義
-export interface AttackTypeValueType {
+export interface ValueType {
   id: string;
   value: string;
   mi18n_key: string;
@@ -77,29 +68,24 @@ export interface CharacterListItem {
     [key: string]: string; // attr_level_1, attr_level_10 など
   };
   filter_values: {
-    agent_attack_type?: {
-      values: string[];
-      value_types: AttackTypeValueType[];
-      key: null;
-    };
     agent_stats?: {
       values: string[];
-      value_types: AttackTypeValueType[];
+      value_types: ValueType[];
       key: null;
     };
     agent_faction?: {
       values: string[];
-      value_types: AttackTypeValueType[];
+      value_types: ValueType[];
       key: null;
     };
     agent_rarity?: {
       values: string[];
-      value_types: AttackTypeValueType[];
+      value_types: ValueType[];
       key: null;
     };
     agent_specialties?: {
       values: string[];
-      value_types: AttackTypeValueType[];
+      value_types: ValueType[];
       key: null;
     };
   };
@@ -121,7 +107,6 @@ export type Character = {
   fullName: { [key in Lang]: string }; // 多言語フルネーム
   specialty: Specialty; // 特性
   stats: Stats; // 属性
-  attackType: AttackTypes; // 攻撃タイプ（複数対応）
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス

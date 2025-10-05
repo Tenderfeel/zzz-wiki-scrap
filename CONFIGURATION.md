@@ -7,19 +7,25 @@
 ### 1. デフォルト設定で実行
 
 ```bash
-npm run main:configurable
-```
-
-### 2. 設定ファイルを生成
-
-```bash
-npm run config:generate
+npm run generate:configurable
 ```
 
 ### 3. カスタム設定ファイルを使用
 
 ```bash
-npm run main:configurable --config my-config.json
+npm run generate:configurable --config my-config.json
+```
+
+### 5. シンプルな生成（設定なし）
+
+```bash
+npm run generate
+```
+
+### 6. ヘルプを表示
+
+```bash
+npm run generate:configurable --help
 ```
 
 ## 設定ファイル
@@ -253,13 +259,13 @@ npm run main:configurable --config my-config.json
 
 ```bash
 # 開発用設定
-npm run main:configurable --config config/development.json
+npm run generate:configurable -- --config config/development.json
 
 # 本番用設定
-npm run main:configurable --config config/production.json
+npm run generate:configurable -- --config config/production.json
 
 # テスト用設定
-npm run main:configurable --config config/test.json
+npm run generate:configurable -- --config config/test.json
 ```
 
 ### 設定ファイルのバージョン管理
@@ -278,7 +284,7 @@ git commit -m "Add processing configuration"
 
 ```bash
 # 設定ファイルを生成して内容を確認
-npm run config:generate
+npm run generate:config
 cat processing-config.json
 ```
 
@@ -290,7 +296,7 @@ cat processing-config.json
 
 ```bash
 # 環境変数で設定を上書き
-BATCH_SIZE=10 npm run main:configurable
+BATCH_SIZE=10 npm run generate:configurable
 ```
 
 ### CI/CD での使用
@@ -301,10 +307,10 @@ BATCH_SIZE=10 npm run main:configurable
 # GitHub Actions の例
 - name: Generate character data
   run: |
-    npm run config:generate
+    npm run generate:config
     # 設定をカスタマイズ
     jq '.batchSize = 3 | .enableDebugMode = false' processing-config.json > ci-config.json
-    npm run main:configurable --config ci-config.json
+    npm run generate:configurable -- --config ci-config.json
 ```
 
 このガイドを参考に、あなたの環境や要件に合わせて設定をカスタマイズしてください。

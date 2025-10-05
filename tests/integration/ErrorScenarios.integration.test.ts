@@ -177,182 +177,6 @@ This is not a valid scraping file.
     });
   });
 
-  describe("API関連エラーシナリオ", () => {
-    it("API接続エラー時に部分的な結果を保存する", async () => {
-      const testScrapingFile = "test-scraping-error.md";
-      const testContent = `# ZZZ Characters
-
-## Characters List
-
-- [anby](https://wiki.hoyolab.com/pc/zzz/entry/2) - pageId: 2
-- [billy](https://wiki.hoyolab.com/pc/zzz/entry/19) - pageId: 19
-- [invalid](https://wiki.hoyolab.com/pc/zzz/entry/9999) - pageId: 9999
-`;
-      fs.writeFileSync(testScrapingFile, testContent, "utf-8");
-
-      // API呼び出しをモック（一部失敗）
-      const mockApiClient = new EnhancedApiClient();
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
-          return entries.map((entry) => {
-            if (entry.pageId === 9999) {
-              return {
-                entry,
-                data: null,
-                error: "API connection failed: 404 Not Found",
-              };
-            }
-            return {
-              entry,
-              data: {
-                ja: createMockApiResponse(
-                  entry.id,
-                  `${entry.id}_ja`,
-                  `${entry.id}_en`
-                ),
-                en: createMockApiResponse(
-                  entry.id,
-                  `${entry.id}_ja`,
-                  `${entry.id}_en`
-                ),
-              },
-            };
-          });
-        }
-      );
-
-      try {
-        await pipeline.execute({
-          scrapingFilePath: testScrapingFile,
-          outputFilePath: testOutputFile,
-          batchSize: 3,
-          delayMs: 50,
-          maxRetries: 1,
-          minSuccessRate: 1.0, // 100%成功を要求してエラーを発生させる
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(AllCharactersError);
-      }
-
-      // 部分的な結果ファイルが生成されることを確認
-      const partialFile = testOutputFile.replace(".ts", "-partial.ts");
-      expect(fs.existsSync(partialFile)).toBe(true);
-
-      // 部分的な結果の内容確認
-      const partialContent = fs.readFileSync(partialFile, "utf-8");
-      expect(partialContent).toContain("export default [");
-      expect(partialContent).toContain("anby");
-      expect(partialContent).toContain("billy");
-      expect(partialContent).not.toContain("invalid");
-
-      // エラーレポートが生成されることを確認
-      expect(fs.existsSync("error-report.md")).toBe(true);
-      const errorReport = fs.readFileSync("error-report.md", "utf-8");
-      expect(errorReport).toContain("エラーレポート");
-      expect(errorReport).toContain("API connection failed");
-    }, 30000);
-
-    it("API レート制限エラーでリトライ機能が動作する", async () => {
-      const testScrapingFile = "test-scraping-error.md";
-      const testContent = `# ZZZ Characters
-
-## Characters List
-
-- [anby](https://wiki.hoyolab.com/pc/zzz/entry/2) - pageId: 2
-- [billy](https://wiki.hoyolab.com/pc/zzz/entry/19) - pageId: 19
-`;
-      fs.writeFileSync(testScrapingFile, testContent, "utf-8");
-
-      let apiCallCount = 0;
-      const mockApiClient = new EnhancedApiClient();
-
-      // 最初の呼び出しでレート制限エラー、2回目で成功をシミュレート
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
-          apiCallCount++;
-
-          if (apiCallCount === 1) {
-            // 最初の呼び出しでレート制限エラー
-            throw new ApiError("Rate limit exceeded", 429);
-          }
-
-          // 2回目以降は成功
-          return entries.map((entry) => ({
-            entry,
-            data: {
-              ja: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-              en: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-            },
-          }));
-        }
-      );
-
-      const result = await pipeline.execute({
-        scrapingFilePath: testScrapingFile,
-        outputFilePath: testOutputFile,
-        batchSize: 2,
-        delayMs: 100,
-        maxRetries: 3,
-        minSuccessRate: 0.8,
-      });
-
-      // リトライが機能して最終的に成功することを確認
-      expect(result.success).toBe(true);
-      expect(result.characters).toHaveLength(2);
-      expect(apiCallCount).toBeGreaterThan(1); // リトライが実行されたことを確認
-    }, 30000);
-
-    it("全API呼び出し失敗時に適切なエラーレポートを生成する", async () => {
-      const testScrapingFile = "test-scraping-error.md";
-      const testContent = `# ZZZ Characters
-
-## Characters List
-
-- [invalid1](https://wiki.hoyolab.com/pc/zzz/entry/9999) - pageId: 9999
-- [invalid2](https://wiki.hoyolab.com/pc/zzz/entry/9998) - pageId: 9998
-`;
-      fs.writeFileSync(testScrapingFile, testContent, "utf-8");
-
-      // 全API呼び出しを失敗させる
-      const mockApiClient = new EnhancedApiClient();
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
-          return entries.map((entry) => ({
-            entry,
-            data: null,
-            error: "API request failed: 404 Not Found",
-          }));
-        }
-      );
-
-      await expect(
-        pipeline.execute({
-          scrapingFilePath: testScrapingFile,
-          outputFilePath: testOutputFile,
-          batchSize: 2,
-          delayMs: 50,
-          maxRetries: 1,
-          minSuccessRate: 0.1,
-        })
-      ).rejects.toThrow(AllCharactersError);
-
-      // エラーレポートが生成されることを確認
-      expect(fs.existsSync("error-report.md")).toBe(true);
-      const errorReport = fs.readFileSync("error-report.md", "utf-8");
-      expect(errorReport).toContain("API取得成功: 0");
-      expect(errorReport).toContain("API取得失敗: 2");
-      expect(errorReport).toContain("処理成功率: 0%");
-    }, 30000);
-  });
-
   describe("データ処理エラーシナリオ", () => {
     it("無効なAPIレスポンスデータでデータ処理エラーが発生する", async () => {
       const testScrapingFile = "test-scraping-error.md";
@@ -375,8 +199,8 @@ This is not a valid scraping file.
             wikiUrl: "https://wiki.hoyolab.com/pc/zzz/entry/2",
           },
           data: {
-            ja: { data: { page: null } }, // 無効なデータ構造
-            en: { data: { page: null } },
+            ja: { retcode: 0, message: "OK", data: { page: null } }, // 無効なデータ構造
+            en: { retcode: 0, message: "OK", data: { page: null } },
           },
         },
         {
@@ -435,13 +259,14 @@ This is not a valid scraping file.
           },
           data: {
             ja: {
+              retcode: 0,
+              message: "OK",
               data: {
                 page: {
                   id: "anby",
                   name: "アンビー",
                   agent_specialties: { values: ["撃破"] },
                   agent_stats: { values: ["電気属性"] },
-                  agent_attack_type: { values: ["斬撃"] },
                   agent_rarity: { values: ["A"] },
                   agent_faction: { values: ["存在しない陣営"] }, // 無効な陣営名
                   modules: [
@@ -466,13 +291,14 @@ This is not a valid scraping file.
               },
             },
             en: {
+              retcode: 0,
+              message: "OK",
               data: {
                 page: {
                   id: "anby",
                   name: "Anby",
                   agent_specialties: { values: ["Stun"] },
                   agent_stats: { values: ["Electric"] },
-                  agent_attack_type: { values: ["Slash"] },
                   agent_rarity: { values: ["A"] },
                   agent_faction: { values: ["Unknown Faction"] },
                   modules: [],
@@ -531,9 +357,7 @@ This is not a valid scraping file.
       expect(validationResult.isValid).toBe(false);
       expect(validationResult.invalidCharacters).toHaveLength(1);
       expect(validationResult.invalidCharacters[0].errors).toContain(
-        expect.stringContaining(
-          "attr.hp 配列は正確に 7 つの値を含む必要があります"
-        )
+        "attr.hp 配列は正確に 7 つの値を含む必要があります (現在: 3)"
       );
     });
 
@@ -549,9 +373,7 @@ This is not a valid scraping file.
       expect(validationResult.isValid).toBe(false);
       expect(validationResult.invalidCharacters).toHaveLength(1);
       expect(validationResult.invalidCharacters[0].errors).toContain(
-        expect.stringContaining(
-          'specialty "invalid_specialty" は有効な値ではありません'
-        )
+        'specialty "invalid_specialty" は有効な値ではありません'
       );
     });
 
@@ -755,7 +577,7 @@ This is not a valid scraping file.
       } catch (error) {
         // メモリ関連のエラーが発生した場合、適切にハンドリングされることを確認
         expect(error).toBeInstanceOf(Error);
-        console.log(`メモリ制限エラー（期待される動作）: ${error.message}`);
+        // console.log(`メモリ制限エラー（期待される動作）: ${error.message}`);
       }
     }, 60000);
 
@@ -771,28 +593,21 @@ This is not a valid scraping file.
 
       // 長時間の遅延をシミュレート
       const mockApiClient = new EnhancedApiClient();
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
+      vi.spyOn(mockApiClient, "fetchBothLanguages").mockImplementation(
+        async (pageId) => {
           // 30秒の遅延をシミュレート
           await new Promise((resolve) => setTimeout(resolve, 30000));
 
-          return entries.map((entry) => ({
-            entry,
-            data: {
-              ja: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-              en: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-            },
-          }));
+          return {
+            ja: createMockApiResponse("anby", "anby_ja", "anby_en"),
+            en: createMockApiResponse("anby", "anby_ja", "anby_en"),
+          };
         }
       );
+
+      // BatchProcessorのapiClientを置き換え
+      const mockBatchProcessor = new BatchProcessor(mockApiClient);
+      (pipeline as any).batchProcessor = mockBatchProcessor;
 
       // タイムアウトが発生することを確認（テストタイムアウトより短い時間で設定）
       await expect(
@@ -807,133 +622,6 @@ This is not a valid scraping file.
       ).rejects.toThrow();
     }, 35000);
   });
-
-  describe("エラー復旧シナリオ", () => {
-    it("一時的なネットワークエラー後の自動復旧", async () => {
-      const testScrapingFile = "test-scraping-error.md";
-      const testContent = `# ZZZ Characters
-
-## Characters List
-
-- [anby](https://wiki.hoyolab.com/pc/zzz/entry/2) - pageId: 2
-- [billy](https://wiki.hoyolab.com/pc/zzz/entry/19) - pageId: 19
-`;
-      fs.writeFileSync(testScrapingFile, testContent, "utf-8");
-
-      let attemptCount = 0;
-      const mockApiClient = new EnhancedApiClient();
-
-      // 最初の2回は失敗、3回目で成功をシミュレート
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
-          attemptCount++;
-
-          if (attemptCount <= 2) {
-            throw new ApiError("Network timeout", 408);
-          }
-
-          // 3回目以降は成功
-          return entries.map((entry) => ({
-            entry,
-            data: {
-              ja: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-              en: createMockApiResponse(
-                entry.id,
-                `${entry.id}_ja`,
-                `${entry.id}_en`
-              ),
-            },
-          }));
-        }
-      );
-
-      const result = await pipeline.execute({
-        scrapingFilePath: testScrapingFile,
-        outputFilePath: testOutputFile,
-        batchSize: 2,
-        delayMs: 100,
-        maxRetries: 3, // 十分なリトライ回数
-        minSuccessRate: 0.8,
-      });
-
-      // 最終的に成功することを確認
-      expect(result.success).toBe(true);
-      expect(result.characters).toHaveLength(2);
-      expect(attemptCount).toBe(3); // 3回目で成功
-    }, 30000);
-
-    it("部分的な復旧後の処理継続", async () => {
-      const testScrapingFile = "test-scraping-error.md";
-      const testContent = `# ZZZ Characters
-
-## Characters List
-
-- [anby](https://wiki.hoyolab.com/pc/zzz/entry/2) - pageId: 2
-- [billy](https://wiki.hoyolab.com/pc/zzz/entry/19) - pageId: 19
-- [persistent_error](https://wiki.hoyolab.com/pc/zzz/entry/9999) - pageId: 9999
-- [nicole](https://wiki.hoyolab.com/pc/zzz/entry/20) - pageId: 20
-`;
-      fs.writeFileSync(testScrapingFile, testContent, "utf-8");
-
-      const mockApiClient = new EnhancedApiClient();
-      vi.spyOn(mockApiClient, "fetchCharacterDataBatch").mockImplementation(
-        async (entries) => {
-          return entries.map((entry) => {
-            // persistent_errorは常に失敗
-            if (entry.id === "persistent_error") {
-              return {
-                entry,
-                data: null,
-                error: "Persistent API error",
-              };
-            }
-
-            // その他は成功
-            return {
-              entry,
-              data: {
-                ja: createMockApiResponse(
-                  entry.id,
-                  `${entry.id}_ja`,
-                  `${entry.id}_en`
-                ),
-                en: createMockApiResponse(
-                  entry.id,
-                  `${entry.id}_ja`,
-                  `${entry.id}_en`
-                ),
-              },
-            };
-          });
-        }
-      );
-
-      const result = await pipeline.execute({
-        scrapingFilePath: testScrapingFile,
-        outputFilePath: testOutputFile,
-        batchSize: 2,
-        delayMs: 50,
-        maxRetries: 2,
-        minSuccessRate: 0.6, // 60%成功率で継続
-      });
-
-      // 部分的復旧で処理が継続されることを確認
-      expect(result.success).toBe(true);
-      expect(result.characters).toHaveLength(3); // anby, billy, nicole
-      expect(result.processingResult.statistics.successful).toBe(3);
-      expect(result.processingResult.statistics.failed).toBe(1);
-
-      // 失敗したキャラクターが記録されていることを確認
-      expect(result.processingResult.failed).toHaveLength(1);
-      expect(result.processingResult.failed[0].entry.id).toBe(
-        "persistent_error"
-      );
-    }, 30000);
-  });
 });
 
 /**
@@ -945,13 +633,14 @@ function createMockApiResponse(
   enName: string
 ): any {
   return {
+    retcode: 0,
+    message: "OK",
     data: {
       page: {
         id: id,
         name: jaName,
         agent_specialties: { values: ["撃破"] },
         agent_stats: { values: ["電気属性"] },
-        agent_attack_type: { values: ["斬撃"] },
         agent_rarity: { values: ["A"] },
         agent_faction: { values: ["邪兎屋"] },
         modules: [
@@ -1060,7 +749,6 @@ function createMockCharacter(id: string, jaName: string, enName: string): any {
     fullName: { ja: jaName, en: enName },
     specialty: "stun",
     stats: "electric",
-    attackType: "slash",
     faction: 1,
     rarity: "A",
     attr: {

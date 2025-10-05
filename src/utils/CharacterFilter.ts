@@ -1,6 +1,11 @@
 import { CharacterEntry } from "../types";
 import { CharacterFilter as FilterConfig } from "../config/ProcessingConfig";
 
+// テスト環境でのログ制御
+const isTestEnvironment =
+  process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+const log = isTestEnvironment ? () => {} : console.log;
+
 /**
  * フィルタリング結果
  */
@@ -36,8 +41,8 @@ export class CharacterFilterUtil {
     entries: CharacterEntry[],
     filterConfig: FilterConfig
   ): FilteringResult {
-    console.log(`\n🔍 === キャラクターフィルタリング開始 ===`);
-    console.log(`元のキャラクター数: ${entries.length}`);
+    log(`\n🔍 === キャラクターフィルタリング開始 ===`);
+    log(`元のキャラクター数: ${entries.length}`);
 
     let filtered = [...entries];
     const excluded: CharacterEntry[] = [];
@@ -62,8 +67,8 @@ export class CharacterFilterUtil {
         `包含フィルター: ${filterConfig.includeCharacterIds.length}件指定`
       );
 
-      console.log(`📋 包含フィルター適用: ${beforeCount} → ${filtered.length}`);
-      console.log(`   対象: ${filterConfig.includeCharacterIds.join(", ")}`);
+      log(`📋 包含フィルター適用: ${beforeCount} → ${filtered.length}`);
+      log(`   対象: ${filterConfig.includeCharacterIds.join(", ")}`);
     }
 
     // 2. 除外フィルター
@@ -85,8 +90,8 @@ export class CharacterFilterUtil {
         `除外フィルター: ${filterConfig.excludeCharacterIds.length}件指定`
       );
 
-      console.log(`🚫 除外フィルター適用: ${beforeCount} → ${filtered.length}`);
-      console.log(`   除外: ${filterConfig.excludeCharacterIds.join(", ")}`);
+      log(`🚫 除外フィルター適用: ${beforeCount} → ${filtered.length}`);
+      log(`   除外: ${filterConfig.excludeCharacterIds.join(", ")}`);
     }
 
     // 3. ページID包含フィルター
@@ -105,9 +110,7 @@ export class CharacterFilterUtil {
         `ページID包含フィルター: ${filterConfig.includePageIds.length}件指定`
       );
 
-      console.log(
-        `📄 ページID包含フィルター適用: ${beforeCount} → ${filtered.length}`
-      );
+      log(`📄 ページID包含フィルター適用: ${beforeCount} → ${filtered.length}`);
     }
 
     // 4. ページID除外フィルター
@@ -126,9 +129,7 @@ export class CharacterFilterUtil {
         `ページID除外フィルター: ${filterConfig.excludePageIds.length}件指定`
       );
 
-      console.log(
-        `🚫 ページID除外フィルター適用: ${beforeCount} → ${filtered.length}`
-      );
+      log(`🚫 ページID除外フィルター適用: ${beforeCount} → ${filtered.length}`);
     }
 
     // 5. ページID範囲フィルター
@@ -145,10 +146,8 @@ export class CharacterFilterUtil {
       excluded.push(...notIncluded);
       appliedFilters.push(`ページID範囲フィルター: ${min}-${max}`);
 
-      console.log(
-        `📊 ページID範囲フィルター適用: ${beforeCount} → ${filtered.length}`
-      );
-      console.log(`   範囲: ${min}-${max}`);
+      log(`📊 ページID範囲フィルター適用: ${beforeCount} → ${filtered.length}`);
+      log(`   範囲: ${min}-${max}`);
     }
 
     // 6. ランダムサンプリング
@@ -173,12 +172,10 @@ export class CharacterFilterUtil {
         excluded.push(...notSampled);
         appliedFilters.push(`ランダムサンプリング: ${sampleCount}件`);
 
-        console.log(
-          `🎲 ランダムサンプリング適用: ${beforeCount} → ${filtered.length}`
-        );
-        console.log(`   サンプル数: ${sampleCount}`);
+        log(`🎲 ランダムサンプリング適用: ${beforeCount} → ${filtered.length}`);
+        log(`   サンプル数: ${sampleCount}`);
         if (filterConfig.randomSample.seed !== undefined) {
-          console.log(`   シード値: ${filterConfig.randomSample.seed}`);
+          log(`   シード値: ${filterConfig.randomSample.seed}`);
         }
       }
     }
@@ -196,10 +193,8 @@ export class CharacterFilterUtil {
         excluded.push(...overflow);
         appliedFilters.push(`最大処理数制限: ${maxCount}件`);
 
-        console.log(
-          `🔢 最大処理数制限適用: ${beforeCount} → ${filtered.length}`
-        );
-        console.log(`   制限数: ${maxCount}`);
+        log(`🔢 最大処理数制限適用: ${beforeCount} → ${filtered.length}`);
+        log(`   制限数: ${maxCount}`);
       }
     }
 
@@ -212,18 +207,16 @@ export class CharacterFilterUtil {
       appliedFilters,
     };
 
-    console.log(`\n📊 フィルタリング結果:`);
-    console.log(`  元のキャラクター数: ${statistics.originalCount}`);
-    console.log(`  フィルタリング後: ${statistics.filteredCount}`);
-    console.log(`  除外されたキャラクター: ${statistics.excludedCount}`);
-    console.log(
-      `  フィルタリング率: ${Math.round(statistics.filteringRate * 100)}%`
-    );
-    console.log(`  適用されたフィルター: ${appliedFilters.length}個`);
+    log(`\n📊 フィルタリング結果:`);
+    log(`  元のキャラクター数: ${statistics.originalCount}`);
+    log(`  フィルタリング後: ${statistics.filteredCount}`);
+    log(`  除外されたキャラクター: ${statistics.excludedCount}`);
+    log(`  フィルタリング率: ${Math.round(statistics.filteringRate * 100)}%`);
+    log(`  適用されたフィルター: ${appliedFilters.length}個`);
     appliedFilters.forEach((filter, index) => {
-      console.log(`    ${index + 1}. ${filter}`);
+      log(`    ${index + 1}. ${filter}`);
     });
-    console.log(`=====================================\n`);
+    log(`=====================================\n`);
 
     return {
       filtered,

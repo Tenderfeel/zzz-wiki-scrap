@@ -259,16 +259,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Slash", "Pierce"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              },
               {
                 "id": "14",
                 "value": "Pierce",
@@ -297,16 +287,6 @@
           "attr_level_50": "{\"base_hp\":\"6836\",\"base_atk\":\"773\",\"base_def\":\"545\",\"dynamic\":{}}"
         },
         "filter_values": {
-          "agent_attack_type": {
-            "values": ["Slash", "Strike"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              },
               {
                 "id": "15",
                 "value": "Strike",
@@ -439,16 +419,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Slash"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              }
             ],
             "key": null
           }
@@ -483,16 +453,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Strike"],
-            "value_types": [
-              {
-                "id": "15",
-                "value": "Strike",
-                "mi18n_key": "filter_custom_11",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
-                "enum_string": "strike"
-              }
             ],
             "key": null
           },
@@ -732,16 +692,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Strike"],
-            "value_types": [
-              {
-                "id": "15",
-                "value": "Strike",
-                "mi18n_key": "filter_custom_11",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
-                "enum_string": "strike"
-              }
             ],
             "key": null
           },
@@ -1279,16 +1229,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Pierce", "Slash"],
-            "value_types": [
-              {
-                "id": "14",
-                "value": "Pierce",
-                "mi18n_key": "filter_custom_10",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/8d73540a22fd463a1f70942fca93ee9b_5768967548377443146.png",
-                "enum_string": "pierce"
-              },
               {
                 "id": "13",
                 "value": "Slash",
@@ -1395,16 +1335,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Slash"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              }
             ],
             "key": null
           },
@@ -1592,16 +1522,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Pierce"],
-            "value_types": [
-              {
-                "id": "14",
-                "value": "Pierce",
-                "mi18n_key": "filter_custom_10",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/8d73540a22fd463a1f70942fca93ee9b_5768967548377443146.png",
-                "enum_string": "pierce"
-              }
             ],
             "key": null
           },
@@ -1854,16 +1774,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Slash"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              }
             ],
             "key": null
           }
@@ -1937,16 +1847,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Strike"],
-            "value_types": [
-              {
-                "id": "15",
-                "value": "Strike",
-                "mi18n_key": "filter_custom_11",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
-                "enum_string": "strike"
-              }
             ],
             "key": null
           }
@@ -1994,16 +1894,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Slash"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              }
             ],
             "key": null
           },
@@ -2090,16 +1980,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Strike"],
-            "value_types": [
-              {
-                "id": "15",
-                "value": "Strike",
-                "mi18n_key": "filter_custom_11",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
-                "enum_string": "strike"
-              }
             ],
             "key": null
           },
@@ -2134,16 +2014,6 @@
           "attr_level_50": "{\"base_hp\":\"7150\",\"base_atk\":\"535\",\"base_def\":\"532\",\"dynamic\":{}}"
         },
         "filter_values": {
-          "agent_attack_type": {
-            "values": ["Slash"],
-            "value_types": [
-              {
-                "id": "13",
-                "value": "Slash",
-                "mi18n_key": "filter_custom_9",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/333341ebb77e06ae4d2cbd05fae62ffe_7490361135098707504.png",
-                "enum_string": "slash"
-              }
             ],
             "key": null
           },
@@ -2256,16 +2126,6 @@
             ],
             "key": null
           },
-          "agent_attack_type": {
-            "values": ["Pierce"],
-            "value_types": [
-              {
-                "id": "14",
-                "value": "Pierce",
-                "mi18n_key": "filter_custom_10",
-                "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/8d73540a22fd463a1f70942fca93ee9b_5768967548377443146.png",
-                "enum_string": "pierce"
-              }
             ],
             "key": null
           },

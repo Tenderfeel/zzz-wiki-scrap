@@ -37,7 +37,6 @@ describe("AllCharactersGenerator", () => {
         name: "テストキャラクター",
         agent_specialties: { values: ["撃破"] },
         agent_stats: { values: ["氷属性"] },
-        agent_attack_type: { values: ["斬撃"] },
         agent_rarity: { values: ["S"] },
         agent_faction: { values: ["邪兎屋"] },
         modules: [],
@@ -51,7 +50,6 @@ describe("AllCharactersGenerator", () => {
     fullName: { ja: "テストキャラクター", en: "Test Character" },
     specialty: "stun",
     stats: "ice",
-    attackType: ["slash"],
     faction: 1,
     rarity: "S",
     attr: {

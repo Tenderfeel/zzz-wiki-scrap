@@ -110,7 +110,10 @@ export class WorkerPool<T, R> {
     this.isRunning = true;
     this.startTime = new Date();
 
-    console.log(`🚀 ワーカープール開始 (並行度: ${this.maxConcurrency})`);
+    // テスト環境ではログを抑制
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`🚀 ワーカープール開始 (並行度: ${this.maxConcurrency})`);
+    }
 
     // 並行ワーカーを起動
     const workers = Array.from({ length: this.maxConcurrency }, (_, index) =>
@@ -121,7 +124,9 @@ export class WorkerPool<T, R> {
     await Promise.all(workers);
 
     this.isRunning = false;
-    console.log(`✅ ワーカープール完了`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`✅ ワーカープール完了`);
+    }
   }
 
   /**
@@ -129,7 +134,9 @@ export class WorkerPool<T, R> {
    */
   stop(): void {
     this.isRunning = false;
-    console.log(`⏹️  ワーカープール停止要求`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`⏹️  ワーカープール停止要求`);
+    }
   }
 
   /**
@@ -148,7 +155,9 @@ export class WorkerPool<T, R> {
    * 個別ワーカーの実行
    */
   private async runWorker(workerId: string): Promise<void> {
-    console.log(`👷 ${workerId} 開始`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`👷 ${workerId} 開始`);
+    }
 
     while (this.isRunning) {
       // キューからタスクを取得
@@ -168,7 +177,9 @@ export class WorkerPool<T, R> {
       }
     }
 
-    console.log(`👷 ${workerId} 終了`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`👷 ${workerId} 終了`);
+    }
   }
 
   /**
@@ -197,7 +208,9 @@ export class WorkerPool<T, R> {
     const startTime = Date.now();
 
     try {
-      console.log(`🔄 ${workerId}: ${task.id} 実行開始`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`🔄 ${workerId}: ${task.id} 実行開始`);
+      }
 
       // タスクを実行
       const result = await this.processor(task.data);
@@ -219,15 +232,19 @@ export class WorkerPool<T, R> {
         this.processingTimes = this.processingTimes.slice(-100);
       }
 
-      console.log(`✅ ${workerId}: ${task.id} 完了 (${processingTime}ms)`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`✅ ${workerId}: ${task.id} 完了 (${processingTime}ms)`);
+      }
     } catch (error) {
       // エラー時の処理
       task.error = error instanceof Error ? error : new Error(String(error));
       task.retryCount++;
 
-      console.log(
-        `❌ ${workerId}: ${task.id} 失敗 (試行 ${task.retryCount}/${task.maxRetries})`
-      );
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(
+          `❌ ${workerId}: ${task.id} 失敗 (試行 ${task.retryCount}/${task.maxRetries})`
+        );
+      }
 
       // リトライ判定
       if (task.retryCount < task.maxRetries) {
@@ -236,14 +253,18 @@ export class WorkerPool<T, R> {
         this.activeTasks.delete(task.id);
         this.taskQueue.push(task);
 
-        console.log(`🔄 ${workerId}: ${task.id} リトライ予定`);
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(`🔄 ${workerId}: ${task.id} リトライ予定`);
+        }
       } else {
         // 最大リトライ回数に達した場合は失敗として記録
         task.completedAt = new Date();
         this.activeTasks.delete(task.id);
         this.failedTasks.push(task);
 
-        console.log(`💀 ${workerId}: ${task.id} 最終失敗`);
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(`💀 ${workerId}: ${task.id} 最終失敗`);
+        }
       }
     }
   }
@@ -362,7 +383,9 @@ export class WorkerPool<T, R> {
    */
   clearQueue(): void {
     this.taskQueue.length = 0;
-    console.log(`🧹 タスクキューをクリアしました`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`🧹 タスクキューをクリアしました`);
+    }
   }
 
   /**
@@ -375,7 +398,9 @@ export class WorkerPool<T, R> {
     this.tasksCompletedSinceLastCheck = 0;
     this.lastThroughputCheck = Date.now();
     this.startTime = undefined;
-    console.log(`📊 統計をリセットしました`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`📊 統計をリセットしました`);
+    }
   }
 
   /**

@@ -13,7 +13,6 @@ export interface PageData {
   name: string;
   agent_specialties: { values: string[] };
   agent_stats: { values: string[] };
-  agent_attack_type: { values: string[] };
   agent_rarity: { values: string[] };
   agent_faction: { values: string[] };
   modules: Module[];

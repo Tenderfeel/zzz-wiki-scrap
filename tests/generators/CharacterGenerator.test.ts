@@ -3,7 +3,6 @@ import { CharacterGenerator } from "../../src/generators/CharacterGenerator";
 import { ProcessedData } from "../../src/types/processing";
 import { ValidationError, ParsingError } from "../../src/errors";
 import { DataMapper } from "../../src/mappers/DataMapper";
-import { AttackType } from "../../src/types";
 import * as fs from "fs";
 
 // fsモジュールをモック
@@ -19,7 +18,6 @@ describe("CharacterGenerator", () => {
   beforeEach(() => {
     // DataMapperのモックを作成
     mockDataMapper = {
-      mapAttackType: vi.fn(),
       mapSpecialty: vi.fn(),
       mapStats: vi.fn(),
       mapRarity: vi.fn(),
@@ -39,7 +37,6 @@ describe("CharacterGenerator", () => {
       name: "フォン・ライカン",
       specialty: "撃破",
       stats: "氷属性",
-      attackType: "打撃",
       rarity: "S",
     },
     factionInfo: {
@@ -123,7 +120,6 @@ describe("CharacterGenerator", () => {
       name: "Von Lycaon",
       specialty: "stun",
       stats: "ice",
-      attackType: ["strike"],
       rarity: "S",
     },
     factionInfo: {
@@ -140,7 +136,6 @@ describe("CharacterGenerator", () => {
       // デフォルトのモック戻り値を設定
       mockDataMapper.mapSpecialty.mockReturnValue("stun");
       mockDataMapper.mapStats.mockReturnValue("ice");
-      mockDataMapper.mapAttackType.mockReturnValue("strike");
       mockDataMapper.mapRarity.mockReturnValue("S");
       mockDataMapper.createMultiLangName.mockReturnValue({
         ja: "フォン・ライカン",
@@ -157,7 +152,6 @@ describe("CharacterGenerator", () => {
         fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
         specialty: "stun",
         stats: "ice",
-        attackType: ["strike"],
         faction: 2,
         rarity: "S",
         attr: {
@@ -173,12 +167,6 @@ describe("CharacterGenerator", () => {
           energy: 1.2,
         },
       });
-
-      // mapAttackTypeがpageIdなしで呼ばれることを確認
-      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith(
-        "打撃",
-        undefined
-      );
     });
 
     it("pageIdパラメータを含むCharacterオブジェクトを生成できる", () => {
@@ -195,7 +183,6 @@ describe("CharacterGenerator", () => {
         fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
         specialty: "stun",
         stats: "ice",
-        attackType: ["strike"],
         faction: 2,
         rarity: "S",
         attr: {
@@ -211,131 +198,6 @@ describe("CharacterGenerator", () => {
           energy: 1.2,
         },
       });
-
-      // mapAttackTypeがpageIdと共に呼ばれることを確認
-      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith("打撃", pageId);
-    });
-
-    it("フォールバック機能を使用してCharacterオブジェクトを生成できる", () => {
-      // wikiデータに攻撃タイプがない場合のテストデータ
-      const mockJaDataWithoutAttackType = {
-        ...mockJaData,
-        basicInfo: {
-          ...mockJaData.basicInfo,
-          attackType: "", // 空の攻撃タイプ
-        },
-      };
-
-      // フォールバック機能で"pierce"を返すようにモック
-      mockDataMapper.mapAttackType.mockReturnValue("pierce");
-
-      const pageId = "28";
-      const result = generator.generateCharacter(
-        mockJaDataWithoutAttackType,
-        mockEnData,
-        pageId
-      );
-
-      expect(result.attackType).toEqual(["pierce"]);
-      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith("", pageId);
-    });
-
-    it("攻撃タイプが配列の場合は最初の要素を使用する", () => {
-      const mockJaDataWithArrayAttackType = {
-        ...mockJaData,
-        basicInfo: {
-          ...mockJaData.basicInfo,
-          attackType: ["打撃", "斬撃"], // 配列の攻撃タイプ
-        },
-      };
-
-      const result = generator.generateCharacter(
-        mockJaDataWithArrayAttackType,
-        mockEnData
-      );
-
-      expect(mockDataMapper.mapAttackType).toHaveBeenCalledWith(
-        "打撃",
-        undefined
-      );
-    });
-
-    it("攻撃タイプ取得でエラーが発生した場合はデフォルト値を使用する", () => {
-      // mapAttackTypeがエラーを投げるようにモック
-      mockDataMapper.mapAttackType.mockImplementation(() => {
-        throw new Error("攻撃タイプマッピングエラー");
-      });
-
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-      const consoleInfoSpy = vi
-        .spyOn(console, "info")
-        .mockImplementation(() => {});
-
-      const pageId = "28";
-      const result = generator.generateCharacter(
-        mockJaData,
-        mockEnData,
-        pageId
-      );
-
-      expect(result.attackType).toEqual(["strike"]); // デフォルト値
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("攻撃タイプ取得に失敗")
-      );
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('デフォルト攻撃タイプ "strike" を使用')
-      );
-
-      consoleSpy.mockRestore();
-      consoleInfoSpy.mockRestore();
-    });
-
-    it("wikiデータから攻撃タイプを取得した場合は適切なログを出力する", () => {
-      const consoleInfoSpy = vi
-        .spyOn(console, "info")
-        .mockImplementation(() => {});
-
-      const pageId = "28";
-      generator.generateCharacter(mockJaData, mockEnData, pageId);
-
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining("攻撃タイプをwikiデータから取得")
-      );
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining(`pageId=${pageId}`)
-      );
-
-      consoleInfoSpy.mockRestore();
-    });
-
-    it("フォールバック機能を使用した場合は適切なログを出力する", () => {
-      const mockJaDataWithoutAttackType = {
-        ...mockJaData,
-        basicInfo: {
-          ...mockJaData.basicInfo,
-          attackType: "", // 空の攻撃タイプ
-        },
-      };
-
-      const consoleInfoSpy = vi
-        .spyOn(console, "info")
-        .mockImplementation(() => {});
-
-      const pageId = "28";
-      generator.generateCharacter(
-        mockJaDataWithoutAttackType,
-        mockEnData,
-        pageId
-      );
-
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining("攻撃タイプをlist.jsonからフォールバック取得")
-      );
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining(`pageId=${pageId}`)
-      );
-
-      consoleInfoSpy.mockRestore();
     });
 
     it("日本語データが存在しない場合はValidationErrorを投げる", () => {
@@ -422,7 +284,6 @@ describe("CharacterGenerator", () => {
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
       stats: "ice" as const,
-      attackType: ["strike" as AttackType],
       faction: 2,
       rarity: "S" as const,
       attr: {
@@ -498,48 +359,6 @@ describe("CharacterGenerator", () => {
       );
     });
 
-    it("attackTypeが配列でない場合は検証エラーを返す", () => {
-      const invalidCharacter = {
-        ...validCharacter,
-        attackType: "strike" as any, // 配列ではなく文字列
-      };
-
-      const result = generator.validateCharacter(invalidCharacter);
-
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "attackType フィールドが存在しないか、空の配列です"
-      );
-    });
-
-    it("attackTypeが空配列の場合は検証エラーを返す", () => {
-      const invalidCharacter = {
-        ...validCharacter,
-        attackType: [], // 空の配列
-      };
-
-      const result = generator.validateCharacter(invalidCharacter);
-
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "attackType フィールドが存在しないか、空の配列です"
-      );
-    });
-
-    it("attackTypeに無効な値が含まれる場合は検証エラーを返す", () => {
-      const invalidCharacter = {
-        ...validCharacter,
-        attackType: ["strike" as AttackType, "invalid"] as any,
-      };
-
-      const result = generator.validateCharacter(invalidCharacter);
-
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        'attackType "invalid" は有効な値ではありません'
-      );
-    });
-
     it("検証失敗時は警告ログを出力する", () => {
       const consoleWarnSpy = vi
         .spyOn(console, "warn")
@@ -569,7 +388,6 @@ describe("CharacterGenerator", () => {
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
       stats: "ice" as const,
-      attackType: ["strike" as AttackType],
       faction: 2,
       rarity: "S" as const,
       attr: {
@@ -601,11 +419,6 @@ describe("CharacterGenerator", () => {
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         "data/test-characters.ts",
         expect.stringContaining('id: "lycaon"'),
-        "utf-8"
-      );
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        "data/test-characters.ts",
-        expect.stringContaining('attackType: ["strike"]'),
         "utf-8"
       );
       expect(fs.writeFileSync).toHaveBeenCalledWith(

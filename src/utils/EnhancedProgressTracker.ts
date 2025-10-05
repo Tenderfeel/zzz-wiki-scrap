@@ -247,7 +247,9 @@ export class EnhancedProgressTracker {
       this.displayCallback(displayString);
     } else {
       // デフォルトのコンソール表示
-      console.log(displayString);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(displayString);
+      }
     }
   }
 
@@ -366,25 +368,29 @@ export class EnhancedProgressTracker {
         ? Math.round((progress.successCount / progress.total) * 100)
         : 0;
 
-    console.log(`\n📊 === 処理完了統計 ===`);
-    console.log(`総処理数: ${progress.total}`);
-    console.log(`成功: ${progress.successCount}`);
-    console.log(`失敗: ${progress.failureCount}`);
-    console.log(`リトライ: ${progress.retryCount}`);
-    console.log(`成功率: ${successRate}%`);
-    console.log(`総実行時間: ${this.formatDuration(progress.elapsedTime)}`);
-    console.log(`平均処理時間: ${Math.round(progress.averageItemTime)}ms/item`);
-    console.log(
-      `スループット: ${progress.itemsPerSecond.toFixed(2)} items/sec`
-    );
-
-    if (progress.memoryUsage) {
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`\n📊 === 処理完了統計 ===`);
+      console.log(`総処理数: ${progress.total}`);
+      console.log(`成功: ${progress.successCount}`);
+      console.log(`失敗: ${progress.failureCount}`);
+      console.log(`リトライ: ${progress.retryCount}`);
+      console.log(`成功率: ${successRate}%`);
+      console.log(`総実行時間: ${this.formatDuration(progress.elapsedTime)}`);
       console.log(
-        `最終メモリ使用量: ${this.formatBytes(progress.memoryUsage.heapUsed)}`
+        `平均処理時間: ${Math.round(progress.averageItemTime)}ms/item`
       );
-    }
+      console.log(
+        `スループット: ${progress.itemsPerSecond.toFixed(2)} items/sec`
+      );
 
-    console.log(`========================\n`);
+      if (progress.memoryUsage) {
+        console.log(
+          `最終メモリ使用量: ${this.formatBytes(progress.memoryUsage.heapUsed)}`
+        );
+      }
+
+      console.log(`========================\n`);
+    }
   }
 
   /**

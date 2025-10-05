@@ -24,8 +24,10 @@ class ConfigurableMain {
    */
   async run(): Promise<void> {
     try {
-      console.log(`🚀 === 設定可能メイン処理開始 ===`);
-      console.log(`開始時刻: ${new Date().toLocaleString()}`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`🚀 === 設定可能メイン処理開始 ===`);
+        console.log(`開始時刻: ${new Date().toLocaleString()}`);
+      }
 
       // 設定概要を表示
       this.configManager.displayConfigSummary();
@@ -34,11 +36,15 @@ class ConfigurableMain {
       if (this.config.enableDebugMode) {
         const configReport = this.configManager.generateConfigReport();
         fs.writeFileSync("config-report.md", configReport, "utf-8");
-        console.log(`📄 設定レポートを生成: config-report.md`);
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(`📄 設定レポートを生成: config-report.md`);
+        }
       }
 
       // キャラクターリストを解析
-      console.log(`📋 キャラクターリスト解析中...`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`📋 キャラクターリスト解析中...`);
+      }
       const parser = new CharacterListParser();
       const allEntries = await parser.parseScrapingFile(
         this.config.scrapingFilePath
@@ -47,7 +53,9 @@ class ConfigurableMain {
       // フィルタリングを適用
       let targetEntries = allEntries;
       if (this.config.enableCharacterFiltering) {
-        console.log(`🔍 キャラクターフィルタリング適用中...`);
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(`🔍 キャラクターフィルタリング適用中...`);
+        }
 
         // フィルター設定を検証
         const validation = CharacterFilterUtil.validateFilterConfig(
@@ -71,11 +79,13 @@ class ConfigurableMain {
           allEntries,
           this.config.characterFilter
         );
-        console.log(`📊 フィルタリングプレビュー:`);
-        console.log(
-          `  推定処理数: ${preview.estimatedCount}/${allEntries.length}`
-        );
-        console.log(`  フィルター: ${preview.filterDescription}`);
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(`📊 フィルタリングプレビュー:`);
+          console.log(
+            `  推定処理数: ${preview.estimatedCount}/${allEntries.length}`
+          );
+          console.log(`  フィルター: ${preview.filterDescription}`);
+        }
 
         // フィルタリングを実行
         const filteringResult = CharacterFilterUtil.filterCharacters(
@@ -89,7 +99,12 @@ class ConfigurableMain {
           const filteringReport =
             CharacterFilterUtil.generateFilteringReport(filteringResult);
           fs.writeFileSync("filtering-report.md", filteringReport, "utf-8");
-          console.log(`📄 フィルタリングレポートを生成: filtering-report.md`);
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true"
+          ) {
+            console.log(`📄 フィルタリングレポートを生成: filtering-report.md`);
+          }
         }
       }
 
@@ -101,7 +116,9 @@ class ConfigurableMain {
       }
 
       // パイプラインを実行
-      console.log(`⚡ パイプライン実行開始...`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`⚡ パイプライン実行開始...`);
+      }
       const pipeline = new EnhancedMainPipeline();
 
       const result = await pipeline.execute({
@@ -118,14 +135,18 @@ class ConfigurableMain {
         await pipeline.generateReport(result, this.config.reportOutputPath);
       }
 
-      console.log(`\n🎉 === 処理完了 ===`);
-      console.log(`完了時刻: ${new Date().toLocaleString()}`);
-      console.log(`処理されたキャラクター数: ${result.characters.length}`);
-      console.log(`出力ファイル: ${result.outputFilePath}`);
-      console.log(`総実行時間: ${this.formatDuration(result.executionTime)}`);
-      console.log(`==================\n`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.log(`\n🎉 === 処理完了 ===`);
+        console.log(`完了時刻: ${new Date().toLocaleString()}`);
+        console.log(`処理されたキャラクター数: ${result.characters.length}`);
+        console.log(`出力ファイル: ${result.outputFilePath}`);
+        console.log(`総実行時間: ${this.formatDuration(result.executionTime)}`);
+        console.log(`==================\n`);
+      }
     } catch (error) {
-      console.error(`\n❌ === 処理失敗 ===`);
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.error(`\n❌ === 処理失敗 ===`);
+      }
       console.error(
         `エラー: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -201,7 +222,7 @@ function showHelp(): void {
 🚀 設定可能全キャラクターデータ生成ツール
 
 使用方法:
-  npm run main:configurable [オプション]
+  npm run generate:configurable [オプション]
 
 オプション:
   -c, --config <file>     設定ファイルのパスを指定 (デフォルト: processing-config.json)
@@ -210,13 +231,13 @@ function showHelp(): void {
 
 例:
   # デフォルト設定で実行
-  npm run main:configurable
+  npm run generate:configurable
 
   # カスタム設定ファイルを使用
-  npm run main:configurable --config my-config.json
+  npm run generate:configurable -- --config my-config.json
 
   # デフォルト設定ファイルを生成
-  npm run main:configurable --generate-config
+  npm run generate:configurable -- --generate-config
 
 設定ファイルの例:
 {

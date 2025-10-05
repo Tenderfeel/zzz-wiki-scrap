@@ -2,7 +2,7 @@
   "batchSize": 5,
   "delayMs": 200,
   "maxRetries": 3,
-  "minSuccessRate": 0.4,
+  "minSuccessRate": 0.8,
   "maxConcurrency": 5,
   "enableWorkerPool": true,
   "enableMemoryOptimization": true,
@@ -21,7 +21,7 @@
   "reportOutputPath": "processing-report.md",
   "enableCharacterFiltering": false,
   "characterFilter": {},
-  "enableDebugMode": true,
+  "enableDebugMode": false,
   "logLevel": "info",
   "enableDetailedLogging": false
 }

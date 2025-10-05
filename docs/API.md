@@ -2,193 +2,172 @@
 
 ## 概要
 
-このドキュメントでは、攻撃タイプフォールバック機能の実装で追加・拡張されたクラスとメソッドの API について説明します。
+このドキュメントでは、キャラクターデータ生成システムの主要なクラスとメソッドの API について説明します。
 
-## AttackTypeFallbackService
+## DataMapper
 
-`json/data/list.json` から攻撃タイプ情報を取得し、wiki データから取得できなかった場合のフォールバック機能を提供するサービスクラスです。
+API レスポンスから取得したデータを内部型にマッピングするクラスです。
 
 ### クラス概要
 
 ```typescript
-export class AttackTypeFallbackService {
-  private listData: ListJsonData | null = null;
-  private isInitialized: boolean = false;
+export class DataMapper {
+  // 各種マッピングメソッドを提供
 }
 ```
 
 ### メソッド
 
-#### `initialize(): Promise<void>`
+#### `mapSpecialty(rawSpecialty: string): Specialty`
 
-list.json データの初期化を行います。一度だけ実行され、ファイルの存在確認、読み込み、JSON 解析を行います。
-
-**パラメータ:** なし
-
-**戻り値:** `Promise<void>`
-
-**動作:**
-
-- 既に初期化済みの場合は何もしない
-- `json/data/list.json` ファイルの存在を確認
-- ファイルを読み込み、JSON として解析
-- データ構造の基本的な検証を実行
-- エラー時は適切なログを出力し、処理を継続
-
-**例外処理:**
-
-- ファイルが存在しない場合: 警告ログを出力し、初期化完了とする
-- JSON 解析エラー: エラーログを出力し、`listData` を `null` に設定
-
-#### `getAttackTypeByPageId(pageId: string): AttackType | null`
-
-キャラクターのページ ID に基づいて攻撃タイプを取得します。
+日本語の特性名を英語の列挙値にマッピングします。
 
 **パラメータ:**
 
-- `pageId` (string): キャラクターのページ ID
+- `rawSpecialty` (string): 日本語の特性名
 
-**戻り値:** `AttackType | null`
+**戻り値:** `Specialty`
 
-- 攻撃タイプが見つかった場合: 対応する `AttackType` 値
-- 見つからない場合: `null`
+**マッピング:**
 
-**動作:**
+- `"撃破"` → `"stun"`
+- `"強攻"` → `"attack"`
+- `"異常"` → `"anomaly"`
+- `"支援"` → `"support"`
+- `"防護"` → `"defense"`
+- `"命破"` → `"rupture"`
 
-1. 初期化状態とデータの存在を確認
-2. `entry_page_id` でキャラクターを検索
-3. 攻撃タイプ情報の存在を確認
-4. 複数攻撃タイプがある場合は最初の値を使用
-5. 英語の攻撃タイプを enum 値にマッピング
+#### `mapStats(rawStats: string): Stats`
 
-**ログ出力:**
-
-- DEBUG: キャラクター検索結果
-- DEBUG: マッピング結果
-- WARN: 未知の攻撃タイプ値
-
-## DataMapper (拡張)
-
-既存の `DataMapper` クラスに攻撃タイプのフォールバック機能が統合されました。
-
-### 新しいコンストラクタ
-
-```typescript
-constructor() {
-  this.attackTypeFallback = new AttackTypeFallbackService();
-  // サービスの初期化（非同期）
-}
-```
-
-**動作:**
-
-- `AttackTypeFallbackService` のインスタンスを作成
-- バックグラウンドでサービスの初期化を実行
-- 初期化エラー時は適切なログを出力
-
-### 拡張されたメソッド
-
-#### `mapAttackType(rawAttackType: string, pageId?: string): AttackType`
-
-日本語の攻撃タイプ名を英語の列挙値にマッピングします。フォールバック機能付きで、wiki データから取得できない場合は `json/data/list.json` からの取得を試行します。
+日本語の属性名を英語の列挙値にマッピングします。
 
 **パラメータ:**
 
-- `rawAttackType` (string): 日本語の攻撃タイプ名
-- `pageId` (string, オプション): キャラクターのページ ID（フォールバック用）
+- `rawStats` (string): 日本語の属性名
 
-**戻り値:** `AttackType`
+**戻り値:** `Stats`
 
-**動作フロー:**
+**マッピング:**
 
-1. 既存の日本語マッピングを優先して試行
-2. 成功した場合: マッピング結果を返す
-3. 失敗し、`pageId` が提供されている場合: フォールバック機能を使用
-4. フォールバックも失敗した場合: `MappingError` をスロー
+- `"氷属性"` → `"ice"`
+- `"炎属性"` → `"fire"`
+- `"電気属性"` → `"electric"`
+- `"物理属性"` → `"physical"`
+- `"エーテル属性"` → `"ether"`
 
-**例外:**
+#### `mapRarity(rawRarity: string): Rarity`
 
-- `MappingError`: 未知の攻撃タイプ名でフォールバックも失敗した場合
-
-**ログ出力:**
-
-- DEBUG: wiki データ使用時
-- INFO: フォールバック機能使用時
-- WARN: デフォルト値使用時
-
-### 新しいプライベートメソッド
-
-#### `mapAttackTypeWithFallback(rawAttackType: string, pageId: string): AttackType`
-
-フォールバック機能付きの攻撃タイプマッピングを実行します。
+レアリティ値をマッピングします。
 
 **パラメータ:**
 
-- `rawAttackType` (string): 日本語の攻撃タイプ名（失敗したもの）
-- `pageId` (string): キャラクターのページ ID
+- `rawRarity` (string): レアリティ値
 
-**戻り値:** `AttackType`
+**戻り値:** `Rarity`
+
+**マッピング:**
+
+- `"A"` → `"A"`
+- `"S"` → `"S"`
+
+## CharacterGenerator
+
+キャラクターデータを生成するクラスです。
+
+### クラス概要
+
+```typescript
+export class CharacterGenerator {
+  constructor(
+    private dataMapper: DataMapper,
+    private dataProcessor: DataProcessor
+  ) {}
+}
+```
+
+### メソッド
+
+#### `generateCharacter(pageId: number): Promise<Character>`
+
+指定されたページ ID のキャラクターデータを生成します。
+
+**パラメータ:**
+
+- `pageId` (number): キャラクターのページ ID
+
+**戻り値:** `Promise<Character>`
 
 **動作:**
 
-1. `AttackTypeFallbackService` を使用してフォールバック取得を試行
-2. 成功した場合: フォールバック結果を返す
-3. 失敗した場合: デフォルト値 "strike" を返す
-4. エラー時: エラーログを出力し、デフォルト値 "strike" を返す
+1. API からキャラクターデータを取得
+2. データの解析と変換を実行
+3. Character オブジェクトを生成して返す
 
-## 新しい型定義
+## 型定義
 
-### ListJsonData
+### Character
 
-`json/data/list.json` のデータ構造を表現する型です。
+キャラクター情報を表現する型です。
 
 ```typescript
-export interface ListJsonData {
-  retcode: number;
-  message: string;
-  data: {
-    list: CharacterListItem[];
-  };
-}
+type Character = {
+  id: number;
+  name: { [key in Lang]: string };
+  fullName: { [key in Lang]: string };
+  specialty: Specialty;
+  stats: Stats;
+  faction: Faction;
+  rarity: Rarity;
+  attr: Attributes;
+};
 ```
 
-### CharacterListItem
+### Specialty
 
-list.json 内の個別キャラクター情報を表現する型です。
+キャラクターの特性を表現する型です。
 
 ```typescript
-export interface CharacterListItem {
-  entry_page_id: string;
-  name: string;
-  icon_url: string;
-  display_field: {
-    materials: string;
-    [key: string]: string;
-  };
-  filter_values: {
-    agent_attack_type?: {
-      values: string[];
-      value_types: AttackTypeValueType[];
-      key: null;
-    };
-    // その他のフィルター値...
-  };
-  desc: string;
-}
+type Specialty =
+  | "attack"
+  | "stun"
+  | "anomaly"
+  | "support"
+  | "defense"
+  | "rupture";
 ```
 
-### AttackTypeValueType
+### Stats
 
-攻撃タイプの詳細情報を表現する型です。
+キャラクターの属性を表現する型です。
 
 ```typescript
-export interface AttackTypeValueType {
-  id: string;
-  value: string;
-  mi18n_key: string;
-  icon: string;
-  enum_string: string;
-}
+type Stats =
+  | "ether"
+  | "fire"
+  | "ice"
+  | "physical"
+  | "electric"
+  | "frostAttribute"
+  | "auricInk";
+```
+
+### Attributes
+
+キャラクターのステータス情報を表現する型です。
+
+```typescript
+type Attributes = {
+  hp: number[]; // [1,10,20,30,40,50,60]レベル別
+  atk: number[]; // [1,10,20,30,40,50,60]レベル別
+  def: number[]; // [1,10,20,30,40,50,60]レベル別
+  impact: number; // 固定値
+  critRate: number; // 固定値 (% 除去済み)
+  critDmg: number; // 固定値 (% 除去済み)
+  anomalyMastery: number;
+  anomalyProficiency: number;
+  penRatio: number; // 固定値 (% 除去済み)
+  energy: number;
+};
 ```
 
 ## 使用例
@@ -197,36 +176,30 @@ export interface AttackTypeValueType {
 
 ```typescript
 import { DataMapper } from "./mappers/DataMapper.js";
+import { CharacterGenerator } from "./generators/CharacterGenerator.js";
 
 const mapper = new DataMapper();
+const generator = new CharacterGenerator(mapper, dataProcessor);
 
-// 既存の日本語マッピング（従来通り）
-const attackType1 = mapper.mapAttackType("打撃"); // "strike"
+// 特性のマッピング
+const specialty = mapper.mapSpecialty("撃破"); // "stun"
 
-// フォールバック機能付きマッピング
-const attackType2 = mapper.mapAttackType("未知の値", "28"); // フォールバック実行
-```
+// 属性のマッピング
+const stats = mapper.mapStats("氷属性"); // "ice"
 
-### AttackTypeFallbackService の直接使用
-
-```typescript
-import { AttackTypeFallbackService } from "./services/AttackTypeFallbackService.js";
-
-const service = new AttackTypeFallbackService();
-await service.initialize();
-
-const attackType = service.getAttackTypeByPageId("28"); // "strike" または null
+// キャラクター生成
+const character = await generator.generateCharacter(28);
 ```
 
 ## エラーハンドリング
 
 ### MappingError
 
-未知の攻撃タイプ値でフォールバックも失敗した場合にスローされます。
+未知の値でマッピングが失敗した場合にスローされます。
 
 ```typescript
 try {
-  const attackType = mapper.mapAttackType("未知の値"); // pageId なし
+  const specialty = mapper.mapSpecialty("未知の値");
 } catch (error) {
   if (error instanceof MappingError) {
     console.error("マッピングエラー:", error.message);
@@ -236,14 +209,14 @@ try {
 
 ### ログレベル
 
-- **INFO**: フォールバック機能の使用、サービス初期化完了
-- **WARN**: ファイル読み込みエラー、未知の攻撃タイプ、デフォルト値使用
-- **DEBUG**: キャラクター検索結果、マッピング詳細
-- **ERROR**: 重大なシステムエラー、初期化エラー
+- **INFO**: 処理完了、データ生成成功
+- **WARN**: データ不整合、デフォルト値使用
+- **DEBUG**: 詳細な処理情報
+- **ERROR**: 重大なシステムエラー、処理失敗
 
 ## パフォーマンス考慮事項
 
-- `json/data/list.json` の読み込みは初回のみ実行
-- メモリ上にキャッシュして再利用
-- 初期化は非同期で実行され、コンストラクタをブロックしない
+- API リクエストは適切な間隔で実行
+- メモリ使用量を最適化
 - エラー時も処理を継続し、システム全体の安定性を保つ
+- バッチ処理により効率的なデータ生成を実現

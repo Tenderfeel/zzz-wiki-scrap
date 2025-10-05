@@ -1,4 +1,4 @@
-import { Character, AttackTypes } from "../types";
+import { Character } from "../types";
 import { ProcessedData, ValidationResult } from "../types/processing";
 import { DataMapper } from "../mappers/DataMapper";
 import { AttributesProcessor } from "../processors/AttributesProcessor";
@@ -58,54 +58,6 @@ export class CharacterGenerator {
       );
       const stats = this.dataMapper.mapStats(jaData.basicInfo.stats);
 
-      // 攻撃タイプのマッピング（フォールバック機能付き）
-      let attackType: AttackTypes;
-      try {
-        // attackTypeが配列の場合は最初の要素を使用、文字列の場合はそのまま使用
-        const rawAttackType = Array.isArray(jaData.basicInfo.attackType)
-          ? jaData.basicInfo.attackType[0] || ""
-          : jaData.basicInfo.attackType || "";
-
-        const mappedAttackType = this.dataMapper.mapAttackType(
-          rawAttackType,
-          pageId
-        );
-        attackType = [mappedAttackType]; // 単一の攻撃タイプを配列に変換
-
-        // 攻撃タイプ取得方法をログに記録
-        const hasValidWikiData =
-          jaData.basicInfo.attackType &&
-          ((typeof jaData.basicInfo.attackType === "string" &&
-            jaData.basicInfo.attackType.trim() !== "") ||
-            (Array.isArray(jaData.basicInfo.attackType) &&
-              jaData.basicInfo.attackType.length > 0));
-
-        if (hasValidWikiData) {
-          logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
-            pageId,
-            method: "wiki",
-            attackType: mappedAttackType,
-          });
-        } else if (pageId) {
-          logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
-            pageId,
-            method: "fallback",
-            attackType: mappedAttackType,
-          });
-        }
-      } catch (error) {
-        logger.warn("Attack type retrieval failed", {
-          pageId,
-          error: error instanceof Error ? error.message : String(error),
-        });
-        logger.info(LogMessages.ATTACK_TYPE_RETRIEVAL_METHOD, {
-          pageId,
-          method: "default",
-          attackType: "strike",
-        });
-        attackType = ["strike"]; // デフォルト値を配列として使用して処理を継続
-      }
-
       const rarity = this.dataMapper.mapRarity(jaData.basicInfo.rarity);
 
       // 多言語名オブジェクトの生成
@@ -130,7 +82,6 @@ export class CharacterGenerator {
         fullName,
         specialty,
         stats,
-        attackType,
         faction: jaData.factionInfo.id, // 陣営ID
         rarity,
         attr: attributes,
@@ -186,14 +137,6 @@ export class CharacterGenerator {
 
     if (!character.stats) {
       errors.push("stats フィールドが存在しません");
-    }
-
-    if (
-      !character.attackType ||
-      !Array.isArray(character.attackType) ||
-      character.attackType.length === 0
-    ) {
-      errors.push("attackType フィールドが存在しないか、空の配列です");
     }
 
     if (character.faction === undefined || character.faction === null) {
@@ -294,15 +237,6 @@ export class CharacterGenerator {
       errors.push(`stats "${character.stats}" は有効な値ではありません`);
     }
 
-    const validAttackTypes = ["slash", "pierce", "strike"];
-    if (character.attackType && Array.isArray(character.attackType)) {
-      for (const attackType of character.attackType) {
-        if (!validAttackTypes.includes(attackType)) {
-          errors.push(`attackType "${attackType}" は有効な値ではありません`);
-        }
-      }
-    }
-
     const validRarities = ["A", "S"];
     if (character.rarity && !validRarities.includes(character.rarity)) {
       errors.push(`rarity "${character.rarity}" は有効な値ではありません`);
@@ -315,7 +249,7 @@ export class CharacterGenerator {
 
     // 検証失敗時の詳細ログ
     if (!result.isValid) {
-      logger.warn("Character validation failed", { errors });
+      console.warn("Character検証エラー:", errors);
     }
 
     return result;
@@ -394,9 +328,6 @@ ${indent}  fullName: { ja: "${character.fullName.ja}", en: "${
     }" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
-${indent}  attackType: [${character.attackType
-      .map((type) => `"${type}"`)
-      .join(", ")}],
 ${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
 ${indent}  attr: {

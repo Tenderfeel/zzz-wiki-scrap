@@ -49,11 +49,13 @@ export class MemoryOptimizer {
 
     // メモリ使用量が閾値を超えた場合の警告
     if (currentUsage.heapUsed > MemoryOptimizer.MEMORY_THRESHOLD) {
-      console.warn(
-        `⚠️  メモリ使用量が閾値を超過: ${this.formatBytes(
-          currentUsage.heapUsed
-        )} / ${this.formatBytes(MemoryOptimizer.MEMORY_THRESHOLD)}`
-      );
+      if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+        console.warn(
+          `⚠️  メモリ使用量が閾値を超過: ${this.formatBytes(
+            currentUsage.heapUsed
+          )} / ${this.formatBytes(MemoryOptimizer.MEMORY_THRESHOLD)}`
+        );
+      }
       this.forceGarbageCollection();
     }
 
@@ -79,9 +81,11 @@ export class MemoryOptimizer {
 
       const memoryFreed = beforeGC.heapUsed - afterGC.heapUsed;
       if (memoryFreed > 0) {
-        console.log(
-          `🧹 ガベージコレクション実行: ${this.formatBytes(memoryFreed)} 解放`
-        );
+        if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+          console.log(
+            `🧹 ガベージコレクション実行: ${this.formatBytes(memoryFreed)} 解放`
+          );
+        }
       }
     }
   }

@@ -343,29 +343,37 @@ export class ConfigManager {
    * 設定の概要を表示
    */
   displayConfigSummary(): void {
-    console.log(`\n⚙️  === 処理設定概要 ===`);
-    console.log(`バッチサイズ: ${this.config.batchSize}`);
-    console.log(`遅延時間: ${this.config.delayMs}ms`);
-    console.log(`最大リトライ回数: ${this.config.maxRetries}`);
-    console.log(`最小成功率: ${Math.round(this.config.minSuccessRate * 100)}%`);
-    console.log(`並行度: ${this.config.maxConcurrency}`);
-    console.log(
-      `メモリ最適化: ${this.config.enableMemoryOptimization ? "有効" : "無効"}`
-    );
-    console.log(
-      `拡張プログレス: ${this.config.enableEnhancedProgress ? "有効" : "無効"}`
-    );
-    console.log(
-      `キャラクターフィルタリング: ${
-        this.config.enableCharacterFiltering ? "有効" : "無効"
-      }`
-    );
-    console.log(
-      `デバッグモード: ${this.config.enableDebugMode ? "有効" : "無効"}`
-    );
-    console.log(`入力ファイル: ${this.config.scrapingFilePath}`);
-    console.log(`出力ファイル: ${this.config.outputFilePath}`);
-    console.log(`=======================\n`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`\n⚙️  === 処理設定概要 ===`);
+      console.log(`バッチサイズ: ${this.config.batchSize}`);
+      console.log(`遅延時間: ${this.config.delayMs}ms`);
+      console.log(`最大リトライ回数: ${this.config.maxRetries}`);
+      console.log(
+        `最小成功率: ${Math.round(this.config.minSuccessRate * 100)}%`
+      );
+      console.log(`並行度: ${this.config.maxConcurrency}`);
+      console.log(
+        `メモリ最適化: ${
+          this.config.enableMemoryOptimization ? "有効" : "無効"
+        }`
+      );
+      console.log(
+        `拡張プログレス: ${
+          this.config.enableEnhancedProgress ? "有効" : "無効"
+        }`
+      );
+      console.log(
+        `キャラクターフィルタリング: ${
+          this.config.enableCharacterFiltering ? "有効" : "無効"
+        }`
+      );
+      console.log(
+        `デバッグモード: ${this.config.enableDebugMode ? "有効" : "無効"}`
+      );
+      console.log(`入力ファイル: ${this.config.scrapingFilePath}`);
+      console.log(`出力ファイル: ${this.config.outputFilePath}`);
+      console.log(`=======================\n`);
+    }
   }
 
   /**

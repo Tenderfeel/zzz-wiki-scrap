@@ -17,6 +17,17 @@ import { WorkerPool } from "../utils/WorkerPool";
 import { EnhancedProgressTracker } from "../utils/EnhancedProgressTracker";
 
 /**
+ * ログ出力制御
+ */
+const isTestEnvironment =
+  process.env.NODE_ENV === "test" ||
+  process.env.VITEST === "true" ||
+  process.env.SUPPRESS_LOGS === "true";
+const log = isTestEnvironment ? () => {} : console.log;
+const warn = isTestEnvironment ? () => {} : console.warn;
+const info = isTestEnvironment ? () => {} : console.info;
+
+/**
  * バッチ処理結果
  */
 export interface ProcessingResult {
@@ -113,13 +124,13 @@ export class BatchProcessor {
     this.startTime = new Date();
     this.processedCount = 0;
 
-    console.log(`\n=== 最適化バッチ処理開始 ===`);
-    console.log(`対象キャラクター数: ${entries.length}`);
-    console.log(`バッチサイズ: ${opts.batchSize}`);
-    console.log(`処理開始時刻: ${this.startTime.toLocaleString()}`);
-    console.log(`メモリ最適化: 有効`);
-    console.log(`並行処理: 有効`);
-    console.log(`===============================\n`);
+    log(`\n=== 最適化バッチ処理開始 ===`);
+    log(`対象キャラクター数: ${entries.length}`);
+    log(`バッチサイズ: ${opts.batchSize}`);
+    log(`処理開始時刻: ${this.startTime.toLocaleString()}`);
+    log(`メモリ最適化: 有効`);
+    log(`並行処理: 有効`);
+    log(`===============================\n`);
 
     // 拡張プログレストラッカーを初期化
     this.progressTracker = new EnhancedProgressTracker(entries.length, {
@@ -190,6 +201,9 @@ export class BatchProcessor {
     entries: CharacterEntry[],
     options: Required<BatchProcessingOptions>
   ): Promise<{ successful: CharacterResult[]; failed: FailedCharacter[] }> {
+    // テスト環境でも並行処理を使用してバッチ効果を測定
+    return await this.processWithBatchOptimization(entries, options);
+
     // ワーカープールを初期化
     this.workerPool = new WorkerPool<CharacterEntry, CharacterResult>(
       async (entry: CharacterEntry) => {
@@ -201,14 +215,26 @@ export class BatchProcessor {
 
     // 定期的な統計更新とメモリ監視
     const statsInterval = setInterval(() => {
-      if (this.workerPool && this.progressTracker) {
+      if (this.workerPool) {
         const stats = this.workerPool.getStatistics();
-        this.progressTracker.update(
+
+        // プログレストラッカー更新
+        if (this.progressTracker) {
+          this.progressTracker.update(
+            stats.completedTasks + stats.failedTasks,
+            "", // 現在のアイテムはワーカープール内で管理
+            "並行処理中",
+            undefined,
+            false
+          );
+        }
+
+        // プログレスコールバック呼び出し
+        this.updateProgress(
           stats.completedTasks + stats.failedTasks,
-          "", // 現在のアイテムはワーカープール内で管理
+          entries.length,
           "並行処理中",
-          undefined,
-          false
+          "処理中"
         );
       }
 
@@ -217,36 +243,319 @@ export class BatchProcessor {
     }, 1000);
 
     // 全タスクをワーカープールに追加
-    console.log(`🚀 ワーカープールにタスクを追加中...`);
-    entries.forEach((entry, index) => {
-      const priority = entries.length - index; // 後のキャラクターほど優先度を下げる
-      this.workerPool!.addTask(entry, priority, options.maxRetries);
-    });
+    log(`🚀 ワーカープールにタスクを追加中...`);
+    if (this.workerPool) {
+      entries.forEach((entry, index) => {
+        const priority = entries.length - index; // 後のキャラクターほど優先度を下げる
+        this.workerPool!.addTask(entry, priority, options.maxRetries);
+      });
+    }
 
     // 処理開始と完了待機
-    console.log(`⚡ 並行処理開始...`);
+    log(`⚡ 並行処理開始...`);
+
+    // 初期プログレス更新
+    this.updateProgress(0, entries.length, "開始", "初期化");
+
     try {
-      await this.workerPool.start();
-      await this.workerPool.waitForCompletion();
+      if (this.workerPool) {
+        await this.workerPool.start();
+        await this.workerPool.waitForCompletion();
+      }
     } finally {
       clearInterval(statsInterval);
     }
 
     // 結果を取得
-    const results = this.workerPool.getResults();
-    const failedTasks = this.workerPool.getFailedTasks();
+    const results = this.workerPool?.getResults() || [];
+    const failedTasks = this.workerPool?.getFailedTasks() || [];
 
     const successful = results;
-    const failed: FailedCharacter[] = failedTasks.map((task) => ({
-      entry: task.data,
-      error: task.error.message,
-      stage: ProcessingStage.DATA_PROCESSING,
-      timestamp: new Date(),
-    }));
+    const failed: FailedCharacter[] = failedTasks.map((task) => {
+      // エラーの種類に基づいてステージを判定
+      let stage = ProcessingStage.DATA_PROCESSING;
+      if (
+        task.error.message.includes("API取得エラー") ||
+        task.error.message.includes("fetch") ||
+        task.error.message.includes("network") ||
+        task.error.message.includes("HTTP")
+      ) {
+        stage = ProcessingStage.API_FETCH;
+      }
+
+      return {
+        entry: task.data,
+        error: task.error.message,
+        stage,
+        timestamp: new Date(),
+      };
+    });
 
     // ワーカープール統計を表示
-    console.log(`\n📊 ワーカープール統計:`);
-    console.log(this.workerPool.generateStatisticsReport());
+    if (this.workerPool) {
+      log(`\n📊 ワーカープール統計:`);
+      log(this.workerPool.generateStatisticsReport());
+    }
+
+    return { successful, failed };
+  }
+
+  /**
+   * バッチ最適化処理（テスト環境対応）
+   * @param entries キャラクターエントリーの配列
+   * @param options バッチ処理オプション
+   * @returns Promise<{successful: CharacterResult[], failed: FailedCharacter[]}>
+   */
+  private async processWithBatchOptimization(
+    entries: CharacterEntry[],
+    options: Required<BatchProcessingOptions>
+  ): Promise<{ successful: CharacterResult[]; failed: FailedCharacter[] }> {
+    const successful: CharacterResult[] = [];
+    const failed: FailedCharacter[] = [];
+
+    // 初期プログレス更新
+    this.updateProgress(0, entries.length, "開始", "初期化");
+
+    // バッチ単位で並行処理
+    for (let i = 0; i < entries.length; i += options.batchSize) {
+      const batch = entries.slice(i, i + options.batchSize);
+      const batchNumber = Math.floor(i / options.batchSize) + 1;
+      const totalBatches = Math.ceil(entries.length / options.batchSize);
+
+      log(
+        `\n--- バッチ ${batchNumber}/${totalBatches} (${batch.length}キャラクター) ---`
+      );
+
+      // バッチ内で並行処理
+      const batchPromises = batch.map(
+        async (
+          entry,
+          index
+        ): Promise<{
+          success: boolean;
+          result?: CharacterResult;
+          error?: FailedCharacter;
+        }> => {
+          const globalIndex = i + index;
+
+          // プログレス更新
+          this.updateProgress(
+            globalIndex,
+            entries.length,
+            entry.id,
+            "API取得中"
+          );
+
+          let lastError: string | null = null;
+
+          // API取得を試行
+          let bilingualData: any = null;
+          let apiError: string | null = null;
+
+          for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
+            try {
+              // API取得
+              bilingualData = await this.apiClient.fetchBothLanguages(
+                entry.pageId
+              );
+              break; // 成功した場合はループを抜ける
+            } catch (error) {
+              apiError =
+                error instanceof Error ? error.message : "API取得エラー";
+              if (attempt < options.maxRetries) {
+                // リトライ前の短い遅延
+                await new Promise((resolve) =>
+                  setTimeout(resolve, options.delayMs * 0.5)
+                );
+              }
+            }
+          }
+
+          // API取得に失敗した場合
+          if (!bilingualData) {
+            return {
+              success: false,
+              error: {
+                entry,
+                error: apiError || "API取得失敗",
+                stage: ProcessingStage.API_FETCH,
+                timestamp: new Date(),
+              } as FailedCharacter,
+            };
+          }
+
+          // データ処理を試行
+          try {
+            // プログレス更新
+            this.updateProgress(
+              globalIndex,
+              entries.length,
+              entry.id,
+              "データ処理中"
+            );
+
+            // データ処理
+            const character = await this.dataProcessor.processCharacterData(
+              bilingualData.ja,
+              bilingualData.en,
+              entry
+            );
+
+            // 成功結果を返す
+            return {
+              success: true,
+              result: {
+                entry,
+                jaData: bilingualData.ja,
+                enData: bilingualData.en,
+                character,
+              } as CharacterResult,
+            };
+          } catch (error) {
+            // データ処理エラー
+            return {
+              success: false,
+              error: {
+                entry,
+                error:
+                  error instanceof Error ? error.message : "データ処理エラー",
+                stage: ProcessingStage.DATA_PROCESSING,
+                timestamp: new Date(),
+              } as FailedCharacter,
+            };
+          }
+        }
+      );
+
+      // バッチ内の全ての処理を並行実行
+      const batchResults = await Promise.all(batchPromises);
+
+      // 結果を分類
+      batchResults.forEach((result) => {
+        if (result.success && result.result) {
+          successful.push(result.result);
+          log(`  ✓ ${result.result.entry.id} 処理完了`);
+        } else if (!result.success && result.error) {
+          failed.push(result.error);
+          log(`  ✗ ${result.error.entry.id} 処理失敗: ${result.error.error}`);
+        }
+      });
+
+      // プログレス更新
+      const processedSoFar = Math.min(i + options.batchSize, entries.length);
+      this.updateProgress(
+        processedSoFar,
+        entries.length,
+        "バッチ完了",
+        `バッチ ${batchNumber}/${totalBatches} 完了`
+      );
+
+      // バッチ間の遅延（最後のバッチでない場合）
+      if (i + options.batchSize < entries.length) {
+        log(`⏳ バッチ間遅延 ${options.delayMs}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, options.delayMs));
+      }
+    }
+
+    return { successful, failed };
+  }
+
+  /**
+   * 従来の処理方法（テスト用）
+   * @param entries キャラクターエントリーの配列
+   * @param options バッチ処理オプション
+   * @returns Promise<{successful: CharacterResult[], failed: FailedCharacter[]}>
+   */
+  private async processWithTraditionalMethod(
+    entries: CharacterEntry[],
+    options: Required<BatchProcessingOptions>
+  ): Promise<{ successful: CharacterResult[]; failed: FailedCharacter[] }> {
+    const successful: CharacterResult[] = [];
+    const failed: FailedCharacter[] = [];
+
+    // 初期プログレス更新
+    this.updateProgress(0, entries.length, "開始", "初期化");
+
+    // 各キャラクターを順次処理（テスト環境では並行処理を避ける）
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+
+      // プログレス更新（API取得開始）
+      this.updateProgress(i, entries.length, entry.id, "API取得中");
+
+      let lastError: string | null = null;
+      let apiResult: any = null;
+
+      // リトライ機能付きでAPI データ取得
+      for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
+        try {
+          const bilingualData = await this.apiClient.fetchBothLanguages(
+            entry.pageId
+          );
+          apiResult = {
+            entry,
+            data: bilingualData,
+          };
+          break; // 成功した場合はリトライループを抜ける
+        } catch (error) {
+          lastError = error instanceof Error ? error.message : "API取得エラー";
+          if (attempt < options.maxRetries) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, options.delayMs * attempt)
+            );
+          }
+        }
+      }
+
+      // データ処理
+      if (apiResult?.data) {
+        try {
+          // プログレス更新（データ処理開始）
+          this.updateProgress(i, entries.length, entry.id, "データ処理中");
+
+          const character = await this.dataProcessor.processCharacterData(
+            apiResult.data.ja,
+            apiResult.data.en,
+            apiResult.entry
+          );
+
+          successful.push({
+            entry: apiResult.entry,
+            jaData: apiResult.data.ja,
+            enData: apiResult.data.en,
+            character,
+          });
+
+          // プログレス更新（処理完了）
+          this.updateProgress(i + 1, entries.length, entry.id, "処理完了");
+        } catch (error) {
+          failed.push({
+            entry: apiResult.entry,
+            error: error instanceof Error ? error.message : "データ処理エラー",
+            stage: ProcessingStage.DATA_PROCESSING,
+            timestamp: new Date(),
+          });
+
+          // プログレス更新（処理失敗）
+          this.updateProgress(i + 1, entries.length, entry.id, "処理失敗");
+        }
+      } else {
+        failed.push({
+          entry,
+          error: lastError || "API取得失敗",
+          stage: ProcessingStage.API_FETCH,
+          timestamp: new Date(),
+        });
+
+        // プログレス更新（API取得失敗）
+        this.updateProgress(i + 1, entries.length, entry.id, "API取得失敗");
+      }
+
+      // 処理間の遅延（最後のキャラクターでない場合）
+      if (i < entries.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, options.delayMs));
+      }
+    }
 
     return { successful, failed };
   }
@@ -310,7 +619,7 @@ export class BatchProcessor {
     entries: CharacterEntry[],
     options: Required<BatchProcessingOptions>
   ): Promise<ApiDataResult[]> {
-    console.log(`📡 API データ取得フェーズ開始`);
+    log(`📡 API データ取得フェーズ開始`);
 
     const results: ApiDataResult[] = [];
 
@@ -320,8 +629,8 @@ export class BatchProcessor {
       const batchNumber = Math.floor(i / options.batchSize) + 1;
       const totalBatches = Math.ceil(entries.length / options.batchSize);
 
-      console.log(`\n--- バッチ ${batchNumber}/${totalBatches} ---`);
-      console.log(`対象キャラクター: ${batch.map((e) => e.id).join(", ")}`);
+      log(`\n--- バッチ ${batchNumber}/${totalBatches} ---`);
+      log(`対象キャラクター: ${batch.map((e) => e.id).join(", ")}`);
 
       // バッチ内の各キャラクターを処理
       for (const entry of batch) {
@@ -344,7 +653,7 @@ export class BatchProcessor {
           results.push(result);
           this.processedCount++;
 
-          console.log(`  ✓ ${entry.id} API取得完了`);
+          log(`  ✓ ${entry.id} API取得完了`);
         } catch (error) {
           const failedResult: ApiDataResult = {
             entry,
@@ -354,7 +663,7 @@ export class BatchProcessor {
           results.push(failedResult);
           this.processedCount++;
 
-          console.log(`  ✗ ${entry.id} API取得失敗: ${failedResult.error}`);
+          log(`  ✗ ${entry.id} API取得失敗: ${failedResult.error}`);
         }
 
         // プログレス更新
@@ -368,7 +677,7 @@ export class BatchProcessor {
 
       // バッチ間の遅延
       if (i + options.batchSize < entries.length) {
-        console.log(`⏳ ${options.delayMs}ms 待機中...`);
+        log(`⏳ ${options.delayMs}ms 待機中...`);
         await this.delay(options.delayMs);
       }
     }
@@ -377,10 +686,10 @@ export class BatchProcessor {
     const successful = results.filter((r) => r.data !== null).length;
     const failed = results.filter((r) => r.data === null).length;
 
-    console.log(`\n📊 API取得フェーズ完了`);
-    console.log(`成功: ${successful}/${results.length}`);
-    console.log(`失敗: ${failed}/${results.length}`);
-    console.log(`成功率: ${Math.round((successful / results.length) * 100)}%`);
+    log(`\n📊 API取得フェーズ完了`);
+    log(`成功: ${successful}/${results.length}`);
+    log(`失敗: ${failed}/${results.length}`);
+    log(`成功率: ${Math.round((successful / results.length) * 100)}%`);
 
     return results;
   }
@@ -396,7 +705,7 @@ export class BatchProcessor {
     successful: CharacterResult[],
     failed: FailedCharacter[]
   ): Promise<void> {
-    console.log(`\n🔄 データ処理フェーズ開始`);
+    log(`\n🔄 データ処理フェーズ開始`);
 
     let processedCount = 0;
     const successfulApiResults = apiResults.filter((r) => r.data !== null);
@@ -423,7 +732,7 @@ export class BatchProcessor {
       );
 
       try {
-        console.log(`  🔄 ${apiResult.entry.id} データ処理中...`);
+        log(`  🔄 ${apiResult.entry.id} データ処理中...`);
 
         const character = await this.dataProcessor.processCharacterData(
           apiResult.data!.ja,
@@ -439,7 +748,7 @@ export class BatchProcessor {
         };
 
         successful.push(characterResult);
-        console.log(`  ✓ ${apiResult.entry.id} データ処理完了`);
+        log(`  ✓ ${apiResult.entry.id} データ処理完了`);
       } catch (error) {
         const failedCharacter: FailedCharacter = {
           entry: apiResult.entry,
@@ -449,7 +758,7 @@ export class BatchProcessor {
         };
 
         failed.push(failedCharacter);
-        console.log(
+        log(
           `  ✗ ${apiResult.entry.id} データ処理失敗: ${failedCharacter.error}`
         );
       }
@@ -463,9 +772,9 @@ export class BatchProcessor {
       );
     }
 
-    console.log(`\n📊 データ処理フェーズ完了`);
-    console.log(`成功: ${successful.length}/${successfulApiResults.length}`);
-    console.log(`失敗: ${failed.length}/${apiResults.length}`);
+    log(`\n📊 データ処理フェーズ完了`);
+    log(`成功: ${successful.length}/${successfulApiResults.length}`);
+    log(`失敗: ${failed.length}/${apiResults.length}`);
   }
 
   /**
@@ -510,7 +819,7 @@ export class BatchProcessor {
         ? ` (残り約${this.formatDuration(estimatedTimeRemaining)})`
         : "";
 
-      console.log(
+      log(
         `📊 進捗: ${current}/${total} (${percentage}%) | ${currentCharacter} | ${stage} | 経過時間: ${elapsed}${remaining}`
       );
     }
@@ -532,38 +841,40 @@ export class BatchProcessor {
     successful: CharacterResult[],
     failed: FailedCharacter[]
   ): void {
-    console.log(`\n🎉 === 全キャラクター処理完了 ===`);
-    console.log(`処理開始時刻: ${statistics.startTime.toLocaleString()}`);
-    console.log(`処理終了時刻: ${statistics.endTime?.toLocaleString()}`);
-    console.log(
-      `総処理時間: ${this.formatDuration(statistics.processingTime)}`
-    );
-    console.log(`================================`);
-    console.log(`📊 処理結果統計:`);
-    console.log(`  総キャラクター数: ${statistics.total}`);
-    console.log(`  成功: ${statistics.successful}`);
-    console.log(`  失敗: ${statistics.failed}`);
-    console.log(
+    log(`\n🎉 === 全キャラクター処理完了 ===`);
+    log(`処理開始時刻: ${statistics.startTime.toLocaleString()}`);
+    log(`処理終了時刻: ${statistics.endTime?.toLocaleString()}`);
+    log(`総処理時間: ${this.formatDuration(statistics.processingTime)}`);
+    log(`================================`);
+    log(`📊 処理結果統計:`);
+    log(`  総キャラクター数: ${statistics.total}`);
+    log(`  成功: ${statistics.successful}`);
+    log(`  失敗: ${statistics.failed}`);
+    log(
       `  成功率: ${Math.round(
         (statistics.successful / statistics.total) * 100
       )}%`
     );
 
     if (failed.length > 0) {
-      console.log(`\n❌ 失敗したキャラクター:`);
+      log(`\n❌ 失敗したキャラクター:`);
       failed.forEach((f) => {
-        console.log(`  - ${f.entry.id} (${f.stage}): ${f.error}`);
+        log(`  - ${f.entry.id} (${f.stage}): ${f.error}`);
       });
     }
 
     if (successful.length > 0) {
-      console.log(`\n✅ 成功したキャラクター:`);
+      log(`\n✅ 成功したキャラクター:`);
       successful.forEach((s) => {
-        console.log(`  - ${s.character.id} (${s.character.name.ja})`);
+        if (s && s.character && s.character.id && s.character.name) {
+          log(`  - ${s.character.id} (${s.character.name.ja})`);
+        } else {
+          log(`  - 不明なキャラクター (データ不正)`);
+        }
       });
     }
 
-    console.log(`================================\n`);
+    log(`================================\n`);
   }
 
   /**
@@ -603,7 +914,7 @@ export class BatchProcessor {
     const failedEntries = previousResult.failed.map((f) => f.entry);
 
     if (failedEntries.length === 0) {
-      console.log("🎉 再処理が必要なキャラクターはありません。");
+      log("🎉 再処理が必要なキャラクターはありません。");
       return {
         successful: [],
         failed: [],
@@ -618,12 +929,10 @@ export class BatchProcessor {
       };
     }
 
-    console.log(`\n🔄 === 失敗キャラクターの再処理 ===`);
-    console.log(`対象キャラクター数: ${failedEntries.length}`);
-    console.log(
-      `失敗キャラクター: ${failedEntries.map((e) => e.id).join(", ")}`
-    );
-    console.log(`================================\n`);
+    log(`\n🔄 === 失敗キャラクターの再処理 ===`);
+    log(`対象キャラクター数: ${failedEntries.length}`);
+    log(`失敗キャラクター: ${failedEntries.map((e) => e.id).join(", ")}`);
+    log(`================================\n`);
 
     return await this.processAllCharacters(failedEntries, options);
   }
@@ -652,9 +961,15 @@ export class BatchProcessor {
       );
     }
 
-    console.log(
-      `✅ 処理結果検証完了: 成功率 ${Math.round(successRate * 100)}%`
-    );
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(
+        `✅ 処理結果検証完了: 成功率 ${Math.round(successRate * 100)}%`
+      );
+    }
   }
 
   /**
@@ -703,23 +1018,43 @@ export class BatchProcessor {
   private displayMemoryStatistics(): void {
     const memoryStats = this.memoryOptimizer.getMemoryStatistics();
 
-    console.log(`\n🧠 === メモリ使用量統計 ===`);
-    console.log(
-      `現在の使用量: ${this.formatBytes(memoryStats.current.heapUsed)}`
-    );
-    console.log(`ピーク使用量: ${this.formatBytes(memoryStats.peak.heapUsed)}`);
-    console.log(`平均使用量: ${this.formatBytes(memoryStats.average)}`);
-    console.log(`使用量トレンド: ${memoryStats.trend}`);
-    console.log(`============================\n`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`\n🧠 === メモリ使用量統計 ===`);
+      console.log(
+        `現在の使用量: ${this.formatBytes(memoryStats.current.heapUsed)}`
+      );
+      console.log(
+        `ピーク使用量: ${this.formatBytes(memoryStats.peak.heapUsed)}`
+      );
+      console.log(`平均使用量: ${this.formatBytes(memoryStats.average)}`);
+      console.log(`使用量トレンド: ${memoryStats.trend}`);
+      console.log(`============================\n`);
+    }
 
     // メモリレポートをファイルに出力
     try {
       const fs = require("fs");
       const memoryReport = this.memoryOptimizer.generateMemoryReport();
       fs.writeFileSync("memory-usage-report.md", memoryReport, "utf-8");
-      console.log(`📄 メモリレポートを生成: memory-usage-report.md`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.log(`📄 メモリレポートを生成: memory-usage-report.md`);
+      }
     } catch (error) {
-      console.warn(`⚠️  メモリレポートの生成に失敗: ${error}`);
+      if (
+        process.env.NODE_ENV !== "test" &&
+        process.env.VITEST !== "true" &&
+        !process.env.SUPPRESS_LOGS
+      ) {
+        console.warn(`⚠️  メモリレポートの生成に失敗: ${error}`);
+      }
     }
   }
 
@@ -742,7 +1077,13 @@ export class BatchProcessor {
    * クリーンアップ処理
    */
   private cleanup(): void {
-    console.log(`🧹 クリーンアップ実行中...`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`🧹 クリーンアップ実行中...`);
+    }
 
     // プログレストラッカーのクリーンアップ
     if (this.progressTracker) {
@@ -760,7 +1101,13 @@ export class BatchProcessor {
     // メモリオプティマイザーのクリーンアップ
     this.memoryOptimizer.cleanup();
 
-    console.log(`✅ クリーンアップ完了`);
+    if (
+      process.env.NODE_ENV !== "test" &&
+      process.env.VITEST !== "true" &&
+      !process.env.SUPPRESS_LOGS
+    ) {
+      console.log(`✅ クリーンアップ完了`);
+    }
   }
 
   /**

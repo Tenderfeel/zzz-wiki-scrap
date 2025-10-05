@@ -355,28 +355,6 @@
             "updated_at": "1715150447"
           }
         },
-        "agent_attack_type": {
-          "values": ["打撃"],
-          "value_types": [
-            {
-              "id": "15",
-              "value": "打撃",
-              "mi18n_key": "filter_custom_11",
-              "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/07/5968cd96bfaa65d8d30e6d2275c4fa4e_1934106277785949805.png",
-              "enum_string": "strike"
-            }
-          ],
-          "key": {
-            "key": "agent_attack_type",
-            "text": "攻撃タイプ",
-            "values": [],
-            "mi18n_key": "filter_custom_30",
-            "is_multi_select": true,
-            "id": "4",
-            "is_hidden": false,
-            "updated_at": "1750061840"
-          }
-        },
         "agent_faction": {
           "values": ["ヴィクトリア家政"],
           "value_types": [

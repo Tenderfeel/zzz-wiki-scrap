@@ -36,7 +36,6 @@ describe("DataProcessor", () => {
           filter_values: {
             agent_specialties: { values: ["撃破"] },
             agent_stats: { values: ["氷属性"] },
-            agent_attack_type: { values: ["打撃"] },
             agent_rarity: { values: ["S"] },
           },
           modules: [],
@@ -52,7 +51,6 @@ describe("DataProcessor", () => {
         name: "フォン・ライカン",
         specialty: "撃破",
         stats: "氷属性",
-        attackType: "打撃",
         rarity: "S",
       });
     });

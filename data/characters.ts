@@ -7,7 +7,6 @@ export default [
     fullName: { ja: "アンビー・デマラ", en: "Anby Demara" },
     specialty: "stun",
     stats: "electric",
-    attackType: ["slash"],
     faction: 1,
     rarity: "A",
     attr: {
@@ -29,7 +28,6 @@ export default [
     fullName: { ja: "ビリー・キッド", en: "Billy Kid" },
     specialty: "attack",
     stats: "physical",
-    attackType: ["pierce"],
     faction: 1,
     rarity: "A",
     attr: {
@@ -51,7 +49,7 @@ export default [
     fullName: { ja: "ニコ・デマラ", en: "Nicole Demara" },
     specialty: "support",
     stats: "ether",
-    attackType: ["strike"],
+
     faction: 1,
     rarity: "A",
     attr: {
@@ -73,7 +71,7 @@ export default [
     fullName: { ja: "猫宮又奈", en: "Nekomiya Mana" },
     specialty: "attack",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 1,
     rarity: "S",
     attr: {
@@ -95,7 +93,7 @@ export default [
     fullName: { ja: "「11号」", en: "Soldier 11" },
     specialty: "attack",
     stats: "fire",
-    attackType: ["slash"],
+
     faction: 4,
     rarity: "S",
     attr: {
@@ -117,7 +115,7 @@ export default [
     fullName: { ja: "カリン・ウィクス", en: "Corin Wickes" },
     specialty: "attack",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 2,
     rarity: "A",
     attr: {
@@ -139,7 +137,7 @@ export default [
     fullName: { ja: "アンドー・イワノフ", en: "Anton Ivanov" },
     specialty: "attack",
     stats: "electric",
-    attackType: ["pierce"],
+
     faction: 3,
     rarity: "A",
     attr: {
@@ -161,7 +159,7 @@ export default [
     fullName: { ja: "ベン・ビガー", en: "Ben Bigger" },
     specialty: "defense",
     stats: "fire",
-    attackType: ["strike"],
+
     faction: 3,
     rarity: "A",
     attr: {
@@ -183,7 +181,7 @@ export default [
     fullName: { ja: "クレタ・ベロボーグ", en: "Koleda Belobog" },
     specialty: "stun",
     stats: "fire",
-    attackType: ["strike"],
+
     faction: 3,
     rarity: "S",
     attr: {
@@ -205,7 +203,7 @@ export default [
     fullName: { ja: "グレース・ハワード", en: "Grace Howard" },
     specialty: "anomaly",
     stats: "electric",
-    attackType: ["pierce"],
+
     faction: 3,
     rarity: "S",
     attr: {
@@ -227,7 +225,7 @@ export default [
     fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
     specialty: "stun",
     stats: "ice",
-    attackType: ["strike"],
+
     faction: 2,
     rarity: "S",
     attr: {
@@ -249,7 +247,7 @@ export default [
     fullName: { ja: "エレン・ジョー", en: "Ellen Joe" },
     specialty: "attack",
     stats: "ice",
-    attackType: ["slash"],
+
     faction: 2,
     rarity: "S",
     attr: {
@@ -267,11 +265,17 @@ export default [
   },
   {
     id: "rina",
-    name: { ja: "アレクサンドリナ・セバスチャン", en: "Alexandrina Sebastiane" },
-    fullName: { ja: "アレクサンドリナ・セバスチャン", en: "Alexandrina Sebastiane" },
+    name: {
+      ja: "アレクサンドリナ・セバスチャン",
+      en: "Alexandrina Sebastiane",
+    },
+    fullName: {
+      ja: "アレクサンドリナ・セバスチャン",
+      en: "Alexandrina Sebastiane",
+    },
     specialty: "support",
     stats: "electric",
-    attackType: ["strike"],
+
     faction: 2,
     rarity: "S",
     attr: {
@@ -293,7 +297,7 @@ export default [
     fullName: { ja: "朱鳶", en: "Zhu Yuan" },
     specialty: "attack",
     stats: "ether",
-    attackType: ["pierce"],
+
     faction: 6,
     rarity: "S",
     attr: {
@@ -315,7 +319,7 @@ export default [
     fullName: { ja: "蒼角", en: "Soukaku" },
     specialty: "support",
     stats: "ice",
-    attackType: ["slash"],
+
     faction: 5,
     rarity: "A",
     attr: {
@@ -334,10 +338,13 @@ export default [
   {
     id: "lucy",
     name: { ja: "ルシアーナ・デ・モンテフィーノ", en: "Luciana de Montefio" },
-    fullName: { ja: "ルシアーナ・デ・モンテフィーノ", en: "Luciana de Montefio" },
+    fullName: {
+      ja: "ルシアーナ・デ・モンテフィーノ",
+      en: "Luciana de Montefio",
+    },
     specialty: "support",
     stats: "fire",
-    attackType: ["strike"],
+
     faction: 7,
     rarity: "A",
     attr: {
@@ -359,7 +366,7 @@ export default [
     fullName: { ja: "パイパー・ウィール", en: "Piper Wheel" },
     specialty: "anomaly",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 7,
     rarity: "A",
     attr: {
@@ -381,7 +388,7 @@ export default [
     fullName: { ja: "青衣", en: "Qingyi" },
     specialty: "stun",
     stats: "electric",
-    attackType: ["strike"],
+
     faction: 6,
     rarity: "S",
     attr: {
@@ -403,7 +410,7 @@ export default [
     fullName: { ja: "ジェーン・ドゥ", en: "Jane Doe" },
     specialty: "anomaly",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 6,
     rarity: "S",
     attr: {
@@ -425,7 +432,7 @@ export default [
     fullName: { ja: "セス・ローウェル", en: "Seth Lowell" },
     specialty: "defense",
     stats: "electric",
-    attackType: ["slash"],
+
     faction: 6,
     rarity: "A",
     attr: {
@@ -447,7 +454,7 @@ export default [
     fullName: { ja: "キング・シーザー", en: "Caesar King" },
     specialty: "defense",
     stats: "physical",
-    attackType: ["slash", "strike"],
+
     faction: 7,
     rarity: "S",
     attr: {
@@ -469,7 +476,7 @@ export default [
     fullName: { ja: "バーニス・ホワイト", en: "Burnice White" },
     specialty: "anomaly",
     stats: "fire",
-    attackType: ["pierce"],
+
     faction: 7,
     rarity: "S",
     attr: {
@@ -491,7 +498,7 @@ export default [
     fullName: { ja: "月城柳", en: "Tsukishiro Yanagi" },
     specialty: "anomaly",
     stats: "electric",
-    attackType: ["slash"],
+
     faction: 5,
     rarity: "S",
     attr: {
@@ -513,7 +520,7 @@ export default [
     fullName: { ja: "ライト", en: "Lighter" },
     specialty: "stun",
     stats: "fire",
-    attackType: ["strike"],
+
     faction: 7,
     rarity: "S",
     attr: {
@@ -535,7 +542,7 @@ export default [
     fullName: { ja: "星見雅", en: "Hoshimi Miyabi" },
     specialty: "anomaly",
     stats: "frostAttribute",
-    attackType: ["slash"],
+
     faction: 5,
     rarity: "S",
     attr: {
@@ -557,7 +564,7 @@ export default [
     fullName: { ja: "浅羽悠真", en: "Asaba Harumasa" },
     specialty: "attack",
     stats: "electric",
-    attackType: ["slash", "pierce"],
+
     faction: 5,
     rarity: "S",
     attr: {
@@ -579,7 +586,7 @@ export default [
     fullName: { ja: "アストラ・ヤオ", en: "Astra Yao" },
     specialty: "support",
     stats: "ether",
-    attackType: ["strike"],
+
     faction: 8,
     rarity: "S",
     attr: {
@@ -601,7 +608,7 @@ export default [
     fullName: { ja: "イヴリン・シェヴァリエ", en: "Evelyn Chevalier" },
     specialty: "attack",
     stats: "fire",
-    attackType: ["slash"],
+
     faction: 8,
     rarity: "S",
     attr: {
@@ -623,7 +630,7 @@ export default [
     fullName: { ja: "0号・アンビー", en: "Soldier 0 - Anby" },
     specialty: "attack",
     stats: "electric",
-    attackType: ["slash"],
+
     faction: 9,
     rarity: "S",
     attr: {
@@ -645,7 +652,7 @@ export default [
     fullName: { ja: "プルクラ・フェリーニ", en: "Pulchra Fellini" },
     specialty: "stun",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 7,
     rarity: "A",
     attr: {
@@ -667,7 +674,7 @@ export default [
     fullName: { ja: "「トリガー」", en: "Trigger" },
     specialty: "stun",
     stats: "electric",
-    attackType: ["pierce"],
+
     faction: 4,
     rarity: "S",
     attr: {
@@ -689,7 +696,7 @@ export default [
     fullName: { ja: "ビビアン・バンシー", en: "Vivian Banshee" },
     specialty: "anomaly",
     stats: "ether",
-    attackType: ["slash"],
+
     faction: 10,
     rarity: "S",
     attr: {
@@ -711,7 +718,7 @@ export default [
     fullName: { ja: "ヒューゴ・ヴラド", en: "Hugo Vlad" },
     specialty: "attack",
     stats: "ice",
-    attackType: ["slash"],
+
     faction: 10,
     rarity: "S",
     attr: {
@@ -733,7 +740,7 @@ export default [
     fullName: { ja: "橘福福", en: "Ju Fufu" },
     specialty: "stun",
     stats: "fire",
-    attackType: ["strike"],
+
     faction: 11,
     rarity: "S",
     attr: {
@@ -755,7 +762,7 @@ export default [
     fullName: { ja: "潘引壺", en: "Pan Yinhu" },
     specialty: "defense",
     stats: "physical",
-    attackType: ["strike"],
+
     faction: 11,
     rarity: "A",
     attr: {
@@ -777,7 +784,7 @@ export default [
     fullName: { ja: "儀玄", en: "Yixuan" },
     specialty: "rupture",
     stats: "auricInk",
-    attackType: ["strike"],
+
     faction: 11,
     rarity: "S",
     attr: {
@@ -799,7 +806,7 @@ export default [
     fullName: { ja: "浮波柚葉", en: "Ukinami Yuzuha" },
     specialty: "support",
     stats: "physical",
-    attackType: ["strike"],
+
     faction: 12,
     rarity: "S",
     attr: {
@@ -821,7 +828,7 @@ export default [
     fullName: { ja: "アリス・タイムフィールド", en: "Alice Thymefield" },
     specialty: "anomaly",
     stats: "physical",
-    attackType: ["slash"],
+
     faction: 12,
     rarity: "S",
     attr: {
@@ -843,7 +850,7 @@ export default [
     fullName: { ja: "「シード」", en: "Seed" },
     specialty: "attack",
     stats: "electric",
-    attackType: ["slash", "strike"],
+
     faction: 4,
     rarity: "S",
     attr: {
@@ -861,11 +868,16 @@ export default [
   },
   {
     id: "orphie",
-    name: { ja: "オルペウス・マグヌッソン＆「鬼火」", en: "Orphie Magnusson & "Magus"" },
-    fullName: { ja: "オルペウス・マグヌッソン＆「鬼火」", en: "Orphie Magnusson & "Magus"" },
+    name: {
+      ja: "オルペウス・マグヌッソン＆「鬼火」",
+      en: 'Orphie Magnusson & "Magus"',
+    },
+    fullName: {
+      ja: "オルペウス・マグヌッソン＆「鬼火」",
+      en: 'Orphie Magnusson & "Magus"',
+    },
     specialty: "attack",
     stats: "fire",
-    attackType: ["slash", "pierce"],
     faction: 4,
     rarity: "S",
     attr: {
@@ -880,5 +892,5 @@ export default [
       penRatio: 0,
       energy: 1.48,
     },
-  }
+  },
 ] as Character[];

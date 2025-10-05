@@ -149,7 +149,6 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
         expect(character).toHaveProperty("fullName");
         expect(character).toHaveProperty("specialty");
         expect(character).toHaveProperty("stats");
-        expect(character).toHaveProperty("attackType");
         expect(character).toHaveProperty("faction");
         expect(character).toHaveProperty("rarity");
         expect(character).toHaveProperty("attr");
@@ -425,13 +424,14 @@ No character entries here.
   describe("パフォーマンステスト", () => {
     it("10キャラクターの処理が合理的な時間内に完了する", async () => {
       // テスト用Scraping.mdファイルを作成（10キャラクター）
-      const characters = Array.from(
-        { length: 10 },
-        (_, i) =>
-          `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${
-            i + 2
-          }) - pageId: ${i + 2}`
-      ).join("\n");
+      // 実際に存在するキャラクターのpageIdを使用
+      const realPageIds = [2, 19, 20, 21, 22, 23, 24, 25, 26, 27];
+      const characters = realPageIds
+        .map(
+          (pageId, i) =>
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+        )
+        .join("\n");
 
       const testScrapingContent = `# ZZZ Characters
 
@@ -473,13 +473,16 @@ ${characters}
 
     it("大量データ処理時のメモリ使用量が適切である", async () => {
       // テスト用Scraping.mdファイルを作成（15キャラクター）
-      const characters = Array.from(
-        { length: 15 },
-        (_, i) =>
-          `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${
-            i + 2
-          }) - pageId: ${i + 2}`
-      ).join("\n");
+      // 実際に存在するキャラクターのpageIdを使用
+      const realPageIds = [
+        2, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 89,
+      ];
+      const characters = realPageIds
+        .map(
+          (pageId, i) =>
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+        )
+        .join("\n");
 
       const testScrapingContent = `# ZZZ Characters
 
@@ -523,13 +526,14 @@ ${characters}
 
     it("並行処理の効率性が適切である", async () => {
       // テスト用Scraping.mdファイルを作成（8キャラクター）
-      const characters = Array.from(
-        { length: 8 },
-        (_, i) =>
-          `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${
-            i + 2
-          }) - pageId: ${i + 2}`
-      ).join("\n");
+      // 実際に存在するキャラクターのpageIdを使用
+      const realPageIds = [2, 19, 20, 21, 22, 23, 24, 25];
+      const characters = realPageIds
+        .map(
+          (pageId, i) =>
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+        )
+        .join("\n");
 
       const testScrapingContent = `# ZZZ Characters
 
@@ -639,7 +643,7 @@ ${characters}
           "frostAttribute",
           "auricInk",
         ]).toContain(character.stats);
-        expect(["slash", "pierce", "strike"]).toContain(character.attackType);
+
         expect(["A", "S"]).toContain(character.rarity);
 
         // 要件3: 陣営情報の抽出
@@ -815,7 +819,6 @@ function createMockApiResponse(
         name: jaName,
         agent_specialties: { values: ["撃破"] },
         agent_stats: { values: ["電気属性"] },
-        agent_attack_type: { values: ["斬撃"] },
         agent_rarity: { values: ["A"] },
         agent_faction: { values: ["邪兎屋"] },
         modules: [

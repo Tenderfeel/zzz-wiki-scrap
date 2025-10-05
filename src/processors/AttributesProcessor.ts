@@ -195,7 +195,13 @@ export class AttributesProcessor {
           stat.values.length < 2
         ) {
           // 値が存在しない場合はスキップ（警告のみ）
-          console.warn(`ステータス "${stat.key}" の値が不正な形式です`);
+          // テスト環境では警告を抑制
+          if (
+            process.env.NODE_ENV !== "test" &&
+            process.env.VITEST !== "true"
+          ) {
+            console.warn(`ステータス "${stat.key}" の値が不正な形式です`);
+          }
           return;
         }
 

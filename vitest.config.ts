@@ -6,6 +6,14 @@ export default defineConfig({
     environment: "node",
     include: ["**/*.test.ts", "**/*.spec.ts"],
     exclude: ["node_modules", "dist"],
+    setupFiles: ["./tests/setup.ts"],
+    // ログ出力を最小限に抑制
+    silent: true,
+    reporter: "basic",
+    logHeapUsage: false,
+    outputFile: {
+      json: "./test-results.json",
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

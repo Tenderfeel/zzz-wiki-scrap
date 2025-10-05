@@ -12,9 +12,11 @@ import { AllCharactersError } from "./errors";
  * 要件: 1.1, 1.5, 5.5, 6.6, 7.3, 7.4
  */
 async function main(): Promise<void> {
-  console.log(`🎮 === ZZZ 全キャラクターデータ生成ツール ===`);
-  console.log(`開始時刻: ${new Date().toLocaleString()}`);
-  console.log(`==========================================\n`);
+  if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+    console.log(`🎮 === ZZZ 全キャラクターデータ生成ツール ===`);
+    console.log(`開始時刻: ${new Date().toLocaleString()}`);
+    console.log(`==========================================\n`);
+  }
 
   // コマンドライン引数から設定を取得
   const options: PipelineOptions = parseCommandLineArgs();
@@ -26,16 +28,22 @@ async function main(): Promise<void> {
     const result = await pipeline.execute(options);
 
     // 成功時の処理
-    console.log(`\n🎉 === 処理完了 ===`);
-    console.log(`✅ 全キャラクターデータの生成が正常に完了しました！`);
-    console.log(`📁 出力ファイル: ${result.outputFilePath}`);
-    console.log(`📊 生成されたキャラクター数: ${result.characters.length}`);
-    console.log(`⏱️  総実行時間: ${formatDuration(result.executionTime)}`);
-    console.log(`==================\n`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(`\n🎉 === 処理完了 ===`);
+      console.log(`✅ 全キャラクターデータの生成が正常に完了しました！`);
+      console.log(`📁 出力ファイル: ${result.outputFilePath}`);
+      console.log(`📊 生成されたキャラクター数: ${result.characters.length}`);
+      console.log(`⏱️  総実行時間: ${formatDuration(result.executionTime)}`);
+      console.log(`==================\n`);
+    }
 
     // 処理レポートを生成
     await pipeline.generateReport(result);
-    console.log(`📄 詳細な処理レポートが生成されました: processing-report.md`);
+    if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+      console.log(
+        `📄 詳細な処理レポートが生成されました: processing-report.md`
+      );
+    }
 
     process.exit(0);
   } catch (error) {
@@ -177,16 +185,20 @@ function formatDuration(ms: number): string {
 
 // プロセス終了時のクリーンアップ
 process.on("SIGINT", () => {
-  console.log(
-    `\n⚠️  処理が中断されました。部分的な結果が保存されている可能性があります。`
-  );
+  if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+    console.log(
+      `\n⚠️  処理が中断されました。部分的な結果が保存されている可能性があります。`
+    );
+  }
   process.exit(130);
 });
 
 process.on("SIGTERM", () => {
-  console.log(
-    `\n⚠️  処理が終了されました。部分的な結果が保存されている可能性があります。`
-  );
+  if (process.env.NODE_ENV !== "test" && process.env.VITEST !== "true") {
+    console.log(
+      `\n⚠️  処理が終了されました。部分的な結果が保存されている可能性があります。`
+    );
+  }
   process.exit(143);
 });
 
