@@ -1,6 +1,6 @@
-import { Character } from "../src/types";
+import type { Character } from "../src/types";
 
-export default [
+const characters: Character[] = [
   {
     id: "anby",
     name: { ja: "アンビー・デマラ", en: "Anby Demara" },
@@ -896,4 +896,6 @@ export default [
       energy: 1.48,
     },
   },
-] as Character[];
+];
+
+export default characters;

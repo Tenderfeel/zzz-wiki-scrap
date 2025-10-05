@@ -1,7 +1,24 @@
 {
-  "name": "zzz-wiki-scrap",
+  "name": "@zzz-wiki-scrap/data",
   "version": "1.0.0",
-  "description": "HoyoLab ZZZ Wiki APIからキャラクターデータを取得するプロジェクト",
+  "description": "HoyoLab ZZZ Wikiからキャラクターデータを生成するプロジェクト",
+  "main": "./data/index.ts",
+  "types": "./data/index.ts",
+  "exports": {
+    "./characters": {
+      "import": "./data/characters.ts",
+      "require": "./data/characters.ts",
+      "types": "./data/characters.ts"
+    },
+    "./factions": {
+      "import": "./data/factions.ts",
+      "require": "./data/factions.ts",
+      "types": "./data/factions.ts"
+    }
+  },
+  "files": [
+    "data"
+  ],
   "scripts": {
     "generate": "ts-node src/main.ts",
     "generate:config": "ts-node src/main-configurable.ts",

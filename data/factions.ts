@@ -1,11 +1,6 @@
-type Lang = "en" | "ja";
+import type { Faction } from "../src/types";
 
-type Faction = {
-  id: number;
-  name: { [key in Lang]: string };
-};
-
-export default [
+const factions: Faction[] = [
   {
     id: 1,
     name: {
@@ -90,4 +85,6 @@ export default [
       en: "Spook Shack",
     },
   },
-] as Faction[];
+];
+
+export default factions;
