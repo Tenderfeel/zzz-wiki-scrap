@@ -81,3 +81,13 @@ export class RateLimitError extends ApiError {
     this.name = "RateLimitError";
   }
 }
+
+export class NameMappingError extends Error {
+  public cause?: Error;
+
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = "NameMappingError";
+    this.cause = cause;
+  }
+}

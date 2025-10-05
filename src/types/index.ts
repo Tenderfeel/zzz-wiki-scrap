@@ -43,6 +43,16 @@ export type Faction = {
   name: { [key in Lang]: string };
 };
 
+// 名前マッピング
+export interface NameMapping {
+  ja: string;
+  en: string;
+}
+
+export interface NameMappings {
+  [characterId: string]: NameMapping;
+}
+
 // キャラクターエントリー（Scraping.mdから抽出される情報）
 export type CharacterEntry = {
   id: string; // リンクテキスト（例: "lycaon"）

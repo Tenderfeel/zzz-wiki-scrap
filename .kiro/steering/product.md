@@ -2,82 +2,71 @@
 inclusion: always
 ---
 
-# Data Mapping & Type Definitions
+# ZZZ Character Data Processing Rules
 
-## Core Data Transformation Rules
+## API Data Extraction (EXACT PATHS)
 
-### API Response → TypeScript Object Mapping
+Extract from HoyoLab API responses using these precise JSON paths:
 
-When processing HoyoLab API responses, extract data using these exact paths:
+- `data.page.id` → Character ID (convert to number)
+- `data.page.name` → Multilingual names object
+- `data.page.agent_specialties.values[0]` → Specialty (requires mapping)
+- `data.page.agent_stats.values[0]` → Element (requires mapping)
+- `data.page.agent_attack_type.values[0]` → Attack type (requires mapping)
+- `data.page.agent_faction.values[0]` → Faction reference
+- `data.page.agent_rarity.values[0]` → Rarity ("A" or "S")
 
-- **Character ID**: `data.page.id` (convert to number)
-- **Names**: `data.page.name` (preserve as multilingual object)
-- **Specialty**: `data.page.agent_specialties.values[0]` (map Japanese → English enum)
-- **Element**: `data.page.agent_stats.values[0]` (map Japanese → English enum)
-- **Attack Type**: `data.page.agent_attack_type.values[0]` (map Japanese → English enum)
-- **Faction**: `data.page.agent_faction.values[0]` (reference faction ID)
-- **Rarity**: `data.page.agent_rarity.values[0]` (use as-is: "A" or "S")
+## Japanese → English Mappings (CRITICAL)
 
-### Required Japanese → English Enum Mappings
+**These mappings are MANDATORY** - apply exactly when processing Japanese API responses:
 
-**Specialty Mappings** (agent_specialties):
-
-```
+```typescript
+// Specialties (agent_specialties)
 "撃破" → "stun"
 "強攻" → "attack"
 "異常" → "anomaly"
 "支援" → "support"
 "防護" → "defense"
 "命破" → "rupture"
-```
 
-**Element Mappings** (agent_stats):
-
-```
+// Elements (agent_stats)
 "氷属性" → "ice"
 "炎属性" → "fire"
 "電気属性" → "electric"
 "物理属性" → "physical"
 "エーテル属性" → "ether"
-```
 
-**Attack Type Mappings** (agent_attack_type):
-
-```
+// Attack Types (agent_attack_type)
 "打撃" → "strike"
 "斬撃" → "slash"
 "刺突" → "pierce"
 ```
 
-## Character Attributes Extraction
+## Character Attributes Processing
 
-### Data Location & Processing
+**Location**: `data.page.modules` → find `ascension` component → parse `data` (JSON string)
 
-Extract attributes from: `data.page.modules` → find `ascension` component → parse `data` (JSON string)
+### Level Arrays (MUST be 7 elements)
 
-### Attribute Processing Rules
+Levels: 1, 10, 20, 30, 40, 50, 60
 
-**Level-Based Arrays** (7 levels: 1,10,20,30,40,50,60):
+- Extract `hp[]`, `atk[]`, `def[]` from `combatList`
+- **Always use `values[1]`** (enhanced stats, not base stats)
 
-- `hp[]`, `atk[]`, `def[]` - extract from `combatList` → `values[1]` (enhanced values)
-
-**Fixed Values** (level 1 only):
+### Single Values (level 1 only)
 
 - `impact`, `critRate`, `critDmg`, `anomalyMastery`, `anomalyProficiency`, `penRatio`, `energy`
 
-**Value Conversion Rules**:
+### Value Transformations (MANDATORY)
 
-- `"-"` → `0` (missing/null values)
-- `"50%"` → `50` (remove percentage symbols)
-- Always use `values[1]` from combatList (enhanced stats, not base)
+- `"-"` → `0` (handle null/missing values)
+- `"50%"` → `50` (strip percentage symbols)
+- Ensure all numbers are properly converted from strings
 
-## Required TypeScript Types
-
-Use these exact type definitions when working with character data:
+## TypeScript Types (STRICT COMPLIANCE)
 
 ```typescript
 type Lang = "en" | "ja";
-
 type Specialty =
   | "attack"
   | "stun"
@@ -90,27 +79,22 @@ type AttackType = "slash" | "pierce" | "strike";
 type Rarity = "A" | "S";
 
 type Attributes = {
-  hp: number[]; // 7-element array [lv1,10,20,30,40,50,60]
-  atk: number[]; // 7-element array [lv1,10,20,30,40,50,60]
-  def: number[]; // 7-element array [lv1,10,20,30,40,50,60]
+  hp: number[]; // 7-element array
+  atk: number[]; // 7-element array
+  def: number[]; // 7-element array
   impact: number;
-  critRate: number; // percentage as number (no % symbol)
-  critDmg: number; // percentage as number (no % symbol)
+  critRate: number;
+  critDmg: number;
   anomalyMastery: number;
   anomalyProficiency: number;
-  penRatio: number; // percentage as number (no % symbol)
+  penRatio: number;
   energy: number;
-};
-
-type Faction = {
-  id: number;
-  name: { [key in Lang]: string };
 };
 
 type Character = {
   id: number;
-  name: { [key in Lang]: string };
-  fullName: { [key in Lang]: string };
+  name: { [key in Lang]: string }; // Scraping.md 短縮名リスト (name-mappings.json)を参照
+  fullName: { [key in Lang]: string }; // Wikiを参照
   specialty: Specialty;
   stats: Stats;
   attackType: AttackType;
@@ -118,26 +102,24 @@ type Character = {
   rarity: Rarity;
   attr: Attributes;
 };
+
+type Faction = {
+  id: number;
+  name: { [key in Lang]: string };
+};
 ```
 
-## Output File Requirements
+## Output Requirements (EXACT FILES)
 
-Generate these exact files with proper TypeScript exports:
+**MUST generate exactly these files**:
 
-- **`data/characters.ts`**: `export default Character[]` (array of all characters)
-- **`data/factions.ts`**: `export default Faction[]` (array of all factions)
+- `data/characters.ts` → `export default Character[]`
+- `data/factions.ts` → `export default Faction[]`
 
-## Critical Processing Rules
+## Validation Rules
 
-**Language Priority**: Always request Japanese (`ja-jp`) first, fallback to English (`en-us`) if needed
-
-**Data Validation**:
-
-- Convert `"-"` strings to `0` for numeric fields
-- Remove `%` symbols from percentage values
-- Ensure all arrays have exactly 7 elements for level-based stats
-- Validate all enum mappings exist before assignment
-
-**Type Safety**: All generated data must strictly conform to the TypeScript types above
-
-**Error Handling**: Log missing mappings but continue processing with fallback values
+- **Language Priority**: Always request `ja-jp` first, fallback to `en-us`
+- **Array Validation**: Ensure hp/atk/def arrays have exactly 7 elements
+- **Type Compliance**: All data must match TypeScript types above
+- **Missing Data**: Log missing mappings, continue with fallbacks
+- **Number Conversion**: Verify string → number conversions are correct

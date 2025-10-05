@@ -158,11 +158,11 @@ describe("EnhancedDataProcessor", () => {
       expect(result).toMatchObject({
         id: "lycaon",
         name: {
-          ja: "フォン・ライカン",
-          en: "Von Lycaon",
+          ja: "ライカン", // mapped name from name-mappings.json
+          en: "Lycaon",
         },
         fullName: {
-          ja: "フォン・ライカン",
+          ja: "フォン・ライカン", // API name
           en: "Von Lycaon",
         },
         specialty: "stun",

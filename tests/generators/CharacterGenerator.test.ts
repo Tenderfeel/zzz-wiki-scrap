@@ -22,6 +22,7 @@ describe("CharacterGenerator", () => {
       mapStats: vi.fn(),
       mapRarity: vi.fn(),
       createMultiLangName: vi.fn(),
+      createNamesWithFallback: vi.fn(),
     };
 
     // DataMapperのコンストラクタをモック
@@ -144,7 +145,17 @@ describe("CharacterGenerator", () => {
     });
 
     it("正常なCharacterオブジェクトを生成できる", () => {
-      const result = generator.generateCharacter(mockJaData, mockEnData);
+      // createNamesWithFallbackメソッドのモックを設定
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "lycaon"
+      );
 
       expect(result).toEqual({
         id: "lycaon",
@@ -167,14 +178,27 @@ describe("CharacterGenerator", () => {
           energy: 1.2,
         },
       });
+
+      // createNamesWithFallbackが正しい引数で呼ばれることを確認
+      expect(mockDataMapper.createNamesWithFallback).toHaveBeenCalledWith(
+        "lycaon",
+        "フォン・ライカン",
+        "Von Lycaon"
+      );
     });
 
-    it("pageIdパラメータを含むCharacterオブジェクトを生成できる", () => {
-      const pageId = "28";
+    it("キャラクターIDパラメータを含むCharacterオブジェクトを生成できる", () => {
+      // createNamesWithFallbackメソッドのモックを設定
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      const characterId = "lycaon";
       const result = generator.generateCharacter(
         mockJaData,
         mockEnData,
-        pageId
+        characterId
       );
 
       expect(result).toEqual({
@@ -202,19 +226,19 @@ describe("CharacterGenerator", () => {
 
     it("日本語データが存在しない場合はValidationErrorを投げる", () => {
       expect(() =>
-        generator.generateCharacter(null as any, mockEnData)
+        generator.generateCharacter(null as any, mockEnData, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(null as any, mockEnData)
+        generator.generateCharacter(null as any, mockEnData, "lycaon")
       ).toThrow("日本語データが存在しません");
     });
 
     it("英語データが存在しない場合はValidationErrorを投げる", () => {
       expect(() =>
-        generator.generateCharacter(mockJaData, null as any)
+        generator.generateCharacter(mockJaData, null as any, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(mockJaData, null as any)
+        generator.generateCharacter(mockJaData, null as any, "lycaon")
       ).toThrow("英語データが存在しません");
     });
 
@@ -222,10 +246,10 @@ describe("CharacterGenerator", () => {
       const incompleteJaData = { ...mockJaData, basicInfo: null as any };
 
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow("日本語の基本情報が存在しません");
     });
 
@@ -233,10 +257,10 @@ describe("CharacterGenerator", () => {
       const incompleteEnData = { ...mockEnData, basicInfo: null as any };
 
       expect(() =>
-        generator.generateCharacter(mockJaData, incompleteEnData)
+        generator.generateCharacter(mockJaData, incompleteEnData, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(mockJaData, incompleteEnData)
+        generator.generateCharacter(mockJaData, incompleteEnData, "lycaon")
       ).toThrow("英語の基本情報が存在しません");
     });
 
@@ -244,10 +268,10 @@ describe("CharacterGenerator", () => {
       const incompleteJaData = { ...mockJaData, factionInfo: null as any };
 
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow("陣営情報が存在しません");
     });
 
@@ -255,11 +279,117 @@ describe("CharacterGenerator", () => {
       const incompleteJaData = { ...mockJaData, attributesInfo: null as any };
 
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow(ValidationError);
       expect(() =>
-        generator.generateCharacter(incompleteJaData, mockEnData)
+        generator.generateCharacter(incompleteJaData, mockEnData, "lycaon")
       ).toThrow("属性情報が存在しません");
+    });
+
+    it("キャラクターIDが空の場合はValidationErrorを投げる", () => {
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "")
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "")
+      ).toThrow("キャラクターIDが指定されていません");
+    });
+
+    it("事前定義された名前マッピングを使用してキャラクターを生成する", () => {
+      // createNamesWithFallbackメソッドのモックを設定
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "ライカン",
+        en: "Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "lycaon"
+      );
+
+      // createNamesWithFallbackが正しい引数で呼ばれることを確認
+      expect(mockDataMapper.createNamesWithFallback).toHaveBeenCalledWith(
+        "lycaon",
+        "フォン・ライカン",
+        "Von Lycaon"
+      );
+
+      // nameは事前定義されたマッピング、fullNameはAPI名であることを確認
+      expect(result.name).toEqual({ ja: "ライカン", en: "Lycaon" });
+      expect(result.fullName).toEqual({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+      expect(result.id).toBe("lycaon");
+    });
+
+    it("should prioritize predefined name mappings over API names", () => {
+      // Mock predefined mapping being used
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "ライカン", // Different from API name
+        en: "Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "lycaon"
+      );
+
+      // Verify that the predefined mapping was used for name, API names for fullName
+      expect(result.name).toEqual({ ja: "ライカン", en: "Lycaon" });
+      expect(result.fullName).toEqual({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      // Verify createNamesWithFallback was called with correct parameters
+      expect(mockDataMapper.createNamesWithFallback).toHaveBeenCalledWith(
+        "lycaon",
+        "フォン・ライカン", // API Japanese name
+        "Von Lycaon" // API English name
+      );
+    });
+
+    it("should use fallback names when mapping not found", () => {
+      // Mock fallback to API names
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン", // API name used as fallback
+        en: "Von Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "unknown_character"
+      );
+
+      expect(result.name).toEqual({ ja: "フォン・ライカン", en: "Von Lycaon" });
+      expect(result.fullName).toEqual({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      expect(mockDataMapper.createNamesWithFallback).toHaveBeenCalledWith(
+        "unknown_character",
+        "フォン・ライカン",
+        "Von Lycaon"
+      );
+    });
+
+    it("should handle name mapping errors gracefully", () => {
+      // Mock createNamesWithFallback throwing an error
+      mockDataMapper.createNamesWithFallback.mockImplementation(() => {
+        throw new MappingError("Name mapping failed");
+      });
+
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "lycaon")
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "lycaon")
+      ).toThrow("Characterオブジェクトの生成に失敗しました");
     });
 
     it("DataMapperでエラーが発生した場合はValidationErrorを投げる", () => {
@@ -268,12 +398,12 @@ describe("CharacterGenerator", () => {
         throw new Error("Specialty mapping error");
       });
 
-      expect(() => generator.generateCharacter(mockJaData, mockEnData)).toThrow(
-        ValidationError
-      );
-      expect(() => generator.generateCharacter(mockJaData, mockEnData)).toThrow(
-        "Characterオブジェクトの生成に失敗しました"
-      );
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "lycaon")
+      ).toThrow(ValidationError);
+      expect(() =>
+        generator.generateCharacter(mockJaData, mockEnData, "lycaon")
+      ).toThrow("Characterオブジェクトの生成に失敗しました");
     });
   });
 

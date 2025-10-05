@@ -56,17 +56,23 @@ export class EnhancedDataProcessor extends DataProcessor {
         attributesInfo.ascensionData
       );
 
+      // name: Scraping.mdの値（事前定義されたマッピングのみ）を使用
+      const name = this.dataMapper.createNamesFromMapping(entry.id);
+
+      // fullName: Wikiから取得した生のAPI名を使用
+      const fullName = this.dataMapper.createMultiLangName(
+        basicInfo.name,
+        enBasicInfo.name
+      );
+
+      // nameがnullの場合（マッピングが見つからない場合）はfullNameと同じ値を使用
+      const finalName = name || fullName;
+
       // Character.idはScraping.mdのリンクテキストを使用
       const character: Character = {
         id: entry.id, // Scraping.mdのリンクテキスト
-        name: {
-          ja: basicInfo.name,
-          en: enBasicInfo.name,
-        },
-        fullName: {
-          ja: basicInfo.name, // 基本的に同じ値
-          en: enBasicInfo.name,
-        },
+        name: finalName, // Scraping.mdの値（マッピング優先）
+        fullName, // Wikiから取得した生のAPI名
         specialty: this.mapSpecialty(basicInfo.specialty),
         stats: this.mapStats(basicInfo.stats),
         faction: factionInfo.id,

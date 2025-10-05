@@ -1,17 +1,30 @@
 import { Specialty, Stats, Rarity, Lang } from "../types/index";
 import { MappingError } from "../errors";
 import { logger, LogMessages } from "../utils/Logger";
+import { NameResolver } from "./NameResolver";
 
 /**
  * データマッピング機能を提供するクラス
  * 日本語の生データを英語の列挙値にマッピングし、多言語オブジェクトを生成する
  */
 export class DataMapper {
+  private nameResolver: NameResolver;
+
   /**
    * DataMapperのコンストラクタ
+   * @param nameResolver 名前解決機能を提供するNameResolverインスタンス
    */
-  constructor() {
-    // コンストラクタは現在何も行わない
+  constructor(nameResolver?: NameResolver) {
+    this.nameResolver = nameResolver || new NameResolver();
+
+    // 初期化時に名前マッピングファイルの可用性をチェック
+    const availability = this.nameResolver.checkMappingFileAvailability();
+    if (!availability.available) {
+      logger.warn("名前マッピング機能が制限されます", {
+        reason: availability.error,
+        fallbackMode: availability.fallbackMode,
+      });
+    }
   }
   // 特性マッピング
   private static readonly SPECIALTY_MAPPING: Record<string, Specialty> = {
@@ -116,6 +129,315 @@ export class DataMapper {
       ja: jaName.trim(),
       en: enName.trim(),
     };
+  }
+
+  /**
+   * キャラクターIDから事前定義された名前マッピングを取得
+   * @param characterId キャラクターID
+   * @returns 多言語名オブジェクト、マッピングが見つからない場合はnull
+   */
+  public createNamesFromMapping(
+    characterId: string
+  ): { [key in Lang]: string } | null {
+    if (!characterId || characterId.trim() === "") {
+      logger.warn("キャラクターIDが空または無効です", {
+        characterId,
+        type: typeof characterId,
+      });
+      return null;
+    }
+
+    const normalizedId = characterId.toLowerCase().trim();
+    logger.debug(`名前マッピング取得を試行: ${normalizedId}`, {
+      originalId: characterId,
+      normalizedId,
+    });
+
+    try {
+      const mapping = this.nameResolver.resolveNames(normalizedId);
+
+      if (!mapping) {
+        logger.debug(
+          `キャラクターID "${normalizedId}" の名前マッピングが見つかりません`,
+          {
+            characterId: normalizedId,
+            mappingStats: this.nameResolver.getMappingStats(),
+          }
+        );
+        return null;
+      }
+
+      logger.debug(`名前マッピング取得成功: ${normalizedId}`, {
+        characterId: normalizedId,
+        jaName: mapping.ja,
+        enName: mapping.en,
+      });
+
+      return {
+        ja: mapping.ja,
+        en: mapping.en,
+      };
+    } catch (error) {
+      logger.error(
+        `名前マッピング取得中にエラーが発生しました (ID: ${normalizedId})`,
+        {
+          characterId: normalizedId,
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        }
+      );
+      return null;
+    }
+  }
+
+  /**
+   * 名前マッピングが見つからない場合のフォールバック処理を提供
+   * @param characterId キャラクターID
+   * @param fallbackJaName フォールバック用日本語名
+   * @param fallbackEnName フォールバック用英語名
+   * @returns 多言語名オブジェクト
+   * @throws MappingError フォールバック名が無効な場合
+   */
+  public createNamesWithFallback(
+    characterId: string,
+    fallbackJaName: string,
+    fallbackEnName: string
+  ): { [key in Lang]: string } {
+    logger.debug(LogMessages.NAME_FALLBACK_START, {
+      characterId,
+      fallbackJaName,
+      fallbackEnName,
+    });
+
+    // 入力パラメータの事前検証
+    if (!characterId || characterId.trim() === "") {
+      logger.error(LogMessages.NAME_FALLBACK_INVALID_INPUT, {
+        issue: "characterId_empty",
+        characterId,
+        characterIdType: typeof characterId,
+      });
+      throw new MappingError("キャラクターIDが空または無効です");
+    }
+
+    try {
+      // まず事前定義されたマッピングを試行
+      logger.debug(LogMessages.NAME_FALLBACK_MAPPING_ATTEMPT, {
+        characterId,
+        step: "predefined_mapping_check",
+      });
+
+      const mappedNames = this.createNamesFromMapping(characterId);
+
+      if (mappedNames) {
+        logger.info(LogMessages.NAME_FALLBACK_USE_PREDEFINED, {
+          characterId,
+          source: "predefined_mapping",
+          jaName: mappedNames.ja,
+          enName: mappedNames.en,
+        });
+        return mappedNames;
+      }
+
+      // マッピングが見つからない場合、フォールバック処理
+      logger.warn(LogMessages.NAME_FALLBACK_WARNING_ISSUED, {
+        characterId,
+        fallbackJaName,
+        fallbackEnName,
+        mappingStats: this.nameResolver.getMappingStats(),
+        availableCharacterIds: this.nameResolver
+          .getMappingStats()
+          .characterIds.slice(0, 10),
+      });
+
+      // フォールバック名の詳細検証
+      const validationErrors: string[] = [];
+
+      if (!fallbackJaName || typeof fallbackJaName !== "string") {
+        validationErrors.push("日本語名が文字列ではありません");
+      } else if (fallbackJaName.trim() === "") {
+        validationErrors.push("日本語名が空です");
+      }
+
+      if (!fallbackEnName || typeof fallbackEnName !== "string") {
+        validationErrors.push("英語名が文字列ではありません");
+      } else if (fallbackEnName.trim() === "") {
+        validationErrors.push("英語名が空です");
+      }
+
+      if (validationErrors.length > 0) {
+        const errorMessage = `フォールバック名の検証に失敗しました (キャラクターID: ${characterId}): ${validationErrors.join(
+          ", "
+        )}`;
+        logger.error(LogMessages.NAME_FALLBACK_ERROR, {
+          characterId,
+          validationErrors,
+          fallbackJaName,
+          fallbackEnName,
+          fallbackJaType: typeof fallbackJaName,
+          fallbackEnType: typeof fallbackEnName,
+        });
+        throw new MappingError(errorMessage);
+      }
+
+      // フォールバック名の正規化
+      const normalizedFallbackNames = {
+        ja: fallbackJaName.trim(),
+        en: fallbackEnName.trim(),
+      };
+
+      // 追加の品質チェック
+      if (normalizedFallbackNames.ja.length > 100) {
+        logger.warn("フォールバック日本語名が異常に長いです", {
+          characterId,
+          jaNameLength: normalizedFallbackNames.ja.length,
+          jaName: normalizedFallbackNames.ja.substring(0, 50) + "...",
+        });
+      }
+
+      if (normalizedFallbackNames.en.length > 100) {
+        logger.warn("フォールバック英語名が異常に長いです", {
+          characterId,
+          enNameLength: normalizedFallbackNames.en.length,
+          enName: normalizedFallbackNames.en.substring(0, 50) + "...",
+        });
+      }
+
+      logger.info(LogMessages.NAME_FALLBACK_API_NAMES_USED, {
+        characterId,
+        source: "api_fallback",
+        jaName: normalizedFallbackNames.ja,
+        enName: normalizedFallbackNames.en,
+        reason: "mapping_not_found",
+        fallbackQuality: "validated",
+      });
+
+      return normalizedFallbackNames;
+    } catch (error) {
+      if (error instanceof MappingError) {
+        // 既にログ出力済みのMappingErrorはそのまま再スロー
+        throw error;
+      }
+
+      // 予期しないエラーの処理
+      logger.error(LogMessages.NAME_FALLBACK_ERROR, {
+        characterId,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        fallbackJaName,
+        fallbackEnName,
+      });
+
+      throw new MappingError(
+        `フォールバック処理中に予期しないエラーが発生しました (キャラクターID: ${characterId})`,
+        error as Error
+      );
+    }
+  }
+
+  /**
+   * 名前マッピングエラーからの回復を試行する拡張フォールバック処理
+   * @param characterId キャラクターID
+   * @param fallbackJaName フォールバック用日本語名
+   * @param fallbackEnName フォールバック用英語名
+   * @param retryCount リトライ回数
+   * @returns 多言語名オブジェクト
+   */
+  public createNamesWithExtendedFallback(
+    characterId: string,
+    fallbackJaName: string,
+    fallbackEnName: string,
+    retryCount: number = 1
+  ): { [key in Lang]: string } {
+    logger.debug("拡張フォールバック処理を開始", {
+      characterId,
+      retryCount,
+      fallbackJaName,
+      fallbackEnName,
+    });
+
+    try {
+      return this.createNamesWithFallback(
+        characterId,
+        fallbackJaName,
+        fallbackEnName
+      );
+    } catch (error) {
+      if (retryCount > 0 && error instanceof MappingError) {
+        logger.info(LogMessages.ERROR_RECOVERY_ATTEMPT, {
+          characterId,
+          retryCount,
+          errorMessage: error.message,
+        });
+
+        // NameResolverでエラー回復を試行
+        const recoveredMapping = this.nameResolver.attemptErrorRecovery(
+          error,
+          characterId
+        );
+
+        if (recoveredMapping) {
+          logger.info(LogMessages.ERROR_RECOVERY_SUCCESS, {
+            characterId,
+            jaName: recoveredMapping.ja,
+            enName: recoveredMapping.en,
+          });
+          return {
+            ja: recoveredMapping.ja,
+            en: recoveredMapping.en,
+          };
+        }
+
+        // 回復に失敗した場合、リトライ
+        logger.debug("エラー回復に失敗、リトライを実行", {
+          characterId,
+          remainingRetries: retryCount - 1,
+        });
+
+        return this.createNamesWithExtendedFallback(
+          characterId,
+          fallbackJaName,
+          fallbackEnName,
+          retryCount - 1
+        );
+      }
+
+      // リトライ回数を超過した場合、段階的縮退を実行
+      const degradationResult =
+        this.nameResolver.gracefulDegradation(characterId);
+
+      logger.error(LogMessages.CRITICAL_ERROR_DETECTED, {
+        characterId,
+        degradationMode: degradationResult.mode,
+        reason: degradationResult.reason,
+        suggestion: degradationResult.suggestion,
+        originalError: error instanceof Error ? error.message : String(error),
+      });
+
+      // 最終的にはフォールバック名を使用（検証なし）
+      if (fallbackJaName && fallbackEnName) {
+        logger.warn("検証なしでフォールバック名を使用", {
+          characterId,
+          jaName: fallbackJaName,
+          enName: fallbackEnName,
+          reason: "critical_error_recovery",
+        });
+
+        return {
+          ja: fallbackJaName.trim() || "Unknown",
+          en: fallbackEnName.trim() || "Unknown",
+        };
+      }
+
+      // 完全に失敗した場合のデフォルト値
+      logger.error("すべてのフォールバック処理が失敗、デフォルト名を使用", {
+        characterId,
+      });
+
+      return {
+        ja: "不明なキャラクター",
+        en: "Unknown Character",
+      };
+    }
   }
 
   /**

@@ -203,7 +203,7 @@ process.on("SIGTERM", () => {
 });
 
 // メイン関数を実行
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
     console.error(`💥 予期しないエラーが発生しました:`, error);
     process.exit(1);

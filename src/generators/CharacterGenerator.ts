@@ -22,16 +22,17 @@ export class CharacterGenerator {
   /**
    * Character オブジェクト生成機能を実装
    * 処理済みデータから Character オブジェクトを構築
-   * id フィールドに Scraping.md のリンクテキスト（"lycaon"）を設定
-   * 要件: 5.1, 5.3, 5.4
+   * 事前定義された名前マッピングを優先使用し、フォールバック処理を実装
+   * 要件: 5.1, 5.3, 5.4, 1.1, 1.4, 2.2, 2.4
    */
   generateCharacter(
     jaData: ProcessedData,
     enData: ProcessedData,
-    pageId?: string
+    characterId: string
   ): Character {
     try {
-      logger.debug(LogMessages.CHARACTER_GENERATION_START, { pageId });
+      logger.debug(LogMessages.CHARACTER_GENERATION_START, { characterId });
+
       // 入力データの検証
       if (!jaData) {
         throw new ValidationError("日本語データが存在しません");
@@ -51,22 +52,27 @@ export class CharacterGenerator {
       if (!jaData.attributesInfo) {
         throw new ValidationError("属性情報が存在しません");
       }
+      if (!characterId || characterId.trim() === "") {
+        throw new ValidationError("キャラクターIDが指定されていません");
+      }
 
       // 基本情報のマッピング
       const specialty = this.dataMapper.mapSpecialty(
         jaData.basicInfo.specialty
       );
       const stats = this.dataMapper.mapStats(jaData.basicInfo.stats);
-
       const rarity = this.dataMapper.mapRarity(jaData.basicInfo.rarity);
 
-      // 多言語名オブジェクトの生成
-      const name = this.dataMapper.createMultiLangName(
+      // fullName: Wikiから取得した生のAPI名を常に使用
+      const fullName = this.dataMapper.createMultiLangName(
         jaData.basicInfo.name,
         enData.basicInfo.name
       );
-      const fullName = this.dataMapper.createMultiLangName(
-        jaData.basicInfo.name, // 基本的に name と同じ値
+
+      // name: Scraping.mdの値（名前マッピング）を優先使用、フォールバックでAPI名
+      const name = this.dataMapper.createNamesWithFallback(
+        characterId,
+        jaData.basicInfo.name,
         enData.basicInfo.name
       );
 
@@ -77,7 +83,7 @@ export class CharacterGenerator {
 
       // Character オブジェクトを構築
       const character: Character = {
-        id: "lycaon", // Scraping.md のリンクテキストと同じ
+        id: characterId, // 明示的に受け取ったキャラクターIDを使用
         name,
         fullName,
         specialty,
@@ -88,13 +94,12 @@ export class CharacterGenerator {
       };
 
       logger.debug(LogMessages.CHARACTER_GENERATION_SUCCESS, {
-        pageId,
         characterId: character.id,
       });
       return character;
     } catch (error) {
       logger.error(LogMessages.CHARACTER_GENERATION_ERROR, {
-        pageId,
+        characterId,
         error: error instanceof Error ? error.message : String(error),
       });
       if (error instanceof ValidationError) {

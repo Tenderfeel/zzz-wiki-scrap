@@ -61,9 +61,9 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - [seed](https://wiki.hoyolab.com/pc/zzz/entry/901) - pageId: 901
 - [orphie](https://wiki.hoyolab.com/pc/zzz/entry/902) - pageId: 902
 
-## name リスト
+## 短縮名リスト
 
-短縮名リスト
+キャラクターデータの name の値はこのデータを利用する
 
 ```
 - anby: { ja: "アンビー", en: "Anby" }
