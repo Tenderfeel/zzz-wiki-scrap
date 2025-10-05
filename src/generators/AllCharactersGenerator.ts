@@ -435,10 +435,12 @@ ${charactersCode}
 
     return `${indent}{
 ${indent}  id: "${character.id}",
-${indent}  name: { ja: "${character.name.ja}", en: "${character.name.en}" },
-${indent}  fullName: { ja: "${character.fullName.ja}", en: "${
-      character.fullName.en
-    }" },
+${indent}  name: { ja: "${this.escapeString(
+      character.name.ja
+    )}", en: "${this.escapeString(character.name.en)}" },
+${indent}  fullName: { ja: "${this.escapeString(
+      character.fullName.ja
+    )}", en: "${this.escapeString(character.fullName.en)}" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
 ${indent}
@@ -457,6 +459,13 @@ ${indent}    penRatio: ${character.attr.penRatio},
 ${indent}    energy: ${character.attr.energy},
 ${indent}  },
 ${indent}}${comma}`;
+  }
+
+  /**
+   * 文字列内のダブルクォートをエスケープ
+   */
+  private escapeString(str: string): string {
+    return str.replace(/"/g, '\\"');
   }
 
   /**

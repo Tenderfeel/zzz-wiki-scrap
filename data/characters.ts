@@ -862,7 +862,7 @@ export default [
   {
     id: "orphie",
     name: { ja: "オルペウス", en: "Orphie" },
-    fullName: { ja: "オルペウス・マグヌッソン＆「鬼火」", en: "Orphie Magnusson & "Magus"" },
+    fullName: { ja: "オルペウス・マグヌッソン＆「鬼火」", en: "Orphie Magnusson & \"Magus\"" },
     specialty: "attack",
     stats: "fire",
   
