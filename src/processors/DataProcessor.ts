@@ -61,12 +61,16 @@ export class DataProcessor {
         throw new ParsingError("レア度データ(agent_rarity)が見つかりません");
       }
 
+      // 実装バージョンを抽出
+      const releaseVersion = this.extractReleaseVersion(apiData);
+
       return {
         id: page.id,
         name: page.name,
         specialty,
         stats,
         rarity,
+        releaseVersion,
       };
     } catch (error) {
       if (error instanceof ParsingError) {
@@ -116,6 +120,188 @@ export class DataProcessor {
         throw error;
       }
       throw new ParsingError("陣営情報の抽出に失敗しました", error as Error);
+    }
+  }
+
+  /**
+   * 実装バージョン情報を抽出
+   * 要件: 2.1, 2.2
+   */
+  extractReleaseVersion(apiData: ApiResponse): number {
+    const characterId = apiData.data?.page?.id || "unknown";
+
+    try {
+      const page = apiData.data.page;
+
+      if (!page) {
+        logger.debug(
+          "APIレスポンスにpageデータが存在しません（実装バージョン抽出）",
+          {
+            characterId,
+          }
+        );
+        return 0;
+      }
+
+      if (!page.modules || !Array.isArray(page.modules)) {
+        logger.debug(
+          "APIレスポンスにmodulesが存在しません（実装バージョン抽出）",
+          {
+            characterId,
+          }
+        );
+        return 0;
+      }
+
+      // baseInfoコンポーネントを探す
+      const baseInfoComponent = this.findComponent(page.modules, "baseInfo");
+      if (!baseInfoComponent) {
+        logger.debug("baseInfoコンポーネントが見つかりません", {
+          characterId,
+        });
+        return 0;
+      }
+
+      if (!baseInfoComponent.data) {
+        logger.debug("baseInfoコンポーネントにdataが存在しません", {
+          characterId,
+        });
+        return 0;
+      }
+
+      // baseInfoデータをパース
+      let baseInfoData;
+      try {
+        baseInfoData = JSON.parse(baseInfoComponent.data);
+      } catch (parseError) {
+        const errorMessage =
+          parseError instanceof Error ? parseError.message : String(parseError);
+        logger.warn("baseInfoデータのパースに失敗", {
+          characterId,
+          error: errorMessage,
+        });
+        return 0;
+      }
+
+      if (!baseInfoData.list || !Array.isArray(baseInfoData.list)) {
+        logger.debug("baseInfoデータにlistが存在しません", {
+          characterId,
+          baseInfoDataKeys: Object.keys(baseInfoData),
+        });
+        return 0;
+      }
+
+      // 実装バージョンキーを検索
+      const versionItem = baseInfoData.list.find(
+        (item: any) => item.key === "実装バージョン"
+      );
+
+      if (!versionItem) {
+        logger.debug("実装バージョンキーが見つかりません", {
+          characterId,
+          availableKeys: baseInfoData.list
+            .map((item: any) => item.key)
+            .filter(Boolean),
+        });
+        return 0;
+      }
+
+      if (
+        !versionItem.value ||
+        !Array.isArray(versionItem.value) ||
+        versionItem.value.length === 0
+      ) {
+        logger.debug("実装バージョンの値が無効です", {
+          characterId,
+          versionValue: versionItem.value,
+        });
+        return 0;
+      }
+
+      // HTMLタグを含むバージョン文字列を取得
+      const versionString = versionItem.value[0];
+      if (typeof versionString !== "string") {
+        logger.debug("実装バージョンの値が文字列ではありません", {
+          characterId,
+          versionValue: versionString,
+        });
+        return 0;
+      }
+
+      logger.debug("実装バージョン文字列を取得", {
+        characterId,
+        rawVersionString: versionString,
+      });
+
+      // バージョン解析ロジックを呼び出し
+      const parsedVersion = this.parseVersionNumber(versionString);
+
+      logger.debug("実装バージョン抽出完了", {
+        characterId,
+        rawVersion: versionString,
+        parsedVersion,
+      });
+
+      return parsedVersion;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      logger.warn("実装バージョン処理中にエラーが発生", {
+        error: errorMessage,
+        characterId,
+      });
+      return 0;
+    }
+  }
+
+  /**
+   * バージョン文字列から数値を抽出
+   * 要件: 2.2, 2.3
+   */
+  private parseVersionNumber(versionString: string): number {
+    try {
+      // HTMLタグを除去
+      const cleanString = versionString.replace(/<[^>]*>/g, "");
+
+      // Ver.X.Y 形式を抽出する正規表現
+      const VERSION_PATTERN = /Ver\.(\d+\.\d+)/;
+      const match = cleanString.match(VERSION_PATTERN);
+
+      if (!match || !match[1]) {
+        logger.debug("バージョンパターンが見つかりません", {
+          cleanString,
+          originalString: versionString,
+        });
+        return 0;
+      }
+
+      // 数値変換
+      const versionNumber = parseFloat(match[1]);
+
+      if (isNaN(versionNumber)) {
+        logger.warn("バージョン数値変換に失敗", {
+          extractedVersion: match[1],
+          originalString: versionString,
+        });
+        return 0;
+      }
+
+      logger.debug("バージョン解析成功", {
+        originalString: versionString,
+        cleanString,
+        extractedVersion: match[1],
+        parsedNumber: versionNumber,
+      });
+
+      return versionNumber;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      logger.warn("バージョン解析中にエラーが発生", {
+        error: errorMessage,
+        versionString,
+      });
+      return 0;
     }
   }
 

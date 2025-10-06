@@ -490,6 +490,74 @@ export class DataMapper {
   }
 
   /**
+   * バージョン文字列から数値を抽出
+   * @param versionString "Ver.1.0「バージョン名」" 形式の文字列
+   * @returns 数値バージョン（例: 1.0）、解析失敗時はnull
+   */
+  public parseVersionNumber(versionString: string): number | null {
+    // 入力値の検証
+    if (!versionString || typeof versionString !== "string") {
+      logger.debug("バージョン文字列の入力値が無効です", {
+        versionString,
+        type: typeof versionString,
+      });
+      return null;
+    }
+
+    const trimmedValue = versionString.trim();
+    if (trimmedValue === "") {
+      logger.debug("バージョン文字列の入力値が空文字列です");
+      return null;
+    }
+
+    try {
+      // HTMLタグを除去
+      const cleanedString = trimmedValue.replace(/<[^>]*>/g, "");
+
+      // Ver.X.Y パターンを抽出する正規表現
+      const VERSION_PATTERN = /Ver\.(\d+\.\d+)/;
+      const match = cleanedString.match(VERSION_PATTERN);
+
+      if (!match || !match[1]) {
+        logger.debug("バージョンパターンが見つかりません", {
+          originalString: versionString,
+          cleanedString,
+          pattern: VERSION_PATTERN.source,
+        });
+        return null;
+      }
+
+      // 数値変換
+      const versionNumber = parseFloat(match[1]);
+
+      if (isNaN(versionNumber)) {
+        logger.warn("バージョン数値変換に失敗しました", {
+          originalString: versionString,
+          extractedVersion: match[1],
+          parsedValue: versionNumber,
+        });
+        return null;
+      }
+
+      logger.debug("バージョン解析成功", {
+        originalString: versionString,
+        cleanedString,
+        extractedVersion: match[1],
+        parsedVersion: versionNumber,
+      });
+
+      return versionNumber;
+    } catch (error) {
+      logger.error("バージョン解析中にエラーが発生しました", {
+        versionString,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      return null;
+    }
+  }
+
+  /**
    * 利用可能なマッピング値を取得（デバッグ用）
    */
   public static getAvailableMappings() {

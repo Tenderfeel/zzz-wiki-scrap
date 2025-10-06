@@ -6,6 +6,7 @@ export interface BasicCharacterInfo {
   specialty: string;
   stats: string;
   rarity: string;
+  releaseVersion?: number; // 実装バージョン（オプショナル、処理中に追加される）
 }
 
 export interface FactionInfo {

@@ -443,6 +443,119 @@ describe("DataMapper", () => {
     });
   });
 
+  describe("parseVersionNumber", () => {
+    it("正常なバージョン文字列の解析", () => {
+      expect(dataMapper.parseVersionNumber("Ver.1.0")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("Ver.1.1")).toBe(1.1);
+      expect(dataMapper.parseVersionNumber("Ver.1.2")).toBe(1.2);
+      expect(dataMapper.parseVersionNumber("Ver.2.0")).toBe(2.0);
+      expect(dataMapper.parseVersionNumber("Ver.10.5")).toBe(10.5);
+    });
+
+    it("バージョン名付きの文字列の解析", () => {
+      expect(
+        dataMapper.parseVersionNumber("Ver.1.0「新エリー都へようこそ」")
+      ).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("Ver.1.1「バージョン名」")).toBe(
+        1.1
+      );
+      expect(
+        dataMapper.parseVersionNumber("Ver.2.0「メジャーアップデート」")
+      ).toBe(2.0);
+    });
+
+    it("HTMLタグを含む文字列の解析", () => {
+      expect(
+        dataMapper.parseVersionNumber("<p>Ver.1.0「新エリー都へようこそ」</p>")
+      ).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("<div>Ver.1.1</div>")).toBe(1.1);
+      expect(
+        dataMapper.parseVersionNumber("<span>Ver.2.0「テスト」</span>")
+      ).toBe(2.0);
+      expect(dataMapper.parseVersionNumber("<strong>Ver.1.5</strong>")).toBe(
+        1.5
+      );
+    });
+
+    it("複雑なHTMLタグを含む文字列の解析", () => {
+      expect(
+        dataMapper.parseVersionNumber(
+          '<p class="version">Ver.1.0「新エリー都へようこそ」</p>'
+        )
+      ).toBe(1.0);
+      expect(
+        dataMapper.parseVersionNumber(
+          '<div id="version"><span>Ver.1.1</span></div>'
+        )
+      ).toBe(1.1);
+      expect(dataMapper.parseVersionNumber('<a href="#">Ver.2.0</a>')).toBe(
+        2.0
+      );
+    });
+
+    it("前後の空白を含む文字列の解析", () => {
+      expect(dataMapper.parseVersionNumber("  Ver.1.0  ")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("\t\nVer.1.1\t\n")).toBe(1.1);
+      expect(dataMapper.parseVersionNumber("   <p>Ver.2.0</p>   ")).toBe(2.0);
+    });
+
+    it("異常なバージョン文字列の処理", () => {
+      expect(dataMapper.parseVersionNumber("")).toBeNull();
+      expect(dataMapper.parseVersionNumber("   ")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Version 1.0")).toBeNull();
+      expect(dataMapper.parseVersionNumber("v1.0")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.abc")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.1")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.1.")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.1.a")).toBeNull();
+      expect(dataMapper.parseVersionNumber("Ver.a.b")).toBeNull();
+    });
+
+    it("null/undefined値の処理", () => {
+      expect(dataMapper.parseVersionNumber(null as any)).toBeNull();
+      expect(dataMapper.parseVersionNumber(undefined as any)).toBeNull();
+    });
+
+    it("非文字列値の処理", () => {
+      expect(dataMapper.parseVersionNumber(123 as any)).toBeNull();
+      expect(dataMapper.parseVersionNumber({} as any)).toBeNull();
+      expect(dataMapper.parseVersionNumber([] as any)).toBeNull();
+      expect(dataMapper.parseVersionNumber(true as any)).toBeNull();
+    });
+
+    it("HTMLタグのみでバージョン情報がない文字列の処理", () => {
+      expect(dataMapper.parseVersionNumber("<p></p>")).toBeNull();
+      expect(
+        dataMapper.parseVersionNumber("<div>テキストのみ</div>")
+      ).toBeNull();
+      expect(
+        dataMapper.parseVersionNumber("<span>Version情報なし</span>")
+      ).toBeNull();
+    });
+
+    it("複数のバージョンパターンがある場合は最初のものを使用", () => {
+      expect(dataMapper.parseVersionNumber("Ver.1.0とVer.2.0")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("古いVer.1.5、新しいVer.2.0")).toBe(
+        1.5
+      );
+    });
+
+    it("小数点以下が複数桁の場合の処理", () => {
+      expect(dataMapper.parseVersionNumber("Ver.1.10")).toBe(1.1);
+      expect(dataMapper.parseVersionNumber("Ver.2.15")).toBe(2.15);
+      expect(dataMapper.parseVersionNumber("Ver.10.25")).toBe(10.25);
+    });
+
+    it("特殊文字を含む文字列でも正常なバージョンパターンは抽出される", () => {
+      // 正規表現は Ver.X.Y パターンを正しく抽出する
+      expect(dataMapper.parseVersionNumber("Ver.1.0[")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("Ver.1.0(")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("Ver.1.0*")).toBe(1.0);
+      expect(dataMapper.parseVersionNumber("Ver.2.5#")).toBe(2.5);
+    });
+  });
+
   describe("getAvailableMappings", () => {
     it("利用可能なマッピング値を返す", () => {
       const mappings = DataMapper.getAvailableMappings();

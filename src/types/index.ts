@@ -125,6 +125,7 @@ export type Character = {
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス
+  releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
 };
 
 export type DeadlyAssultEnemy = {
