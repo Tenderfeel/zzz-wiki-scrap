@@ -110,6 +110,10 @@ export interface ListJsonData {
   };
 }
 
+export type AssistType =
+  | "evasive" // 回避支援
+  | "defensive"; // パリィ支援
+
 // キャラクター
 export type Character = {
   id: string; // Scraping.mdのリンクテキストと同じ
@@ -117,6 +121,7 @@ export type Character = {
   fullName: { [key in Lang]: string }; // 多言語フルネーム
   specialty: Specialty; // 特性
   stats: Stats; // 属性
+  assistType: AssistType; // 支援タイプ
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス
