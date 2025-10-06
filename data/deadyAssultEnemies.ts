@@ -1,3 +1,4 @@
+import type { DeadlyAssultEnemy } from "../src/types";
 export default [
   {
     id: "defiler",
@@ -17,4 +18,4 @@ export default [
       speciality: ["attack"],
     },
   },
-];
+] as DeadlyAssultEnemy[];
