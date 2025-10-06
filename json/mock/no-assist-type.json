@@ -1,0 +1,27 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "999",
+      "name": "テストキャラクター（支援なし）",
+      "modules": [
+        {
+          "name": "エージェントスキル",
+          "components": [
+            {
+              "component_id": "agent_talent",
+              "data": "{\"list\":[{\"title\":\"通常攻撃\"},{\"title\":\"回避\"},{\"title\":\"特殊スキル\"},{\"title\":\"連携スキル\"},{\"title\":\"コアスキル\"}]}"
+            }
+          ]
+        }
+      ],
+      "filter_values": {
+        "agent_specialties": { "values": ["強攻"] },
+        "agent_stats": { "values": ["物理属性"] },
+        "agent_rarity": { "values": ["A"] },
+        "agent_faction": { "values": ["狡兎屋"] }
+      }
+    }
+  }
+}

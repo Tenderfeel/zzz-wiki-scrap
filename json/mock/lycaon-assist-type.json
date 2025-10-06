@@ -1,0 +1,27 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "28",
+      "name": "フォン・ライカン",
+      "modules": [
+        {
+          "name": "エージェントスキル",
+          "components": [
+            {
+              "component_id": "agent_talent",
+              "data": "{\"list\":[{\"title\":\"通常攻撃\"},{\"title\":\"回避\"},{\"title\":\"支援スキル\",\"children\":[{\"title\":\"クイック支援：群狼\",\"desc\":\"操作しているメンバーが吹き飛ばされた時に発動\"},{\"title\":\"パリィ支援：狩りへの介入\",\"desc\":\"出場中のメンバーが攻撃されそうになった時に発動\"},{\"title\":\"支援突撃：復讐の反攻\",\"desc\":\"パリィ支援発動後に発動\"}],\"attributes\":[{\"key\":\"クイック支援：群狼\",\"values\":[\"Lv.1\"]},{\"key\":\"パリィ支援：狩りへの介入\",\"values\":[\"\"]}]},{\"title\":\"特殊スキル\"},{\"title\":\"連携スキル\"},{\"title\":\"コアスキル\"}]}"
+            }
+          ]
+        }
+      ],
+      "filter_values": {
+        "agent_specialties": { "values": ["撃破"] },
+        "agent_stats": { "values": ["氷属性"] },
+        "agent_rarity": { "values": ["S"] },
+        "agent_faction": { "values": ["ヴィクトリア家政"] }
+      }
+    }
+  }
+}

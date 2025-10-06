@@ -433,6 +433,11 @@ ${charactersCode}
     const indent = "  ";
     const comma = isLast ? "" : ",";
 
+    // assistTypeフィールドの条件付き出力
+    const assistTypeField = character.assistType
+      ? `${indent}  assistType: "${character.assistType}",\n`
+      : "";
+
     return `${indent}{
 ${indent}  id: "${character.id}",
 ${indent}  name: { ja: "${this.escapeString(
@@ -443,8 +448,7 @@ ${indent}  fullName: { ja: "${this.escapeString(
     )}", en: "${this.escapeString(character.fullName.en)}" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
-${indent}
-${indent}  faction: ${character.faction},
+${assistTypeField}${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
 ${indent}  attr: {
 ${indent}    hp: [${character.attr.hp.join(", ")}],

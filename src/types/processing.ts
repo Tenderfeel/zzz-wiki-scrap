@@ -21,6 +21,7 @@ export interface ProcessedData {
   basicInfo: BasicCharacterInfo;
   factionInfo: FactionInfo;
   attributesInfo: AttributesInfo;
+  assistType?: import("./index").AssistType;
 }
 
 export interface LevelBasedStats {

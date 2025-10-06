@@ -121,8 +121,20 @@ export type Character = {
   fullName: { [key in Lang]: string }; // 多言語フルネーム
   specialty: Specialty; // 特性
   stats: Stats; // 属性
-  assistType: AssistType; // 支援タイプ
+  assistType?: AssistType; // 支援タイプ（オプショナル）
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス
+};
+
+export type DeadlyAssultEnemy = {
+  id: string;
+  name: { [key in Lang]: string };
+  weaknesses: Stats[];
+  resistances: Stats[];
+  detail: { [key in Lang]: string[] };
+  reccomend: {
+    assistType: AssistType[];
+    speciality: Specialty[];
+  };
 };

@@ -395,11 +395,12 @@ export class BatchProcessor {
             );
 
             // データ処理
-            const character = await this.dataProcessor.processCharacterData(
-              bilingualData.ja,
-              bilingualData.en,
-              entry
-            );
+            const character =
+              await this.dataProcessor.processEnhancedCharacterData(
+                bilingualData.ja,
+                bilingualData.en,
+                entry
+              );
 
             // 成功結果を返す
             return {
@@ -513,11 +514,12 @@ export class BatchProcessor {
           // プログレス更新（データ処理開始）
           this.updateProgress(i, entries.length, entry.id, "データ処理中");
 
-          const character = await this.dataProcessor.processCharacterData(
-            apiResult.data.ja,
-            apiResult.data.en,
-            apiResult.entry
-          );
+          const character =
+            await this.dataProcessor.processEnhancedCharacterData(
+              apiResult.data.ja,
+              apiResult.data.en,
+              apiResult.entry
+            );
 
           successful.push({
             entry: apiResult.entry,
@@ -588,7 +590,7 @@ export class BatchProcessor {
     }
 
     // データ処理
-    const character = await this.dataProcessor.processCharacterData(
+    const character = await this.dataProcessor.processEnhancedCharacterData(
       bilingualData.ja,
       bilingualData.en,
       entry
@@ -734,7 +736,7 @@ export class BatchProcessor {
       try {
         log(`  🔄 ${apiResult.entry.id} データ処理中...`);
 
-        const character = await this.dataProcessor.processCharacterData(
+        const character = await this.dataProcessor.processEnhancedCharacterData(
           apiResult.data!.ja,
           apiResult.data!.en,
           apiResult.entry

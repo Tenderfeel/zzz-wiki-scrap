@@ -124,7 +124,7 @@ describe("BatchProcessor", () => {
 
     // データプロセッサーのモック
     mockDataProcessor = {
-      processCharacterData: vi.fn(),
+      processEnhancedCharacterData: vi.fn(),
       validateProcessedData: vi.fn(),
     } as any;
 
@@ -144,7 +144,7 @@ describe("BatchProcessor", () => {
         ja: mockApiResponse,
         en: mockApiResponse,
       });
-      mockDataProcessor.processCharacterData.mockResolvedValue(mockCharacter);
+      mockDataProcessor.processEnhancedCharacterData.mockResolvedValue(mockCharacter);
       mockDataProcessor.validateProcessedData.mockReturnValue({
         isValid: true,
         errors: [],
@@ -193,7 +193,7 @@ describe("BatchProcessor", () => {
         en: mockApiResponse,
       });
       // 特定のキャラクターでエラーを発生させる
-      mockDataProcessor.processCharacterData.mockImplementation(
+      mockDataProcessor.processEnhancedCharacterData.mockImplementation(
         (jaData, enData, entry) => {
           if (entry.id === "test-character") {
             throw new Error("データ処理エラー");
@@ -228,7 +228,7 @@ describe("BatchProcessor", () => {
         ja: mockApiResponse,
         en: mockApiResponse,
       });
-      mockDataProcessor.processCharacterData.mockResolvedValue(mockCharacter);
+      mockDataProcessor.processEnhancedCharacterData.mockResolvedValue(mockCharacter);
       mockDataProcessor.validateProcessedData.mockReturnValue({
         isValid: true,
         errors: [],
@@ -274,7 +274,7 @@ describe("BatchProcessor", () => {
         ja: mockApiResponse,
         en: mockApiResponse,
       });
-      mockDataProcessor.processCharacterData.mockResolvedValue(mockCharacter);
+      mockDataProcessor.processEnhancedCharacterData.mockResolvedValue(mockCharacter);
       mockDataProcessor.validateProcessedData.mockReturnValue({
         isValid: true,
         errors: [],
@@ -431,7 +431,7 @@ describe("BatchProcessor", () => {
         ja: mockApiResponse,
         en: mockApiResponse,
       });
-      mockDataProcessor.processCharacterData.mockResolvedValue(mockCharacter);
+      mockDataProcessor.processEnhancedCharacterData.mockResolvedValue(mockCharacter);
       mockDataProcessor.validateProcessedData.mockReturnValue({
         isValid: true,
         errors: [],

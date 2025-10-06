@@ -11,6 +11,7 @@ import {
 import { BilingualApiData, ValidationResult } from "../types/processing";
 import { DataProcessor } from "./DataProcessor";
 import { DataMapper } from "../mappers/DataMapper";
+import { AssistTypeStatistics } from "../utils/AssistTypeStatistics";
 import factions from "../../data/factions";
 import {
   ParsingError,
@@ -24,18 +25,15 @@ import {
  * 要件: 2.1-2.7, 3.1-3.5, 4.1-4.7
  */
 export class EnhancedDataProcessor extends DataProcessor {
-  private dataMapper: DataMapper;
-
-  constructor() {
-    super();
-    this.dataMapper = new DataMapper();
+  constructor(assistTypeStatistics?: AssistTypeStatistics) {
+    super(new DataMapper(), assistTypeStatistics);
   }
 
   /**
    * 複数キャラクターの基本情報抽出機能を拡張
    * 要件: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
    */
-  async processCharacterData(
+  async processEnhancedCharacterData(
     jaData: ApiResponse,
     enData: ApiResponse,
     entry: CharacterEntry
@@ -56,6 +54,9 @@ export class EnhancedDataProcessor extends DataProcessor {
         attributesInfo.ascensionData
       );
 
+      // 支援タイプを抽出（統計情報も記録される）
+      const assistType = this.extractAssistType(jaData);
+
       // name: Scraping.mdの値（事前定義されたマッピングのみ）を使用
       const name = this.dataMapper.createNamesFromMapping(entry.id);
 
@@ -75,6 +76,7 @@ export class EnhancedDataProcessor extends DataProcessor {
         fullName, // Wikiから取得した生のAPI名
         specialty: this.mapSpecialty(basicInfo.specialty),
         stats: this.mapStats(basicInfo.stats),
+        assistType, // 支援タイプを追加
         faction: factionInfo.id,
         rarity: this.mapRarity(basicInfo.rarity),
         attr: processedAttributes,

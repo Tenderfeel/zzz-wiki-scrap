@@ -145,10 +145,10 @@ describe("EnhancedDataProcessor", () => {
     processor = new EnhancedDataProcessor();
   });
 
-  describe("processCharacterData", () => {
+  describe("processEnhancedCharacterData", () => {
     it("正常なAPIレスポンスからCharacterオブジェクトを生成する", async () => {
       // Act
-      const result = await processor.processCharacterData(
+      const result = await processor.processEnhancedCharacterData(
         mockJaApiResponse,
         mockEnApiResponse,
         mockCharacterEntry
@@ -202,7 +202,7 @@ describe("EnhancedDataProcessor", () => {
 
       // Act & Assert
       await expect(
-        processor.processCharacterData(
+        processor.processEnhancedCharacterData(
           invalidApiResponse,
           mockEnApiResponse,
           mockCharacterEntry
@@ -224,7 +224,7 @@ describe("EnhancedDataProcessor", () => {
 
       // Act & Assert
       await expect(
-        processor.processCharacterData(
+        processor.processEnhancedCharacterData(
           invalidApiResponse,
           mockEnApiResponse,
           mockCharacterEntry
@@ -232,7 +232,7 @@ describe("EnhancedDataProcessor", () => {
       ).rejects.toThrow(AllCharactersError);
 
       try {
-        await processor.processCharacterData(
+        await processor.processEnhancedCharacterData(
           invalidApiResponse,
           mockEnApiResponse,
           mockCharacterEntry
@@ -475,7 +475,7 @@ describe("EnhancedDataProcessor", () => {
           },
         };
 
-        const result = await processor.processCharacterData(
+        const result = await processor.processEnhancedCharacterData(
           apiResponse,
           mockEnApiResponse,
           mockCharacterEntry
@@ -509,7 +509,7 @@ describe("EnhancedDataProcessor", () => {
           },
         };
 
-        const result = await processor.processCharacterData(
+        const result = await processor.processEnhancedCharacterData(
           apiResponse,
           mockEnApiResponse,
           mockCharacterEntry
@@ -536,7 +536,7 @@ describe("EnhancedDataProcessor", () => {
 
       // Act & Assert
       await expect(
-        processor.processCharacterData(
+        processor.processEnhancedCharacterData(
           invalidApiResponse,
           mockEnApiResponse,
           mockCharacterEntry

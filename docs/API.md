@@ -70,6 +70,22 @@ export class DataMapper {
 - `"A"` → `"A"`
 - `"S"` → `"S"`
 
+#### `mapAssistType(rawAssistType: string): AssistType | undefined`
+
+日本語の支援タイプ名を英語の列挙値にマッピングします。
+
+**パラメータ:**
+
+- `rawAssistType` (string): 日本語の支援タイプ名
+
+**戻り値:** `AssistType | undefined`
+
+**マッピング:**
+
+- `"回避支援"` → `"evasive"`
+- `"パリィ支援"` → `"defensive"`
+- その他の値 → `undefined`
+
 ## CharacterGenerator
 
 キャラクターデータを生成するクラスです。
@@ -116,6 +132,7 @@ type Character = {
   fullName: { [key in Lang]: string };
   specialty: Specialty;
   stats: Stats;
+  assistType?: AssistType; // 支援タイプ（オプショナル）
   faction: Faction;
   rarity: Rarity;
   attr: Attributes;
@@ -149,6 +166,16 @@ type Stats =
   | "electric"
   | "frostAttribute"
   | "auricInk";
+```
+
+### AssistType
+
+キャラクターの支援タイプを表現する型です。
+
+```typescript
+type AssistType =
+  | "evasive" // 回避支援
+  | "defensive"; // パリィ支援
 ```
 
 ### Attributes
@@ -186,6 +213,9 @@ const specialty = mapper.mapSpecialty("撃破"); // "stun"
 
 // 属性のマッピング
 const stats = mapper.mapStats("氷属性"); // "ice"
+
+// 支援タイプのマッピング
+const assistType = mapper.mapAssistType("パリィ支援"); // "defensive"
 
 // キャラクター生成
 const character = await generator.generateCharacter(28);

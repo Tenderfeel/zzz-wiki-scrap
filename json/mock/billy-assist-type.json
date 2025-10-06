@@ -1,0 +1,27 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "19",
+      "name": "ビリー・キッド",
+      "modules": [
+        {
+          "name": "エージェントスキル",
+          "components": [
+            {
+              "component_id": "agent_talent",
+              "data": "{\"list\":[{\"title\":\"通常攻撃\"},{\"title\":\"回避\"},{\"title\":\"支援スキル\",\"children\":[{\"title\":\"クイック支援：スターライト・絆の力\",\"desc\":\"操作しているメンバーが吹き飛ばされた時に発動\"},{\"title\":\"回避支援：ダッジステップ\",\"desc\":\"出場中のメンバーが攻撃されそうになった時に発動\"},{\"title\":\"支援突撃：急所エイム\",\"desc\":\"回避支援発動後に発動\"}],\"attributes\":[{\"key\":\"クイック支援：スターライト・絆の力\",\"values\":[\"Lv.1\"]},{\"key\":\"回避支援：ダッジステップ\",\"values\":[\"\"]}]},{\"title\":\"特殊スキル\"},{\"title\":\"連携スキル\"},{\"title\":\"コアスキル\"}]}"
+            }
+          ]
+        }
+      ],
+      "filter_values": {
+        "agent_specialties": { "values": ["強攻"] },
+        "agent_stats": { "values": ["物理属性"] },
+        "agent_rarity": { "values": ["A"] },
+        "agent_faction": { "values": ["狡兎屋"] }
+      }
+    }
+  }
+}

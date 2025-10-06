@@ -16,15 +16,49 @@ export interface PageData {
   agent_rarity: { values: string[] };
   agent_faction: { values: string[] };
   modules: Module[];
+  filter_values?: FilterValues; // 実際のAPIレスポンス構造
+}
+
+export interface FilterValues {
+  agent_specialties?: { values: string[] };
+  agent_stats?: { values: string[] };
+  agent_rarity?: { values: string[] };
+  agent_faction?: { values: string[] };
+  agent_assist_type?: { values: string[] }; // 支援タイプ（オプショナル）
 }
 
 export interface Module {
+  name: string;
   components: Component[];
 }
 
 export interface Component {
   component_id: string;
   data: string; // JSON文字列
+}
+
+// エージェントタレントデータ構造
+export interface AgentTalentData {
+  list: TalentItem[];
+}
+
+export interface TalentItem {
+  title: string;
+  icon_url?: string;
+  attributes?: TalentAttribute[];
+  children?: TalentChild[];
+}
+
+export interface TalentAttribute {
+  key: string;
+  values: string[];
+}
+
+export interface TalentChild {
+  title: string;
+  desc: string;
+  icon_url?: string;
+  img?: string;
 }
 
 // 昇格データ構造

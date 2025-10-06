@@ -1,4 +1,4 @@
-import { Specialty, Stats, Rarity, Lang } from "../types/index";
+import { Specialty, Stats, Rarity, Lang, AssistType } from "../types/index";
 import { MappingError } from "../errors";
 import { logger, LogMessages } from "../utils/Logger";
 import { NameResolver } from "./NameResolver";
@@ -53,6 +53,14 @@ export class DataMapper {
     A: "A",
   };
 
+  // 支援タイプマッピング
+  private static readonly ASSIST_TYPE_MAPPING: Record<string, AssistType> = {
+    回避支援: "evasive",
+    パリィ支援: "defensive",
+    "Evasive Assist": "evasive",
+    "Defensive Assist": "defensive",
+  };
+
   /**
    * 日本語の特性名を英語の列挙値にマッピング
    * @param rawSpecialty 日本語の特性名
@@ -105,6 +113,47 @@ export class DataMapper {
       );
     }
     return mapped;
+  }
+
+  /**
+   * 日本語または英語の支援タイプ名を英語の列挙値にマッピング
+   * @param rawAssistType 日本語または英語の支援タイプ名
+   * @returns 対応するAssistType列挙値、または未知の値の場合はundefined
+   */
+  public mapAssistType(rawAssistType: string): AssistType | undefined {
+    // 入力値の検証
+    if (!rawAssistType || typeof rawAssistType !== "string") {
+      logger.debug("支援タイプの入力値が無効です", {
+        rawAssistType,
+        type: typeof rawAssistType,
+      });
+      return undefined;
+    }
+
+    const trimmedValue = rawAssistType.trim();
+    if (trimmedValue === "") {
+      logger.debug("支援タイプの入力値が空文字列です");
+      return undefined;
+    }
+
+    // マッピングを試行
+    const mapped = DataMapper.ASSIST_TYPE_MAPPING[trimmedValue];
+
+    if (mapped) {
+      logger.debug("支援タイプマッピング成功", {
+        input: trimmedValue,
+        output: mapped,
+      });
+      return mapped;
+    }
+
+    // 未知の値の場合は警告をログ出力し、undefinedを返す
+    logger.warn("未知の支援タイプ値です", {
+      rawAssistType: trimmedValue,
+      availableValues: Object.keys(DataMapper.ASSIST_TYPE_MAPPING),
+    });
+
+    return undefined;
   }
 
   /**
@@ -448,6 +497,7 @@ export class DataMapper {
       specialty: Object.keys(DataMapper.SPECIALTY_MAPPING),
       stats: Object.keys(DataMapper.STATS_MAPPING),
       rarity: Object.keys(DataMapper.RARITY_MAPPING),
+      assistType: Object.keys(DataMapper.ASSIST_TYPE_MAPPING),
     };
   }
 }

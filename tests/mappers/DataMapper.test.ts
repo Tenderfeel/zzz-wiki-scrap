@@ -6,21 +6,22 @@ import { MappingError } from "../../src/errors";
 // Mock NameResolver
 vi.mock("../../src/mappers/NameResolver");
 
+// Mock Logger
+vi.mock("../../src/utils/Logger", () => ({
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
+  LogMessages: {},
+}));
+
 describe("DataMapper", () => {
   let dataMapper: DataMapper;
   let mockNameResolver: any;
-  let consoleDebugSpy: any;
-  let consoleInfoSpy: any;
-  let consoleWarnSpy: any;
-  let consoleErrorSpy: any;
 
-  beforeEach(() => {
-    // コンソールメソッドをスパイ化
-    consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
-    consoleInfoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
-    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
+  beforeEach(async () => {
     // NameResolverのモックを作成
     mockNameResolver = {
       resolveNames: vi.fn(),
@@ -387,6 +388,61 @@ describe("DataMapper", () => {
     });
   });
 
+  describe("mapAssistType", () => {
+    it("正常な日本語支援タイプマッピング", () => {
+      expect(dataMapper.mapAssistType("回避支援")).toBe("evasive");
+      expect(dataMapper.mapAssistType("パリィ支援")).toBe("defensive");
+    });
+
+    it("正常な英語支援タイプマッピング", () => {
+      expect(dataMapper.mapAssistType("Evasive Assist")).toBe("evasive");
+      expect(dataMapper.mapAssistType("Defensive Assist")).toBe("defensive");
+    });
+
+    it("前後の空白を除去してマッピング", () => {
+      expect(dataMapper.mapAssistType("  回避支援  ")).toBe("evasive");
+      expect(dataMapper.mapAssistType("  パリィ支援  ")).toBe("defensive");
+      expect(dataMapper.mapAssistType("  Evasive Assist  ")).toBe("evasive");
+      expect(dataMapper.mapAssistType("  Defensive Assist  ")).toBe(
+        "defensive"
+      );
+    });
+
+    it("空文字列の場合はundefinedを返す", () => {
+      expect(dataMapper.mapAssistType("")).toBeUndefined();
+      expect(dataMapper.mapAssistType("   ")).toBeUndefined();
+    });
+
+    it("null値の場合はundefinedを返す", () => {
+      expect(dataMapper.mapAssistType(null as any)).toBeUndefined();
+      expect(dataMapper.mapAssistType(undefined as any)).toBeUndefined();
+    });
+
+    it("非文字列値の場合はundefinedを返す", () => {
+      expect(dataMapper.mapAssistType(123 as any)).toBeUndefined();
+      expect(dataMapper.mapAssistType({} as any)).toBeUndefined();
+      expect(dataMapper.mapAssistType([] as any)).toBeUndefined();
+      expect(dataMapper.mapAssistType(true as any)).toBeUndefined();
+    });
+
+    it("未知の支援タイプ値の場合はundefinedを返す", () => {
+      const result = dataMapper.mapAssistType("未知の支援タイプ");
+      expect(result).toBeUndefined();
+    });
+
+    it("大文字小文字が異なる場合はundefinedを返す", () => {
+      expect(dataMapper.mapAssistType("回避支援")).toBe("evasive");
+      expect(dataMapper.mapAssistType("EVASIVE ASSIST")).toBeUndefined();
+      expect(dataMapper.mapAssistType("evasive assist")).toBeUndefined();
+    });
+
+    it("部分的な文字列の場合はundefinedを返す", () => {
+      expect(dataMapper.mapAssistType("回避")).toBeUndefined();
+      expect(dataMapper.mapAssistType("支援")).toBeUndefined();
+      expect(dataMapper.mapAssistType("Evasive")).toBeUndefined();
+    });
+  });
+
   describe("getAvailableMappings", () => {
     it("利用可能なマッピング値を返す", () => {
       const mappings = DataMapper.getAvailableMappings();
@@ -394,10 +450,15 @@ describe("DataMapper", () => {
       expect(mappings).toHaveProperty("specialty");
       expect(mappings).toHaveProperty("stats");
       expect(mappings).toHaveProperty("rarity");
+      expect(mappings).toHaveProperty("assistType");
 
       expect(mappings.specialty).toContain("撃破");
       expect(mappings.stats).toContain("氷属性");
       expect(mappings.rarity).toContain("S");
+      expect(mappings.assistType).toContain("回避支援");
+      expect(mappings.assistType).toContain("パリィ支援");
+      expect(mappings.assistType).toContain("Evasive Assist");
+      expect(mappings.assistType).toContain("Defensive Assist");
     });
   });
 });
