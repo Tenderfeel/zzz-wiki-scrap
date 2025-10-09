@@ -128,6 +128,17 @@ export type Character = {
   releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
 };
 
+// ボンプ
+export type Bomp = {
+  id: string; // Scraping.mdのリンクテキストと同じ
+  name: { [key in Lang]: string }; // 多言語名
+  stats: Stats; // 属性
+  releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
+  faction?: number[]; // 陣営ID
+  attr: Attributes; // ステータス
+  extraAbility: string; // 『追加能力』
+};
+
 export type DeadlyAssultEnemy = {
   id: string;
   name: { [key in Lang]: string };
