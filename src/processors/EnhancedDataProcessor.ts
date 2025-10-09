@@ -42,8 +42,8 @@ export class EnhancedDataProcessor extends DataProcessor {
       // 基本情報を日本語データから抽出
       const basicInfo = this.extractBasicInfo(jaData);
 
-      // 英語データから名前を抽出
-      const enBasicInfo = this.extractBasicInfo(enData);
+      // 英語データから名前のみを抽出
+      const enName = this.extractNameOnly(enData);
 
       // 陣営情報を抽出
       const factionInfo = this.extractFactionInfo(jaData);
@@ -63,7 +63,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       // fullName: Wikiから取得した生のAPI名を使用
       const fullName = this.dataMapper.createMultiLangName(
         basicInfo.name,
-        enBasicInfo.name
+        enName
       );
 
       // nameがnullの場合（マッピングが見つからない場合）はfullNameと同じ値を使用
@@ -79,6 +79,7 @@ export class EnhancedDataProcessor extends DataProcessor {
         assistType, // 支援タイプを追加
         faction: factionInfo.id,
         rarity: this.mapRarity(basicInfo.rarity),
+        releaseVersion: basicInfo.releaseVersion || 0, // 実装バージョン（デフォルト: 0）
         attr: processedAttributes,
       };
 
@@ -99,6 +100,22 @@ export class EnhancedDataProcessor extends DataProcessor {
         `キャラクター "${entry.id}" のデータ処理に失敗しました`,
         error as Error
       );
+    }
+  }
+
+  /**
+   * 英語データから名前のみを抽出（releaseVersionの抽出を避ける）
+   * 要件: 2.1
+   */
+  private extractNameOnly(apiData: ApiResponse): string {
+    try {
+      const page = apiData.data.page;
+      if (!page) {
+        throw new ParsingError("APIレスポンスにpageデータが存在しません");
+      }
+      return page.name;
+    } catch (error) {
+      throw new ParsingError("英語名の抽出に失敗しました", error as Error);
     }
   }
 

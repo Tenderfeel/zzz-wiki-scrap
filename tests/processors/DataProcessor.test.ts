@@ -60,6 +60,7 @@ describe("DataProcessor", () => {
         specialty: "撃破",
         stats: "氷属性",
         rarity: "S",
+        releaseVersion: 0,
       });
     });
 
@@ -697,6 +698,7 @@ describe("DataProcessor", () => {
         specialty: "撃破",
         stats: "氷属性",
         rarity: "S",
+        releaseVersion: 0,
       });
       expect(result.factionInfo).toEqual({
         id: 2,

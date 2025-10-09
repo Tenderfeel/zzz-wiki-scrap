@@ -39,6 +39,7 @@ describe("CharacterGenerator", () => {
       specialty: "撃破",
       stats: "氷属性",
       rarity: "S",
+      releaseVersion: 1.0,
     },
     factionInfo: {
       id: 2,
@@ -165,6 +166,7 @@ describe("CharacterGenerator", () => {
         stats: "ice",
         faction: 2,
         rarity: "S",
+        releaseVersion: 1.0,
         attr: {
           hp: [677, 1967, 3350, 4732, 6114, 7498, 8416],
           atk: [105, 197, 296, 394, 494, 592, 653],
@@ -209,6 +211,7 @@ describe("CharacterGenerator", () => {
         stats: "ice",
         faction: 2,
         rarity: "S",
+        releaseVersion: 1.0,
         attr: {
           hp: [677, 1967, 3350, 4732, 6114, 7498, 8416],
           atk: [105, 197, 296, 394, 494, 592, 653],
@@ -405,6 +408,47 @@ describe("CharacterGenerator", () => {
         generator.generateCharacter(mockJaData, mockEnData, "lycaon")
       ).toThrow("Characterオブジェクトの生成に失敗しました");
     });
+
+    it("releaseVersionフィールドを含むCharacterオブジェクトを生成できる", () => {
+      // createNamesWithFallbackメソッドのモックを設定
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "lycaon"
+      );
+
+      expect(result.releaseVersion).toBe(1.0);
+      expect(result).toHaveProperty("releaseVersion");
+    });
+
+    it("releaseVersionが未定義の場合はデフォルト値0を設定する", () => {
+      const dataWithoutVersion = {
+        ...mockJaData,
+        basicInfo: {
+          ...mockJaData.basicInfo,
+          releaseVersion: undefined,
+        },
+      };
+
+      // createNamesWithFallbackメソッドのモックを設定
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        dataWithoutVersion,
+        mockEnData,
+        "lycaon"
+      );
+
+      expect(result.releaseVersion).toBe(0);
+    });
   });
 
   describe("validateCharacter", () => {
@@ -509,6 +553,58 @@ describe("CharacterGenerator", () => {
 
       consoleWarnSpy.mockRestore();
     });
+
+    it("releaseVersionが有効な数値の場合は検証が成功する", () => {
+      const characterWithVersion = {
+        ...validCharacter,
+        releaseVersion: 1.0,
+      };
+
+      const result = generator.validateCharacter(characterWithVersion);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("releaseVersionが無効な値の場合は検証エラーを返す", () => {
+      const invalidCharacter = {
+        ...validCharacter,
+        releaseVersion: "invalid" as any,
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "releaseVersion は有効な数値である必要があります"
+      );
+    });
+
+    it("releaseVersionが負の値の場合は検証エラーを返す", () => {
+      const invalidCharacter = {
+        ...validCharacter,
+        releaseVersion: -1,
+      };
+
+      const result = generator.validateCharacter(invalidCharacter);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "releaseVersion は0以上の値である必要があります"
+      );
+    });
+
+    it("releaseVersionがundefinedの場合は検証が成功する", () => {
+      const characterWithoutVersion = {
+        ...validCharacter,
+        releaseVersion: undefined,
+      };
+
+      const result = generator.validateCharacter(characterWithoutVersion);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
   });
 
   describe("outputCharacterFile", () => {
@@ -601,6 +697,50 @@ describe("CharacterGenerator", () => {
       expect(() =>
         generator.outputCharacterFile(mockCharacter, "data/test.ts")
       ).toThrow("ファイル出力に失敗しました");
+    });
+
+    it("releaseVersionフィールドを含むファイルを出力できる", () => {
+      const characterWithVersion = {
+        ...mockCharacter,
+        releaseVersion: 1.0,
+      };
+
+      vi.mocked(fs.writeFileSync).mockImplementation(() => {});
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+      vi.mocked(fs.mkdirSync).mockImplementation(() => "");
+
+      generator.outputCharacterFile(
+        characterWithVersion,
+        "data/test-characters.ts"
+      );
+
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        "data/test-characters.ts",
+        expect.stringContaining("releaseVersion: 1"),
+        "utf-8"
+      );
+    });
+
+    it("releaseVersionが0の場合もファイルに出力される", () => {
+      const characterWithZeroVersion = {
+        ...mockCharacter,
+        releaseVersion: 0,
+      };
+
+      vi.mocked(fs.writeFileSync).mockImplementation(() => {});
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+      vi.mocked(fs.mkdirSync).mockImplementation(() => "");
+
+      generator.outputCharacterFile(
+        characterWithZeroVersion,
+        "data/test-characters.ts"
+      );
+
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        "data/test-characters.ts",
+        expect.stringContaining("releaseVersion: 0"),
+        "utf-8"
+      );
     });
   });
 });

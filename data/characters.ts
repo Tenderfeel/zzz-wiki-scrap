@@ -10,6 +10,7 @@ export default [
     assistType: "defensive",
     faction: 1,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [603, 1753, 2986, 4218, 5450, 6682, 7500],
       atk: [95, 177, 266, 354, 441, 529, 583],
@@ -32,6 +33,7 @@ export default [
     assistType: "evasive",
     faction: 1,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [555, 1614, 2748, 3883, 5018, 6153, 6907],
       atk: [113, 213, 321, 429, 537, 644, 712],
@@ -54,6 +56,7 @@ export default [
     assistType: "defensive",
     faction: 1,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [655, 1903, 3242, 4580, 5919, 7257, 8145],
       atk: [93, 173, 261, 347, 433, 520, 574],
@@ -76,6 +79,7 @@ export default [
     assistType: "defensive",
     faction: 1,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [608, 1767, 3009, 4250, 5492, 6735, 7560],
       atk: [131, 249, 376, 502, 629, 755, 835],
@@ -98,6 +102,7 @@ export default [
     assistType: "defensive",
     faction: 4,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [128, 243, 366, 489, 613, 736, 813],
@@ -120,6 +125,7 @@ export default [
     assistType: "defensive",
     faction: 2,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [561, 1631, 2777, 3923, 5069, 6215, 6976],
       atk: [116, 219, 330, 441, 552, 662, 732],
@@ -142,6 +148,7 @@ export default [
     assistType: "defensive",
     faction: 3,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [580, 1686, 2873, 4059, 5244, 6431, 7219],
       atk: [114, 215, 323, 432, 541, 648, 716],
@@ -164,6 +171,7 @@ export default [
     assistType: "defensive",
     faction: 3,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [690, 2005, 3425, 4823, 6232, 7641, 8577],
       atk: [117, 243, 377, 512, 646, 782, 867],
@@ -186,6 +194,7 @@ export default [
     assistType: "defensive",
     faction: 3,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [653, 1899, 3234, 4569, 5905, 7240, 8127],
       atk: [106, 199, 299, 398, 498, 598, 660],
@@ -208,6 +217,7 @@ export default [
     assistType: "evasive",
     faction: 3,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [602, 1749, 2979, 4208, 5436, 6666, 7482],
       atk: [119, 225, 339, 452, 566, 679, 750],
@@ -230,6 +240,7 @@ export default [
     assistType: "defensive",
     faction: 2,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [677, 1967, 3350, 4732, 6114, 7498, 8416],
       atk: [105, 197, 296, 394, 494, 592, 653],
@@ -252,6 +263,7 @@ export default [
     assistType: "defensive",
     faction: 2,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [135, 257, 387, 519, 650, 780, 863],
@@ -274,6 +286,7 @@ export default [
     assistType: "evasive",
     faction: 2,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [692, 2012, 3426, 4841, 6255, 7669, 8609],
       atk: [103, 194, 291, 388, 484, 581, 642],
@@ -296,6 +309,7 @@ export default [
     assistType: "evasive",
     faction: 6,
     rarity: "S",
+    releaseVersion: 1,
     attr: {
       hp: [602, 1749, 2979, 4208, 5436, 6666, 7482],
       atk: [132, 251, 380, 508, 635, 763, 844],
@@ -318,6 +332,7 @@ export default [
     assistType: "defensive",
     faction: 5,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [645, 1876, 3194, 4513, 5832, 7150, 8025],
       atk: [96, 179, 268, 358, 447, 535, 590],
@@ -340,6 +355,7 @@ export default [
     assistType: "defensive",
     faction: 7,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [645, 1876, 3194, 4513, 5832, 7150, 8025],
       atk: [95, 177, 266, 354, 441, 529, 583],
@@ -362,6 +378,7 @@ export default [
     assistType: "defensive",
     faction: 7,
     rarity: "A",
+    releaseVersion: 1,
     attr: {
       hp: [561, 1631, 2777, 3923, 5069, 6215, 6976],
       atk: [109, 205, 309, 412, 515, 619, 683],
@@ -384,6 +401,7 @@ export default [
     assistType: "defensive",
     faction: 6,
     rarity: "S",
+    releaseVersion: 1.1,
     attr: {
       hp: [663, 1928, 3284, 4639, 5995, 7350, 8250],
       atk: [109, 205, 309, 412, 515, 618, 683],
@@ -406,6 +424,7 @@ export default [
     assistType: "defensive",
     faction: 6,
     rarity: "S",
+    releaseVersion: 1.1,
     attr: {
       hp: [626, 1820, 3099, 4379, 5659, 6938, 7788],
       atk: [127, 241, 362, 485, 607, 728, 805],
@@ -428,6 +447,7 @@ export default [
     assistType: "defensive",
     faction: 6,
     rarity: "A",
+    releaseVersion: 1.1,
     attr: {
       hp: [699, 2033, 3462, 4892, 6321, 7751, 8701],
       atk: [93, 173, 258, 344, 430, 515, 568],
@@ -450,6 +470,7 @@ export default [
     assistType: "defensive",
     faction: 7,
     rarity: "S",
+    releaseVersion: 1.2,
     attr: {
       hp: [766, 2227, 3791, 5357, 6921, 8486, 9526],
       atk: [101, 191, 288, 384, 481, 577, 636],
@@ -472,6 +493,7 @@ export default [
     assistType: "defensive",
     faction: 7,
     rarity: "S",
+    releaseVersion: 1.2,
     attr: {
       hp: [592, 1722, 2932, 4143, 5353, 6564, 7368],
       atk: [124, 235, 355, 474, 593, 713, 788],
@@ -494,6 +516,7 @@ export default [
     assistType: "defensive",
     faction: 5,
     rarity: "S",
+    releaseVersion: 1.3,
     attr: {
       hp: [626, 1820, 3099, 4379, 5659, 6938, 7788],
       atk: [126, 239, 360, 479, 600, 721, 797],
@@ -516,6 +539,7 @@ export default [
     assistType: "defensive",
     faction: 7,
     rarity: "S",
+    releaseVersion: 1.3,
     attr: {
       hp: [677, 1935, 3285, 4635, 5984, 7335, 8253],
       atk: [109, 213, 325, 436, 548, 659, 722],
@@ -538,6 +562,7 @@ export default [
     assistType: "defensive",
     faction: 5,
     rarity: "S",
+    releaseVersion: 1.4,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [127, 241, 362, 485, 607, 728, 805],
@@ -560,6 +585,7 @@ export default [
     assistType: "defensive",
     faction: 5,
     rarity: "S",
+    releaseVersion: 1.4,
     attr: {
       hp: [595, 1731, 2947, 4164, 5381, 6597, 7405],
       atk: [132, 251, 378, 505, 633, 760, 840],
@@ -582,6 +608,7 @@ export default [
     assistType: "evasive",
     faction: 8,
     rarity: "S",
+    releaseVersion: 1.5,
     attr: {
       hp: [692, 2012, 3426, 4841, 6255, 7669, 8609],
       atk: [103, 193, 290, 386, 483, 580, 640],
@@ -604,6 +631,7 @@ export default [
     assistType: "defensive",
     faction: 8,
     rarity: "S",
+    releaseVersion: 1.5,
     attr: {
       hp: [626, 1820, 3099, 4379, 5659, 6938, 7788],
       atk: [134, 255, 384, 513, 643, 773, 854],
@@ -626,6 +654,7 @@ export default [
     assistType: "defensive",
     faction: 9,
     rarity: "S",
+    releaseVersion: 1.6,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [134, 255, 384, 513, 643, 773, 854],
@@ -648,6 +677,7 @@ export default [
     assistType: "evasive",
     faction: 7,
     rarity: "A",
+    releaseVersion: 1.6,
     attr: {
       hp: [612, 1779, 3030, 4280, 5531, 6782, 7612],
       atk: [96, 179, 268, 358, 447, 535, 590],
@@ -670,6 +700,7 @@ export default [
     assistType: "defensive",
     faction: 4,
     rarity: "S",
+    releaseVersion: 1.6,
     attr: {
       hp: [637, 1851, 3153, 4454, 5757, 7058, 7923],
       atk: [108, 204, 305, 408, 509, 612, 675],
@@ -692,6 +723,7 @@ export default [
     assistType: "defensive",
     faction: 10,
     rarity: "S",
+    releaseVersion: 1.7,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [127, 241, 362, 485, 607, 728, 805],
@@ -714,6 +746,7 @@ export default [
     assistType: "defensive",
     faction: 10,
     rarity: "S",
+    releaseVersion: 1.7,
     attr: {
       hp: [638, 1855, 3160, 4464, 5769, 7074, 7940],
       atk: [132, 251, 380, 508, 635, 763, 844],
@@ -736,6 +769,7 @@ export default [
     assistType: "defensive",
     faction: 11,
     rarity: "S",
+    releaseVersion: 2,
     attr: {
       hp: [663, 1928, 3284, 4639, 5995, 7350, 8250],
       atk: [110, 207, 312, 416, 520, 625, 690],
@@ -758,6 +792,7 @@ export default [
     assistType: "defensive",
     faction: 11,
     rarity: "A",
+    releaseVersion: 2,
     attr: {
       hp: [680, 1976, 3365, 4753, 6143, 7531, 8453],
       atk: [95, 178, 266, 355, 443, 532, 586],
@@ -780,6 +815,7 @@ export default [
     assistType: "defensive",
     faction: 11,
     rarity: "S",
+    releaseVersion: 2,
     attr: {
       hp: [673, 1893, 3197, 4502, 5806, 7111, 7953],
       atk: [126, 250, 384, 516, 650, 784, 872],
@@ -802,6 +838,7 @@ export default [
     assistType: "defensive",
     faction: 12,
     rarity: "S",
+    releaseVersion: 2.1,
     attr: {
       hp: [710, 2063, 3514, 4964, 6415, 7866, 8829],
       atk: [109, 205, 309, 412, 515, 618, 683],
@@ -824,6 +861,7 @@ export default [
     assistType: "defensive",
     faction: 12,
     rarity: "S",
+    releaseVersion: 2.1,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [127, 241, 362, 485, 607, 728, 805],
@@ -846,6 +884,7 @@ export default [
     assistType: "defensive",
     faction: 4,
     rarity: "S",
+    releaseVersion: 2.2,
     attr: {
       hp: [617, 1793, 3054, 4314, 5576, 6836, 7673],
       atk: [134, 255, 384, 513, 643, 773, 854],
@@ -868,6 +907,7 @@ export default [
     assistType: "defensive",
     faction: 4,
     rarity: "S",
+    releaseVersion: 2.2,
     attr: {
       hp: [626, 1820, 3099, 4379, 5659, 6938, 7788],
       atk: [189, 310, 439, 568, 698, 828, 909],

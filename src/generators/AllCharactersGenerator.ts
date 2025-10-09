@@ -450,6 +450,7 @@ ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
 ${assistTypeField}${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
+${indent}  releaseVersion: ${character.releaseVersion || 0},
 ${indent}  attr: {
 ${indent}    hp: [${character.attr.hp.join(", ")}],
 ${indent}    atk: [${character.attr.atk.join(", ")}],

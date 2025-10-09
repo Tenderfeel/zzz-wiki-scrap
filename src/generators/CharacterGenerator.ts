@@ -91,6 +91,7 @@ export class CharacterGenerator {
         faction: jaData.factionInfo.id, // 陣営ID
         rarity,
         attr: attributes,
+        releaseVersion: jaData.basicInfo.releaseVersion || 0, // 実装バージョン（デフォルト: 0）
       };
 
       logger.debug(LogMessages.CHARACTER_GENERATION_SUCCESS, {
@@ -154,6 +155,22 @@ export class CharacterGenerator {
 
     if (!character.attr) {
       errors.push("attr フィールドが存在しません");
+    }
+
+    // releaseVersion フィールドの検証
+    if (
+      character.releaseVersion !== undefined &&
+      character.releaseVersion !== null
+    ) {
+      if (
+        typeof character.releaseVersion !== "number" ||
+        isNaN(character.releaseVersion)
+      ) {
+        errors.push("releaseVersion は有効な数値である必要があります");
+      }
+      if (character.releaseVersion < 0) {
+        errors.push("releaseVersion は0以上の値である必要があります");
+      }
     }
 
     // 多言語オブジェクトの完全性確認
@@ -337,6 +354,7 @@ ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: "${character.stats}",
 ${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
+${indent}  releaseVersion: ${character.releaseVersion || 0},
 ${indent}  attr: {
 ${indent}    hp: [${character.attr.hp.join(", ")}],
 ${indent}    atk: [${character.attr.atk.join(", ")}],

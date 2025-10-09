@@ -11,6 +11,8 @@ import { ParsingError, MappingError } from "../errors";
 import { DataMapper } from "../mappers/DataMapper";
 import { logger } from "../utils/Logger";
 import { AssistTypeStatistics } from "../utils/AssistTypeStatistics";
+import { ReleaseVersionStatistics } from "../utils/ReleaseVersionStatistics";
+import { GracefulDegradation } from "../utils/GracefulDegradation";
 
 /**
  * データプロセッサー - API レスポンスからキャラクター情報を抽出
@@ -18,14 +20,18 @@ import { AssistTypeStatistics } from "../utils/AssistTypeStatistics";
 export class DataProcessor {
   protected dataMapper: DataMapper;
   protected assistTypeStatistics: AssistTypeStatistics;
+  protected releaseVersionStatistics: ReleaseVersionStatistics;
 
   constructor(
     dataMapper?: DataMapper,
-    assistTypeStatistics?: AssistTypeStatistics
+    assistTypeStatistics?: AssistTypeStatistics,
+    releaseVersionStatistics?: ReleaseVersionStatistics
   ) {
     this.dataMapper = dataMapper || new DataMapper();
     this.assistTypeStatistics =
       assistTypeStatistics || new AssistTypeStatistics();
+    this.releaseVersionStatistics =
+      releaseVersionStatistics || new ReleaseVersionStatistics();
   }
   /**
    * 基本キャラクター情報を抽出
@@ -130,42 +136,139 @@ export class DataProcessor {
   extractReleaseVersion(apiData: ApiResponse): number {
     const characterId = apiData.data?.page?.id || "unknown";
 
+    logger.debug("実装バージョン抽出処理を開始", {
+      characterId,
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       const page = apiData.data.page;
 
       if (!page) {
-        logger.debug(
+        const reason = "missing_page_data";
+        logger.warn(
           "APIレスポンスにpageデータが存在しません（実装バージョン抽出）",
           {
             characterId,
+            reason,
+            defaultVersion: 0,
           }
         );
+
+        // グレースフルデグラデーションを試行
+        const degradationResult =
+          GracefulDegradation.handleReleaseVersionDegradation(
+            characterId,
+            apiData,
+            reason
+          );
+
+        if (degradationResult.success && degradationResult.version > 0) {
+          logger.info(
+            "グレースフルデグラデーションによる実装バージョン回復成功",
+            {
+              characterId,
+              version: degradationResult.version,
+              method: degradationResult.method,
+              degradationLevel: degradationResult.degradationLevel,
+            }
+          );
+          this.releaseVersionStatistics.recordSuccess(
+            characterId,
+            degradationResult.version,
+            `degradation:${degradationResult.method}`
+          );
+          return degradationResult.version;
+        }
+
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
       if (!page.modules || !Array.isArray(page.modules)) {
-        logger.debug(
+        const reason = "missing_modules_array";
+        logger.warn(
           "APIレスポンスにmodulesが存在しません（実装バージョン抽出）",
           {
             characterId,
+            reason,
+            modulesType: typeof page.modules,
+            defaultVersion: 0,
           }
         );
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
+
+      logger.debug("モジュール検索を開始", {
+        characterId,
+        totalModules: page.modules.length,
+        moduleNames: page.modules.map((m: any) => m.name).filter(Boolean),
+      });
 
       // baseInfoコンポーネントを探す
       const baseInfoComponent = this.findComponent(page.modules, "baseInfo");
       if (!baseInfoComponent) {
-        logger.debug("baseInfoコンポーネントが見つかりません", {
+        const reason = "baseinfo_component_not_found";
+        logger.warn("baseInfoコンポーネントが見つかりません", {
           characterId,
+          reason,
+          availableComponents: page.modules
+            .flatMap((m: any) => m.components?.map((c: any) => c.component_id))
+            .filter(Boolean),
+          defaultVersion: 0,
         });
+
+        // グレースフルデグラデーションを試行
+        const degradationResult =
+          GracefulDegradation.handleReleaseVersionDegradation(
+            characterId,
+            apiData,
+            reason
+          );
+
+        if (degradationResult.success && degradationResult.version > 0) {
+          logger.info(
+            "グレースフルデグラデーションによる実装バージョン回復成功",
+            {
+              characterId,
+              version: degradationResult.version,
+              method: degradationResult.method,
+              degradationLevel: degradationResult.degradationLevel,
+            }
+          );
+          this.releaseVersionStatistics.recordSuccess(
+            characterId,
+            degradationResult.version,
+            `degradation:${degradationResult.method}`
+          );
+          return degradationResult.version;
+        }
+
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
+      logger.debug("baseInfoコンポーネントを発見", {
+        characterId,
+        componentId: baseInfoComponent.component_id,
+        hasData: !!baseInfoComponent.data,
+        dataLength: baseInfoComponent.data?.length || 0,
+      });
+
       if (!baseInfoComponent.data) {
-        logger.debug("baseInfoコンポーネントにdataが存在しません", {
+        const reason = "baseinfo_data_missing";
+        logger.warn("baseInfoコンポーネントにdataが存在しません", {
           characterId,
+          reason,
+          componentId: baseInfoComponent.component_id,
+          defaultVersion: 0,
         });
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
@@ -173,23 +276,79 @@ export class DataProcessor {
       let baseInfoData;
       try {
         baseInfoData = JSON.parse(baseInfoComponent.data);
+        logger.debug("baseInfoデータのパース成功", {
+          characterId,
+          dataKeys: Object.keys(baseInfoData),
+          listLength: baseInfoData.list?.length || 0,
+        });
       } catch (parseError) {
         const errorMessage =
           parseError instanceof Error ? parseError.message : String(parseError);
-        logger.warn("baseInfoデータのパースに失敗", {
+        const reason = "json_parse_error";
+        logger.error("baseInfoデータのパースに失敗", {
           characterId,
           error: errorMessage,
+          dataPreview: baseInfoComponent.data.substring(0, 100),
+          reason,
+          defaultVersion: 0,
         });
+
+        // グレースフルデグラデーションを試行
+        const degradationResult =
+          GracefulDegradation.handleReleaseVersionDegradation(
+            characterId,
+            apiData,
+            reason
+          );
+
+        if (degradationResult.success && degradationResult.version > 0) {
+          logger.info(
+            "グレースフルデグラデーションによる実装バージョン回復成功",
+            {
+              characterId,
+              version: degradationResult.version,
+              method: degradationResult.method,
+              degradationLevel: degradationResult.degradationLevel,
+            }
+          );
+          this.releaseVersionStatistics.recordSuccess(
+            characterId,
+            degradationResult.version,
+            `degradation:${degradationResult.method}`
+          );
+          return degradationResult.version;
+        }
+
+        this.releaseVersionStatistics.recordFailure(
+          characterId,
+          reason,
+          errorMessage
+        );
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
       if (!baseInfoData.list || !Array.isArray(baseInfoData.list)) {
-        logger.debug("baseInfoデータにlistが存在しません", {
+        const reason = "baseinfo_list_missing";
+        logger.warn("baseInfoデータにlistが存在しません", {
           characterId,
+          reason,
           baseInfoDataKeys: Object.keys(baseInfoData),
+          listType: typeof baseInfoData.list,
+          defaultVersion: 0,
         });
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
+
+      logger.debug("baseInfoリスト検索を開始", {
+        characterId,
+        listItemCount: baseInfoData.list.length,
+        availableKeys: baseInfoData.list
+          .map((item: any) => item.key)
+          .filter(Boolean),
+      });
 
       // 実装バージョンキーを検索
       const versionItem = baseInfoData.list.find(
@@ -197,59 +356,149 @@ export class DataProcessor {
       );
 
       if (!versionItem) {
-        logger.debug("実装バージョンキーが見つかりません", {
+        const reason = "version_key_not_found";
+        logger.warn("実装バージョンキーが見つかりません", {
           characterId,
+          reason,
           availableKeys: baseInfoData.list
             .map((item: any) => item.key)
             .filter(Boolean),
+          searchedKey: "実装バージョン",
+          defaultVersion: 0,
         });
+
+        // グレースフルデグラデーションを試行
+        const degradationResult =
+          GracefulDegradation.handleReleaseVersionDegradation(
+            characterId,
+            apiData,
+            reason
+          );
+
+        if (degradationResult.success && degradationResult.version > 0) {
+          logger.info(
+            "グレースフルデグラデーションによる実装バージョン回復成功",
+            {
+              characterId,
+              version: degradationResult.version,
+              method: degradationResult.method,
+              degradationLevel: degradationResult.degradationLevel,
+            }
+          );
+          this.releaseVersionStatistics.recordSuccess(
+            characterId,
+            degradationResult.version,
+            `degradation:${degradationResult.method}`
+          );
+          return degradationResult.version;
+        }
+
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
+
+      logger.debug("実装バージョンキーを発見", {
+        characterId,
+        versionItemId: versionItem.id,
+        hasValue: !!versionItem.value,
+        valueType: typeof versionItem.value,
+        valueLength: Array.isArray(versionItem.value)
+          ? versionItem.value.length
+          : 0,
+      });
 
       if (
         !versionItem.value ||
         !Array.isArray(versionItem.value) ||
         versionItem.value.length === 0
       ) {
-        logger.debug("実装バージョンの値が無効です", {
+        const reason = "invalid_version_value";
+        logger.warn("実装バージョンの値が無効です", {
           characterId,
+          reason,
           versionValue: versionItem.value,
+          valueType: typeof versionItem.value,
+          isArray: Array.isArray(versionItem.value),
+          defaultVersion: 0,
         });
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
       // HTMLタグを含むバージョン文字列を取得
       const versionString = versionItem.value[0];
       if (typeof versionString !== "string") {
-        logger.debug("実装バージョンの値が文字列ではありません", {
+        const reason = "version_value_not_string";
+        logger.warn("実装バージョンの値が文字列ではありません", {
           characterId,
+          reason,
           versionValue: versionString,
+          valueType: typeof versionString,
+          defaultVersion: 0,
         });
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
         return 0;
       }
 
       logger.debug("実装バージョン文字列を取得", {
         characterId,
         rawVersionString: versionString,
+        stringLength: versionString.length,
+        hasHtmlTags: /<[^>]*>/.test(versionString),
       });
 
       // バージョン解析ロジックを呼び出し
       const parsedVersion = this.parseVersionNumber(versionString);
 
-      logger.debug("実装バージョン抽出完了", {
-        characterId,
-        rawVersion: versionString,
-        parsedVersion,
-      });
+      if (parsedVersion > 0) {
+        logger.info("実装バージョン抽出成功", {
+          characterId,
+          rawVersion: versionString,
+          parsedVersion,
+          extractionTime: new Date().toISOString(),
+          success: true,
+        });
+        this.releaseVersionStatistics.recordSuccess(
+          characterId,
+          parsedVersion,
+          versionString
+        );
+      } else {
+        const reason = "parse_returned_zero";
+        logger.warn("実装バージョン解析でデフォルト値を使用", {
+          characterId,
+          rawVersion: versionString,
+          parsedVersion,
+          reason,
+          defaultVersion: 0,
+        });
+        this.releaseVersionStatistics.recordFailure(characterId, reason);
+        this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
+      }
 
       return parsedVersion;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      logger.warn("実装バージョン処理中にエラーが発生", {
+      const reason = "unexpected_error";
+      logger.error("実装バージョン処理中に予期しないエラーが発生", {
         error: errorMessage,
         characterId,
+        errorType:
+          error instanceof Error ? error.constructor.name : typeof error,
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString(),
+        defaultVersion: 0,
       });
+      this.releaseVersionStatistics.recordFailure(
+        characterId,
+        reason,
+        errorMessage
+      );
+      this.releaseVersionStatistics.recordDefaultUsed(characterId, reason);
       return 0;
     }
   }
@@ -259,47 +508,118 @@ export class DataProcessor {
    * 要件: 2.2, 2.3
    */
   private parseVersionNumber(versionString: string): number {
+    logger.debug("バージョン解析処理を開始", {
+      originalString: versionString,
+      stringLength: versionString.length,
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       // HTMLタグを除去
       const cleanString = versionString.replace(/<[^>]*>/g, "");
+      const htmlTagsRemoved = versionString !== cleanString;
+
+      logger.debug("HTMLタグ除去処理完了", {
+        originalString: versionString,
+        cleanString,
+        htmlTagsRemoved,
+        removedContent: htmlTagsRemoved
+          ? versionString.replace(cleanString, "")
+          : null,
+      });
 
       // Ver.X.Y 形式を抽出する正規表現
       const VERSION_PATTERN = /Ver\.(\d+\.\d+)/;
       const match = cleanString.match(VERSION_PATTERN);
 
+      logger.debug("正規表現マッチング実行", {
+        pattern: VERSION_PATTERN.source,
+        cleanString,
+        matchFound: !!match,
+        matchedGroups: match ? match.length : 0,
+        fullMatch: match ? match[0] : null,
+        versionGroup: match ? match[1] : null,
+      });
+
       if (!match || !match[1]) {
-        logger.debug("バージョンパターンが見つかりません", {
+        logger.warn("バージョンパターンが見つかりません", {
           cleanString,
           originalString: versionString,
+          pattern: VERSION_PATTERN.source,
+          reason: "regex_no_match",
+          suggestedFormats: ["Ver.1.0", "Ver.1.1", "Ver.2.0"],
+          defaultValue: 0,
         });
         return 0;
       }
 
       // 数値変換
-      const versionNumber = parseFloat(match[1]);
+      const extractedVersion = match[1];
+      const versionNumber = parseFloat(extractedVersion);
+
+      logger.debug("数値変換処理", {
+        extractedVersion,
+        parsedNumber: versionNumber,
+        isValidNumber: !isNaN(versionNumber),
+        isFinite: isFinite(versionNumber),
+        isPositive: versionNumber > 0,
+      });
 
       if (isNaN(versionNumber)) {
-        logger.warn("バージョン数値変換に失敗", {
-          extractedVersion: match[1],
+        logger.error("バージョン数値変換に失敗", {
+          extractedVersion,
           originalString: versionString,
+          cleanString,
+          parseFloatResult: versionNumber,
+          reason: "parse_float_nan",
+          defaultValue: 0,
         });
         return 0;
       }
 
-      logger.debug("バージョン解析成功", {
+      if (!isFinite(versionNumber)) {
+        logger.error("バージョン数値が無限値です", {
+          extractedVersion,
+          originalString: versionString,
+          parsedNumber: versionNumber,
+          reason: "infinite_number",
+          defaultValue: 0,
+        });
+        return 0;
+      }
+
+      if (versionNumber < 0) {
+        logger.warn("バージョン数値が負の値です", {
+          extractedVersion,
+          originalString: versionString,
+          parsedNumber: versionNumber,
+          reason: "negative_version",
+          defaultValue: 0,
+        });
+        return 0;
+      }
+
+      logger.info("バージョン解析成功", {
         originalString: versionString,
         cleanString,
-        extractedVersion: match[1],
+        extractedVersion,
         parsedNumber: versionNumber,
+        processingTime: new Date().toISOString(),
+        success: true,
       });
 
       return versionNumber;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      logger.warn("バージョン解析中にエラーが発生", {
+      logger.error("バージョン解析中に予期しないエラーが発生", {
         error: errorMessage,
         versionString,
+        errorType:
+          error instanceof Error ? error.constructor.name : typeof error,
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString(),
+        defaultValue: 0,
       });
       return 0;
     }
@@ -634,6 +954,13 @@ export class DataProcessor {
   }
 
   /**
+   * 実装バージョン統計情報を取得
+   */
+  public getReleaseVersionStatistics(): ReleaseVersionStatistics {
+    return this.releaseVersionStatistics;
+  }
+
+  /**
    * 支援タイプ統計情報をログに出力
    */
   public logAssistTypeStatistics(): void {
@@ -643,11 +970,21 @@ export class DataProcessor {
   }
 
   /**
+   * 実装バージョン統計情報をログに出力
+   */
+  public logReleaseVersionStatistics(): void {
+    logger.info("実装バージョン処理統計の出力を開始");
+    this.releaseVersionStatistics.logStatistics();
+    logger.info("実装バージョン処理統計の出力を完了");
+  }
+
+  /**
    * 統計情報をリセット
    */
   public resetStatistics(): void {
     this.assistTypeStatistics.reset();
-    logger.debug("DataProcessor: 支援タイプ統計情報をリセット");
+    this.releaseVersionStatistics.reset();
+    logger.debug("DataProcessor: 支援タイプ・実装バージョン統計情報をリセット");
   }
 
   /**
