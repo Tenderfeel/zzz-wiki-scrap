@@ -6,13 +6,7 @@
 
 Request Header に`x-rpc-wiki_app:zzz`が必要
 
-キャラクターデータが格納されている JSON は下記 URL で取得可能：
-
-```
-https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_id={pageId}
-```
-
-ボンプデータが格納されている JSON は下記 URL で取得可能：
+キャラクター・エネミー・ボンプデータが格納されている JSON は下記 URL で取得可能：
 
 ```
 https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_id={pageId}
@@ -71,40 +65,40 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 
 ## ボンプページリスト
 
-- [セイケンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/912)
-- [「マーキュリー」](https://wiki.hoyolab.com/pc/zzz/entry/911)
-- [ミス・エスメ](https://wiki.hoyolab.com/pc/zzz/entry/878)
-- [オシシ](https://wiki.hoyolab.com/pc/zzz/entry/793)
-- [サビザンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/709)
-- [ロビン](https://wiki.hoyolab.com/pc/zzz/entry/708)
-- [カチャコ](https://wiki.hoyolab.com/pc/zzz/entry/592)
-- [カクトウボンプ](https://wiki.hoyolab.com/pc/zzz/entry/543)
-- [ガリバー隊員](https://wiki.hoyolab.com/pc/zzz/entry/542)
-- [キシドウボンプ](https://wiki.hoyolab.com/pc/zzz/entry/532)
-- [カチコミボンプ](https://wiki.hoyolab.com/pc/zzz/entry/532)
-- [真紅のモックス](https://wiki.hoyolab.com/pc/zzz/entry/390)
-- [ツェイ巡査](https://wiki.hoyolab.com/pc/zzz/entry/356)
-- [オマネキボンプ](https://wiki.hoyolab.com/pc/zzz/entry/124)
-- [タンケンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/123)
-- [オスモウボンプ](https://wiki.hoyolab.com/pc/zzz/entry/122)
-- [ハコイリボンプ](https://wiki.hoyolab.com/pc/zzz/entry/121)
-- [フクロノボンプ](https://wiki.hoyolab.com/pc/zzz/entry/120)
-- [ウルリンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/119)
-- [アボカドボンプ](https://wiki.hoyolab.com/pc/zzz/entry/118)
-- [ズバットボンプ](https://wiki.hoyolab.com/pc/zzz/entry/117)
-- [ビリビリボンプ](https://wiki.hoyolab.com/pc/zzz/entry/116)
-- [クッツキボンプ](https://wiki.hoyolab.com/pc/zzz/entry/115)
-- [キアツデボンプ](https://wiki.hoyolab.com/pc/zzz/entry/114)
-- [ガブットボンプ](https://wiki.hoyolab.com/pc/zzz/entry/113)
-- [アクマデボンプ](https://wiki.hoyolab.com/pc/zzz/entry/112)
-- [ハヤスギボンプ](https://wiki.hoyolab.com/pc/zzz/entry/111)
-- [プラグノボンプ](https://wiki.hoyolab.com/pc/zzz/entry/110)
-- [レゾナンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/109)
-- [リボルバボンプ](https://wiki.hoyolab.com/pc/zzz/entry/108)
-- [ゴアンゼン](https://wiki.hoyolab.com/pc/zzz/entry/104)
-- [アミリオン](https://wiki.hoyolab.com/pc/zzz/entry/100)
-- [バトラー](https://wiki.hoyolab.com/pc/zzz/entry/99)
-- [ペンギンボンプ](https://wiki.hoyolab.com/pc/zzz/entry/4)
+- [excaliboo](https://wiki.hoyolab.com/pc/zzz/entry/912) - セイケンボンプ
+- [mercury](https://wiki.hoyolab.com/pc/zzz/entry/911) - 「マーキュリー」
+- [missEsme](https://wiki.hoyolab.com/pc/zzz/entry/878) - ミス・エスメ
+- [belion](https://wiki.hoyolab.com/pc/zzz/entry/793) - オシシ
+- [overtimeboo](https://wiki.hoyolab.com/pc/zzz/entry/709) - サビザンボンプ
+- [robin](https://wiki.hoyolab.com/pc/zzz/entry/708) - ロビン
+- [snap](https://wiki.hoyolab.com/pc/zzz/entry/592) - カチャコ
+- [brawlerboo](https://wiki.hoyolab.com/pc/zzz/entry/543) - カクトウボンプ
+- [agentGulliver](https://wiki.hoyolab.com/pc/zzz/entry/542) - ガリバー隊員
+- [knightboo](https://wiki.hoyolab.com/pc/zzz/entry/532) - キシドウボンプ
+- [baddieboo](https://wiki.hoyolab.com/pc/zzz/entry/532) - カチコミボンプ
+- [redMoccus](https://wiki.hoyolab.com/pc/zzz/entry/390) - 真紅のモックス
+- [officerCui](https://wiki.hoyolab.com/pc/zzz/entry/356) - ツェイ巡査
+- [luckyboo](https://wiki.hoyolab.com/pc/zzz/entry/124) - オマネキボンプ
+- [exploreboo](https://wiki.hoyolab.com/pc/zzz/entry/123) - タンケンボンプ
+- [sumoboo](https://wiki.hoyolab.com/pc/zzz/entry/122) - オスモウボンプ
+- [paperboo](https://wiki.hoyolab.com/pc/zzz/entry/121) - ハコイリボンプ
+- [bagboo](https://wiki.hoyolab.com/pc/zzz/entry/120) - フクロノボンプ
+- [cryboo](https://wiki.hoyolab.com/pc/zzz/entry/119) - ウルリンボンプ
+- [avocaboo](https://wiki.hoyolab.com/pc/zzz/entry/118) - アボカドボンプ
+- [boollseye](https://wiki.hoyolab.com/pc/zzz/entry/117) - ズバットボンプ
+- [electroboo](https://wiki.hoyolab.com/pc/zzz/entry/116) - ビリビリボンプ
+- [magnetiboo](https://wiki.hoyolab.com/pc/zzz/entry/115) - クッツキボンプ
+- [booressure](https://wiki.hoyolab.com/pc/zzz/entry/114) - キアツデボンプ
+- [sharkboo](https://wiki.hoyolab.com/pc/zzz/entry/113) - ガブットボンプ
+- [devilboo](https://wiki.hoyolab.com/pc/zzz/entry/112) - アクマデボンプ
+- [rocketboo](https://wiki.hoyolab.com/pc/zzz/entry/111) - ハヤスギボンプ
+- [plugboo](https://wiki.hoyolab.com/pc/zzz/entry/110) - プラグノボンプ
+- [resonaboo](https://wiki.hoyolab.com/pc/zzz/entry/109) - レゾナンボンプ
+- [bangvolver](https://wiki.hoyolab.com/pc/zzz/entry/108) - リボルバボンプ
+- [safety](https://wiki.hoyolab.com/pc/zzz/entry/104) - ゴアンゼン
+- [amillion](https://wiki.hoyolab.com/pc/zzz/entry/100) - アミリオン
+- [butler](https://wiki.hoyolab.com/pc/zzz/entry/99) - バトラー
+- [penguinboo](https://wiki.hoyolab.com/pc/zzz/entry/4) - ペンギンボンプ
 
 ## 短縮名リスト
 

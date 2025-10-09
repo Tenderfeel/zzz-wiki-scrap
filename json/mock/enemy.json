@@ -1,0 +1,298 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "924",
+      "name": "「冒涜者」",
+      "desc": "戦闘中、「冒涜者」は迅速かつ猛烈な攻撃を繰り出す。「冒涜者」が放つ「ミアズミックブレイド」、または「冒涜者」が召喚した「ミアズマ・レムナント」の攻撃をパリィできた場合、「冒涜者」は大きな隙を見せる。戦闘中に一定のダメージを受けると、「冒涜者」は「ミアズマ領域」を展開し、ミアズマの津波を引き寄せて、致命的なダメージを与える。この間に「冒涜者」の部位を破壊することで「ミアズマの障壁」を生成し、ミアズマの津波の攻撃を防ぐことができる。",
+      "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/09/06/59155606/f8f626dcd222845da0b56bc9977d106e_164842596392307375.png",
+      "header_img_url": "",
+      "modules": [
+        {
+          "name": "ステータス",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "baseInfo",
+              "layout": "",
+              "data": "{\"list\":[{\"key\":\"名称\",\"value\":[\"「冒涜者」\"],\"id\":\"baseInfo86853\"},{\"key\":\"タイプ\",\"value\":[\"サクリファイス\"],\"id\":\"baseInfo28866\"},{\"key\":\"弱点\",\"value\":[\"\u003cp\u003e\u003cspan style=\\\"color: #2eb6ff\\\"\u003e電気属性\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: #f0d12b\\\"\u003e物理\u003c/span\u003e\u003c/p\u003e\"],\"id\":\"baseInfo69172\"},{\"key\":\"耐性\",\"value\":[\"\u003cp\u003e\u003cspan style=\\\"color: #98eff0\\\"\u003e氷属性\u003c/span\u003e\u003c/p\u003e\"],\"id\":\"baseInfo86828\"},{\"key\":\"陣営\",\"value\":[\"特殊\"],\"id\":\"baseInfo872\"},{\"key\":\"関連項目\",\"value\":[\"$[{\\\"ep_id\\\":889,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/21/59155606/39c1eb45af1d03027d7fc5c5e9bb8c1f_7685726378718508417.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"イゾルデ\\\",\\\"menuId\\\":\\\"npc\\\",\\\"_menuId\\\":\\\"9\\\"}]$\",\"$[{\\\"ep_id\\\":918,\\\"icon\\\":\\\"\\\",\\\"amount\\\":0,\\\"name\\\":\\\"ミアズマ・レムナント・ディフェンダー\\\",\\\"menuId\\\":\\\"enemy\\\",\\\"_menuId\\\":\\\"13\\\"}]$\",\"$[{\\\"ep_id\\\":919,\\\"icon\\\":\\\"\\\",\\\"amount\\\":0,\\\"name\\\":\\\"ミアズマ・レムナント・キャノニア\\\",\\\"menuId\\\":\\\"enemy\\\",\\\"_menuId\\\":\\\"13\\\"}]$\",\"$[{\\\"ep_id\\\":902,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/28/59155606/7473503f9af622d85b799c76838b9c4b_3273353374085876873.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"オルペウス＆「鬼火」\\\",\\\"menuId\\\":\\\"agent\\\",\\\"_menuId\\\":\\\"8\\\"}]$\",\"$[{\\\"ep_id\\\":824,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/06/10/59155606/c71b11b10a31d037145ef147acb28f6d_8645869174369915157.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"メヴォラク\\\",\\\"menuId\\\":\\\"npc\\\",\\\"_menuId\\\":\\\"9\\\"}]$\",\"$[{\\\"ep_id\\\":762,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/05/20/59155606/0aed20656aa007e0db7fbc2632b8f41b_6146558431108975636.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"サラ\\\",\\\"menuId\\\":\\\"npc\\\",\\\"_menuId\\\":\\\"9\\\"}]$\",\"$[{\\\"ep_id\\\":90,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/27/59155606/5d8267a1f12bdb48fb4f8974ab755ffe_2909871985808865526.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"防衛軍・オボルス小隊\\\",\\\"menuId\\\":\\\"faction\\\",\\\"_menuId\\\":\\\"22\\\"}]$\",\"$[{\\\"ep_id\\\":828,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/08/59155606/39e69dc3dc633f69beca5c0023790df7_4272571366994856095.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"衛非地区\\\",\\\"menuId\\\":\\\"area\\\",\\\"_menuId\\\":\\\"23\\\"}]$\",\"$[{\\\"ep_id\\\":798,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/08/59155606/3b888886ade65e1055ae5382202bdf3d_716620491204866896.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"旧都陥落\\\",\\\"menuId\\\":\\\"\\\",\\\"_menuId\\\":\\\"26\\\"}]$\",\"$[{\\\"ep_id\\\":802,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/08/59155606/3b888886ade65e1055ae5382202bdf3d_7770458712381966071.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"サクリファイス\\\",\\\"menuId\\\":\\\"\\\",\\\"_menuId\\\":\\\"26\\\"}]$\",\"$[{\\\"ep_id\\\":803,\\\"icon\\\":\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/07/08/59155606/3b888886ade65e1055ae5382202bdf3d_7686461655349157880.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"讃頌会\\\",\\\"menuId\\\":\\\"\\\",\\\"_menuId\\\":\\\"26\\\"}]$\"],\"id\":\"baseInfo18983\",\"isMaterial\":true},{\"key\":\"実装バージョン\",\"value\":[\"\u003cp\u003eVer.2.2「穏やかな夜をよしとせず」\u003c/p\u003e\"],\"id\":\"baseInfo72060\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "36",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "ドロップ",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "drop_material",
+              "layout": "",
+              "data": "",
+              "style": ""
+            }
+          ],
+          "id": "37",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "ギャラリー",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "gallery_character",
+              "layout": "",
+              "data": "{\"pic\":\"\"}",
+              "style": ""
+            }
+          ],
+          "id": "38",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "動画まとめ",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "video_collection",
+              "layout": "",
+              "data": "",
+              "style": ""
+            }
+          ],
+          "id": "108",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "もっと知る",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "textual_research",
+              "layout": "",
+              "data": "{\"list\":[{\"title\":\"現時点での情報\",\"desc\":\"\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e冥き河の向こう側に燃え盛る凶焔は、復讐者の行く道を照らしきれない。神龕に呪いを刻んだ執念の狂徒は、ついに己が冒涜の報いを喰らった。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003eホロウは高塔の下に集い、亡魂はエーテルから目覚める。具現した怨嗟は穢暗の力に凝り固まり、そこに信仰も正義もない。生まれ落ちたのは、怨みと狂気を貫く兵器のみ。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e血の臭いを放つ血痕が罪の地を覆い、やがてこの長き物語の終焉へと広がっていく。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e「結末が満ち足りぬものなら、せめてこの手で書き上げよう」。\u003cbr\u003e\u003cbr\u003e——立ち上がるミアズマの大波の中、どこからともなく響く囁き\u003c/span\u003e\u003c/p\u003e\",\"audios\":[]}]}\n",
+              "style": ""
+            }
+          ],
+          "id": "39",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "40",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "41",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "42",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        }
+      ],
+      "filter_values": {
+        "enemy_weakness": {
+          "values": ["物理属性", "電気属性"],
+          "value_types": [
+            {
+              "id": "65",
+              "value": "物理属性",
+              "mi18n_key": "filter_custom_74",
+              "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/08/b34f33a07ddfae7bbd014a5e36443ea4_9190277582432858578.png",
+              "enum_string": "physical"
+            },
+            {
+              "id": "66",
+              "value": "電気属性",
+              "mi18n_key": "filter_custom_75",
+              "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/08/23f0846bd60219d09ab419b831ce2de7_9173615429809382097.png",
+              "enum_string": "electric"
+            }
+          ],
+          "key": {
+            "key": "enemy_weakness",
+            "text": "弱点属性",
+            "values": [],
+            "mi18n_key": "filter_custom_43",
+            "is_multi_select": true,
+            "id": "7",
+            "is_hidden": false,
+            "updated_at": "1722571053"
+          }
+        },
+        "enemy_resistance": {
+          "values": ["氷属性"],
+          "value_types": [
+            {
+              "id": "69",
+              "value": "氷属性",
+              "mi18n_key": "filter_custom_73",
+              "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/08/a99ef1d28678ab2e82b25099416e2802_5038001116698153515.png",
+              "enum_string": "ice"
+            }
+          ],
+          "key": {
+            "key": "enemy_resistance",
+            "text": "耐性属性",
+            "values": [],
+            "mi18n_key": "filter_custom_44",
+            "is_multi_select": true,
+            "id": "8",
+            "is_hidden": false,
+            "updated_at": "1722571054"
+          }
+        }
+      },
+      "menu_id": "13",
+      "menu_name": "エネミー",
+      "version": "1757225540",
+      "langs": [],
+      "template_layout": null,
+      "edit_lock_status": "Unlock",
+      "correct_lock_status": "Unlock",
+      "menus": [],
+      "template_id": "66f8c5a0c1182e4e739598ce",
+      "ext": {
+        "fe_ext": "",
+        "post_ext": {
+          "post_id": "",
+          "post_user_name": "",
+          "post_time": "0",
+          "post_avatar_url": "",
+          "url": ""
+        },
+        "server_ext": "",
+        "personalized_color": "",
+        "scrolling_text": "",
+        "corner_mark": "None"
+      },
+      "alias_name": "",
+      "lang": "",
+      "beta": false,
+      "page_type": "Default",
+      "menu_style": "enemy",
+      "status": "Online",
+      "enable_staff_online": false
+    }
+  }
+}

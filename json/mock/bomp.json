@@ -1,0 +1,324 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "912",
+      "name": "セイケンボンプ",
+      "desc": "真なる国王の戴冠に、聖剣以外のものは必要ない。",
+      "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/09/07/59155606/52983421a01aba057aa9b9b5867bf77e_5531867362809073662.png",
+      "header_img_url": "",
+      "modules": [
+        {
+          "name": "ステータス",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "baseInfo",
+              "layout": "",
+              "data": "{\"list\":[{\"key\":\"名称\",\"value\":[\"セイケンボンプ\"],\"id\":\"baseInfo54936\"},{\"key\":\"属性\",\"value\":[\"\u003cp\u003e\u003cspan style=\\\"color: #f0d12b\\\"\u003e物理\u003c/span\u003e\u003c/p\u003e\"],\"id\":\"baseInfo85452\"},{\"key\":\"レア度\",\"value\":[\"\u003cp\u003eA級\u003c/p\u003e\"],\"id\":\"baseInfo97603\"},{\"key\":\"『追加能力』\",\"value\":[\"\u003cp\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003eチームに\u003c/span\u003e\u003cspan style=\\\"color: #ffaf2c\\\"\u003e[命破]\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003eのメンバーがいる時に発動\u003c/span\u003e\u003c/p\u003e\"],\"id\":\"baseInfo13907\"},{\"key\":\"実装バージョン\",\"value\":[\"\u003cp\u003eVer.2.2「穏やかな夜をよしとせず」\u003c/p\u003e\"],\"id\":\"baseInfo65703\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "48",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "突破",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "ascension",
+              "layout": "",
+              "data": "{\"list\":[{\"key\":\"1\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"HP\",\"values\":[\"-\",\"360\"]},{\"key\":\"攻撃力\",\"values\":[\"-\",\"53\"]},{\"key\":\"防御力\",\"values\":[\"-\",\"32\"]},{\"key\":\"衝撃力\",\"values\":[\"-\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"-\",\"5%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"-\",\"50%\"]},{\"key\":\"貫通率\",\"values\":[\"-\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"-\",\"100\"]}],\"materials\":[],\"id\":\"ascension90741\"},{\"key\":\"10\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"HP\",\"values\":[\"745\",\"933\"]},{\"key\":\"攻撃力\",\"values\":[\"293\",\"342\"]},{\"key\":\"防御力\",\"values\":[\"115\",\"156\"]},{\"key\":\"衝撃力\",\"values\":[\"94\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"5%\",\"9.5%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"50%\",\"50%\"]},{\"key\":\"貫通率\",\"values\":[\"0%\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"100\",\"100\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":15000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":166,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/8b1d6f7a0549cd25e254fbc3ff5c7926_2574870644591776197.png\\\",\\\"amount\\\":4,\\\"nickname\\\":\\\"エーテル電解液\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension26234\"},{\"key\":\"20\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"HP\",\"values\":[\"1361\",\"1549\"]},{\"key\":\"攻撃力\",\"values\":[\"609\",\"807\"]},{\"key\":\"防御力\",\"values\":[\"248\",\"288\"]},{\"key\":\"衝撃力\",\"values\":[\"94\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"9.5%\",\"27.5%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"50%\",\"50%\"]},{\"key\":\"貫通率\",\"values\":[\"0%\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"100\",\"100\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":35000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":165,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/8738b8c6d2385a67ad1a8a62f84aaa56_3327715367191662364.png\\\",\\\"amount\\\":12,\\\"nickname\\\":\\\"エネルギー循環液\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension41181\"},{\"key\":\"30\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"HP\",\"values\":[\"1978\",\"2166\"]},{\"key\":\"攻撃力\",\"values\":[\"1074\",\"1568\"]},{\"key\":\"防御力\",\"values\":[\"381\",\"422\"]},{\"key\":\"衝撃力\",\"values\":[\"94\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"27.5%\",\"27.5%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"50%\",\"75%\"]},{\"key\":\"貫通率\",\"values\":[\"0%\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"100\",\"100\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":75000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":165,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/8738b8c6d2385a67ad1a8a62f84aaa56_3327715367191662364.png\\\",\\\"amount\\\":20,\\\"nickname\\\":\\\"エネルギー循環液\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension96099\"},{\"key\":\"40\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"\"]},{\"key\":\"HP\",\"values\":[\"2594\",\"2782\"]},{\"key\":\"攻撃力\",\"values\":[\"1835\",\"3070\"]},{\"key\":\"防御力\",\"values\":[\"515\",\"556\"]},{\"key\":\"衝撃力\",\"values\":[\"94\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"27.5%\",\"50%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"75%\",\"75%\"]},{\"key\":\"貫通率\",\"values\":[\"0%\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"100\",\"100\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":125000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":164,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/801f285d9b917e47a787cd019ac9b047_6773126463528203033.png\\\",\\\"amount\\\":10,\\\"nickname\\\":\\\"濃縮型冷却液\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension4088\"},{\"key\":\"50\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"\"]},{\"key\":\"HP\",\"values\":[\"3211\",\"3399\"]},{\"key\":\"攻撃力\",\"values\":[\"3338\",\"6303\"]},{\"key\":\"防御力\",\"values\":[\"648\",\"688\"]},{\"key\":\"衝撃力\",\"values\":[\"94\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"50%\",\"50%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"75%\",\"100%\"]},{\"key\":\"貫通率\",\"values\":[\"0%\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"100\",\"100\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":250000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":164,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/801f285d9b917e47a787cd019ac9b047_6773126463528203033.png\\\",\\\"amount\\\":20,\\\"nickname\\\":\\\"濃縮型冷却液\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension22123\"},{\"key\":\"60\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"HP\",\"values\":[\"-\",\"3827\"]},{\"key\":\"攻撃力\",\"values\":[\"-\",\"6570\"]},{\"key\":\"防御力\",\"values\":[\"-\",\"781\"]},{\"key\":\"衝撃力\",\"values\":[\"-\",\"94\"]},{\"key\":\"会心率\",\"values\":[\"-\",\"50%\"]},{\"key\":\"会心ダメージ\",\"values\":[\"-\",\"100%\"]},{\"key\":\"貫通率\",\"values\":[\"-\",\"0%\"]},{\"key\":\"異常掌握\",\"values\":[\"-\",\"100\"]}],\"materials\":[],\"id\":\"ascension54077\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "49",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "ボンプスキル",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "talent",
+              "layout": "",
+              "data": "{\"list\":[{\"title\":\"聖剣解放\",\"icon_url\":\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/02/af3b58863e8b70ed8f7b059d0d12cf3a_379007138269101148.png\",\"desc\":\"\u003cp\u003e\u003cstrong\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e『アクティブスキル』\u003c/span\u003e\u003c/strong\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003eスキル発動時、セイケンボンプは抜剣を試みる。\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e抜剣に失敗した場合、3連続叩き攻撃で\u003c/span\u003e\u003cspan style=\\\"color: #f0d12b\\\"\u003e物理属性ダメージ\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003eを与える。\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e抜剣に成功した場合、斬撃でターゲットに\u003c/span\u003e\u003cspan style=\\\"color: #f0d12b\\\"\u003e物理属性ダメージ\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003eを大量に与える。\u003c/span\u003e\u003c/p\u003e\",\"talent_img\":\"\",\"talent_imgs\":[],\"attributes\":[{\"key\":\"聖剣解放\",\"values\":[\"Lv.1\",\"Lv.2\",\"Lv.3\",\"Lv.4\",\"Lv.5\",\"Lv.6\",\"Lv.7\",\"Lv.8\",\"Lv.9\",\"Lv.10\"]},{\"key\":\"斬撃ダメージ倍率\",\"values\":[\"480%\",\"528%\",\"576%\",\"624%\",\"672%\",\"720%\",\"768%\",\"816%\",\"864%\",\"912%\"]},{\"key\":\"斬撃ブレイク倍率\",\"values\":[\"281%\",\"309.1%\",\"337.2%\",\"365.3%\",\"393.4%\",\"421.5%\",\"449.6%\",\"477.7%\",\"505.8%\",\"533.9%\"]},{\"key\":\"叩き攻撃ダメージ倍率\",\"values\":[\"384%\",\"422.4%\",\"460.8%\",\"499.2%\",\"537.6%\",\"576%\",\"614.4%\",\"652.8%\",\"691.2%\",\"729.6%\"]},{\"key\":\"叩き攻撃ブレイク倍率\",\"values\":[\"281%\",\"309.1%\",\"337.2%\",\"365.3%\",\"393.4%\",\"421.5%\",\"449.6%\",\"477.7%\",\"505.8%\",\"533.9%\"]},{\"key\":\"クールタイム\",\"values\":[\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\",\"24秒\"]}],\"materials\":null,\"points\":null,\"id\":\"talent97304\"},{\"title\":\"勝利の誓言\",\"icon_url\":\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/02/4e8fcc3caecc822da9f71326f384f677_2656721580316946303.png\",\"desc\":\"\u003cp\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e『追加能力』\u003c/span\u003e\u003c/strong\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003eチームに\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 175, 44)\\\"\u003e[命破]\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003eのメンバーがいる時に発動：『アクティブスキル』使用時、必ず抜剣に成功し、与ダメージ+\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e30%\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e37.5%\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e45%\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e52.5%\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e60%\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e。\u003c/span\u003e\u003c/p\u003e\",\"talent_img\":\"\",\"talent_imgs\":[],\"attributes\":[{\"key\":\"勝利の誓言\",\"values\":[\"Lv.1\",\"Lv.2\",\"Lv.3\",\"Lv.4\",\"Lv.5\"]},{\"key\":\"ダメージアップ\",\"values\":[\"30%\",\"37.5%\",\"45%\",\"52.5%\",\"60%\"]}],\"materials\":null,\"points\":null,\"id\":\"talent54692\"},{\"title\":\"制圧する王威\",\"icon_url\":\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/02/b9daa065e187e79ff22d7185dba9c891_3657169695121413182.png\",\"desc\":\"\u003cp\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e『ボンプ連携スキル』\u003c/span\u003e\u003c/strong\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e聖剣で前方の敵を激しく叩きつけ、\u003c/span\u003e\u003cspan style=\\\"color: rgb(240, 209, 43)\\\"\u003e物理属性ダメージ\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003eを大量に与える。\u003c/span\u003e\u003c/p\u003e\",\"talent_img\":\"\",\"talent_imgs\":[],\"attributes\":[{\"key\":\"制圧する王威\",\"values\":[\"Lv.1\",\"Lv.2\",\"Lv.3\",\"Lv.4\",\"Lv.5\",\"Lv.6\",\"Lv.7\",\"Lv.8\",\"Lv.9\",\"Lv.10\"]},{\"key\":\"ダメージ倍率\",\"values\":[\"963%\",\"1059.3%\",\"1155.6%\",\"1251.9%\",\"1348.2%\",\"1444.5%\",\"1540.8%\",\"1637.1%\",\"1733.4%\",\"1829.7%\"]},{\"key\":\"ブレイク倍率\",\"values\":[\"138%\",\"151.8%\",\"165.6%\",\"179.4%\",\"193.2%\",\"207%\",\"220.8%\",\"234.6%\",\"248.4%\",\"262.2%\"]}],\"materials\":null,\"points\":null,\"id\":\"talent47814\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "50",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "ギャラリー",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "gallery_character",
+              "layout": "",
+              "data": "{\"pic\":\"\",\"list\":[{\"key\":\"セイケンボンプ\",\"img\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/09/06/59155606/01293a6760bb44f336bb1d396344183e_1766821334515707828.png\",\"imgDesc\":\"\",\"id\":\"gallery_character87974\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "51",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "動画まとめ",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "video_collection",
+              "layout": "",
+              "data": "{\"list\":[{\"name\":\"紹介動画\",\"videos\":[{\"title\":\"メイキンプ映像｜セイケンボンプ\",\"url\":\"https://www.youtube.com/watch?v=tVLkrDEjuqA\",\"duration\":28,\"img\":\"https://i.ytimg.com/vi/tVLkrDEjuqA/maxresdefault.jpg\"}]}]}\n",
+              "style": ""
+            }
+          ],
+          "id": "100",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "もっと知る",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "textual_research",
+              "layout": "",
+              "data": "",
+              "style": ""
+            }
+          ],
+          "id": "107",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "101",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "102",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "103",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "その他",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\u003ch1\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 175, 44)\\\"\u003e▌イベント開催履歴\u003c/span\u003e\u003c/strong\u003e\u003c/h1\u003e\u003ch3\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e「ボンプちゃん、防衛軍に志願！」イベント\u003c/span\u003e\u003c/strong\u003e\u003c/h3\u003e\u003cp\u003e\u003ccustom-image url=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/09/06/59155606/a3a52f120cf1d80a6283ba856e52133b_5532653921724065995.png\\\" align=\\\"left\\\"\u003e\u003c/custom-image\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e• 試験ステージをクリアすると、イベント限定報酬「セイケンボンプ」、アクセサリ「ハムスターケージ」、ポリクロームおよび各種育成素材を報酬として獲得できます。\u003c/span\u003e\u003c/p\u003e\u003ctable\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cstrong\u003eイベント期間\u003c/strong\u003e\u003c/p\u003e\u003c/td\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cstrong\u003e該当ボンプ\u003c/strong\u003e\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003eVer.2.2「穏やかな夜をよしとせず」\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e2025/09/05 11:00（JST） ～ 2025/10/13 04:59（JST）\u003c/span\u003e\u003c/p\u003e\u003c/td\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"912\\\" icon=\\\"\\\" name=\\\"セイケンボンプ\\\" displaystyle=\\\"card\\\" menuid=\\\"bangboo\\\"\u003e\u003c/custom-entry\u003e\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "104",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        }
+      ],
+      "filter_values": {
+        "filter_key_17": {
+          "values": [],
+          "value_types": [],
+          "key": null
+        },
+        "bangboo_rarity": {
+          "values": ["A"],
+          "value_types": [
+            {
+              "id": "44",
+              "value": "A",
+              "mi18n_key": "filter_custom_61",
+              "icon": "",
+              "enum_string": "a"
+            }
+          ],
+          "key": {
+            "key": "bangboo_rarity",
+            "text": "レア度",
+            "values": [],
+            "mi18n_key": "menu_custom_29",
+            "is_multi_select": false,
+            "id": "11",
+            "is_hidden": false,
+            "updated_at": "1743408188"
+          }
+        }
+      },
+      "menu_id": "15",
+      "menu_name": "ボンプ",
+      "version": "1757252182",
+      "langs": [],
+      "template_layout": null,
+      "edit_lock_status": "Unlock",
+      "correct_lock_status": "Unlock",
+      "menus": [],
+      "template_id": "66f61b00c1182e4e739598bb",
+      "ext": {
+        "fe_ext": "",
+        "post_ext": {
+          "post_id": "",
+          "post_user_name": "",
+          "post_time": "0",
+          "post_avatar_url": "",
+          "url": ""
+        },
+        "server_ext": "",
+        "personalized_color": "",
+        "scrolling_text": "",
+        "corner_mark": "None"
+      },
+      "alias_name": "",
+      "lang": "",
+      "beta": false,
+      "page_type": "Default",
+      "menu_style": "bangboo",
+      "status": "Online",
+      "enable_staff_online": false
+    }
+  }
+}
