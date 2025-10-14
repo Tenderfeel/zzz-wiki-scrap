@@ -73,3 +73,28 @@ export interface ValidationResult {
   errors: string[];
   warnings?: string[];
 }
+
+// ボンプ処理用の型定義
+export interface BasicBompInfo {
+  id: string;
+  name: string;
+  stats: string;
+  releaseVersion?: number;
+}
+
+export interface ProcessedBompData {
+  basicInfo: BasicBompInfo;
+  attributesInfo: AttributesInfo;
+  extraAbility: string;
+  factionIds?: number[];
+}
+
+export interface BompProcessingResult {
+  successful: import("./index").Bomp[];
+  failed: {
+    bompId: string;
+    error: string;
+    partialData?: Partial<import("./index").Bomp>;
+  }[];
+  statistics: ProcessingStatistics;
+}

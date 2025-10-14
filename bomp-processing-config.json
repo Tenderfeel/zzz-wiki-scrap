@@ -1,0 +1,49 @@
+{
+  "batchSize": 5,
+  "delayMs": 500,
+  "maxRetries": 3,
+  "scrapingFilePath": "Scraping.md",
+  "outputFilePath": "data/bomps.ts",
+  "enableReportGeneration": true,
+  "reportOutputPath": "bomp-processing-report.md",
+  "minSuccessRate": 0.8,
+  "enableValidation": true,
+  "logLevel": "info",
+  "enableDebugMode": false,
+  "maxConcurrency": 3,
+  "enableMemoryOptimization": true,
+  "memoryThresholdMB": 100,
+  "gcInterval": 10,
+  "enableEnhancedProgress": true,
+  "progressUpdateInterval": 1000,
+  "showMemoryUsage": true,
+  "showPerformanceMetrics": true,
+  "showDetailedTiming": true,
+  "progressBarWidth": 40,
+  "useColors": true,
+  "enableDetailedLogging": false,
+  "environments": {
+    "development": {
+      "logLevel": "debug",
+      "enableDebugMode": true,
+      "enableDetailedLogging": true,
+      "delayMs": 1000,
+      "enableValidation": true
+    },
+    "production": {
+      "logLevel": "error",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 500,
+      "enableValidation": false
+    },
+    "test": {
+      "logLevel": "warn",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 100,
+      "enableValidation": true,
+      "useMockData": true
+    }
+  }
+}

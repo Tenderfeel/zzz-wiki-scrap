@@ -1,316 +1,490 @@
 # 設定ガイド
 
-このドキュメントでは、全キャラクターデータ生成ツールの設定オプションについて説明します。
+このドキュメントでは、キャラクターデータ生成システムとボンプデータ生成システムの設定について詳しく説明します。
 
-## 基本的な使用方法
+## 設定ファイル概要
 
-### 1. デフォルト設定で実行
+### キャラクターデータ生成設定
 
-```bash
-npm run generate:configurable
-```
-
-### 3. カスタム設定ファイルを使用
-
-```bash
-npm run generate:configurable --config my-config.json
-```
-
-### 5. シンプルな生成（設定なし）
-
-```bash
-npm run generate
-```
-
-### 6. ヘルプを表示
-
-```bash
-npm run generate:configurable --help
-```
-
-## 設定ファイル
-
-設定ファイルは JSON 形式で、以下の構造を持ちます：
+**ファイル**: `processing-config.json`
 
 ```json
 {
   "batchSize": 5,
   "delayMs": 200,
-  "enableCharacterFiltering": true,
-  "characterFilter": {
-    "includeCharacterIds": ["lycaon", "anby", "billy"]
-  }
+  "maxRetries": 3,
+  "minSuccessRate": 0.8,
+  "maxConcurrency": 5,
+  "enableWorkerPool": true,
+  "enableMemoryOptimization": true,
+  "memoryThresholdMB": 100,
+  "gcInterval": 10,
+  "enableEnhancedProgress": true,
+  "progressUpdateInterval": 1000,
+  "showMemoryUsage": true,
+  "showPerformanceMetrics": true,
+  "showDetailedTiming": true,
+  "progressBarWidth": 40,
+  "useColors": true,
+  "scrapingFilePath": "Scraping.md",
+  "outputFilePath": "data/characters.ts",
+  "enableReportGeneration": true,
+  "reportOutputPath": "processing-report.md",
+  "enableCharacterFiltering": false,
+  "characterFilter": {},
+  "enableDebugMode": false,
+  "logLevel": "info",
+  "enableDetailedLogging": false
 }
 ```
 
-## 設定オプション
+### ボンプデータ生成設定
 
-### バッチ処理設定
-
-| オプション       | 型     | デフォルト | 説明                              |
-| ---------------- | ------ | ---------- | --------------------------------- |
-| `batchSize`      | number | 5          | 同時処理するキャラクター数 (1-20) |
-| `delayMs`        | number | 200        | API リクエスト間の遅延時間 (ms)   |
-| `maxRetries`     | number | 3          | 失敗時の最大リトライ回数          |
-| `minSuccessRate` | number | 0.8        | 最小成功率 (0-1)                  |
-
-### 並行処理設定
-
-| オプション         | 型      | デフォルト | 説明                   |
-| ------------------ | ------- | ---------- | ---------------------- |
-| `maxConcurrency`   | number  | 5          | 最大並行処理数         |
-| `enableWorkerPool` | boolean | true       | ワーカープールの有効化 |
-
-### メモリ最適化設定
-
-| オプション                 | 型      | デフォルト | 説明                         |
-| -------------------------- | ------- | ---------- | ---------------------------- |
-| `enableMemoryOptimization` | boolean | true       | メモリ最適化の有効化         |
-| `memoryThresholdMB`        | number  | 100        | メモリ使用量の閾値 (MB)      |
-| `gcInterval`               | number  | 10         | ガベージコレクション実行間隔 |
-
-### プログレス表示設定
-
-| オプション               | 型      | デフォルト | 説明                       |
-| ------------------------ | ------- | ---------- | -------------------------- |
-| `enableEnhancedProgress` | boolean | true       | 拡張プログレス表示の有効化 |
-| `progressUpdateInterval` | number  | 1000       | プログレス更新間隔 (ms)    |
-| `showMemoryUsage`        | boolean | true       | メモリ使用量の表示         |
-| `showPerformanceMetrics` | boolean | true       | パフォーマンス指標の表示   |
-| `showDetailedTiming`     | boolean | true       | 詳細タイミング情報の表示   |
-| `progressBarWidth`       | number  | 40         | プログレスバーの幅         |
-| `useColors`              | boolean | true       | カラー表示の有効化         |
-
-### ファイル設定
-
-| オプション               | 型      | デフォルト             | 説明                 |
-| ------------------------ | ------- | ---------------------- | -------------------- |
-| `scrapingFilePath`       | string  | "Scraping.md"          | 入力ファイルのパス   |
-| `outputFilePath`         | string  | "data/characters.ts"   | 出力ファイルのパス   |
-| `enableReportGeneration` | boolean | true                   | レポート生成の有効化 |
-| `reportOutputPath`       | string  | "processing-report.md" | レポート出力先       |
-
-### キャラクターフィルタリング設定
-
-| オプション                 | 型      | デフォルト | 説明                       |
-| -------------------------- | ------- | ---------- | -------------------------- |
-| `enableCharacterFiltering` | boolean | false      | フィルタリングの有効化     |
-| `characterFilter`          | object  | {}         | フィルター設定オブジェクト |
-
-#### フィルター設定詳細
+**ファイル**: `bomp-processing-config.json`
 
 ```json
 {
-  "characterFilter": {
-    "includeCharacterIds": ["lycaon", "anby", "billy"],
-    "excludeCharacterIds": ["soldier11"],
-    "includePageIds": [28, 2, 19],
-    "excludePageIds": [100, 200],
-    "pageIdRange": {
-      "min": 1,
-      "max": 100
+  "batchSize": 5,
+  "delayMs": 500,
+  "maxRetries": 3,
+  "scrapingFilePath": "Scraping.md",
+  "outputFilePath": "data/bomps.ts",
+  "enableReportGeneration": true,
+  "reportOutputPath": "bomp-processing-report.md",
+  "minSuccessRate": 0.8,
+  "enableValidation": true,
+  "logLevel": "info",
+  "enableDebugMode": false,
+  "maxConcurrency": 3,
+  "enableMemoryOptimization": true,
+  "memoryThresholdMB": 100,
+  "gcInterval": 10,
+  "enableEnhancedProgress": true,
+  "progressUpdateInterval": 1000,
+  "showMemoryUsage": true,
+  "showPerformanceMetrics": true,
+  "showDetailedTiming": true,
+  "progressBarWidth": 40,
+  "useColors": true,
+  "enableDetailedLogging": false,
+  "environments": {
+    "development": {
+      "logLevel": "debug",
+      "enableDebugMode": true,
+      "enableDetailedLogging": true,
+      "delayMs": 1000,
+      "enableValidation": true
     },
-    "maxCharacters": 10,
-    "randomSample": {
-      "enabled": true,
-      "count": 5,
-      "seed": 12345
+    "production": {
+      "logLevel": "error",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 500,
+      "enableValidation": false
+    },
+    "test": {
+      "logLevel": "warn",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 100,
+      "enableValidation": true,
+      "useMockData": true
     }
   }
 }
 ```
 
-| フィルターオプション  | 型       | 説明                      |
-| --------------------- | -------- | ------------------------- |
-| `includeCharacterIds` | string[] | 処理対象のキャラクター ID |
-| `excludeCharacterIds` | string[] | 除外するキャラクター ID   |
-| `includePageIds`      | number[] | 処理対象のページ ID       |
-| `excludePageIds`      | number[] | 除外するページ ID         |
-| `pageIdRange`         | object   | ページ ID の範囲指定      |
-| `maxCharacters`       | number   | 最大処理キャラクター数    |
-| `randomSample`        | object   | ランダムサンプリング設定  |
+## 設定項目詳細
 
-### デバッグ設定
+### 基本処理設定
 
-| オプション              | 型      | デフォルト | 説明                               |
-| ----------------------- | ------- | ---------- | ---------------------------------- |
-| `enableDebugMode`       | boolean | false      | デバッグモードの有効化             |
-| `logLevel`              | string  | "info"     | ログレベル (error/warn/info/debug) |
-| `enableDetailedLogging` | boolean | false      | 詳細ログの有効化                   |
+#### `batchSize` (number)
 
-## 使用例
+- **説明**: 同時に処理するアイテム数
+- **デフォルト**: 5
+- **推奨値**:
+  - 高速処理: 8-10
+  - 安定処理: 3-5
+  - 低リソース: 1-2
 
-### 例 1: 特定のキャラクターのみ処理
+#### `delayMs` (number)
+
+- **説明**: API リクエスト間の遅延時間（ミリ秒）
+- **デフォルト**:
+  - キャラクター: 200ms
+  - ボンプ: 500ms
+- **推奨値**:
+  - 高速処理: 100-200ms
+  - 安定処理: 300-500ms
+  - レート制限回避: 1000ms 以上
+
+#### `maxRetries` (number)
+
+- **説明**: API 失敗時の最大リトライ回数
+- **デフォルト**: 3
+- **推奨値**: 3-5
+
+#### `minSuccessRate` (number)
+
+- **説明**: 最小成功率（0-1）
+- **デフォルト**: 0.8 (80%)
+- **推奨値**: 0.7-0.9
+
+### パフォーマンス設定
+
+#### `maxConcurrency` (number)
+
+- **説明**: 最大並行処理数
+- **デフォルト**:
+  - キャラクター: 5
+  - ボンプ: 3
+- **推奨値**: CPU コア数の 1-2 倍
+
+#### `enableWorkerPool` (boolean)
+
+- **説明**: ワーカープールの使用
+- **デフォルト**: true（キャラクターのみ）
+- **推奨**: CPU 集約的な処理で有効
+
+#### `enableMemoryOptimization` (boolean)
+
+- **説明**: メモリ最適化の有効化
+- **デフォルト**: true
+- **推奨**: 大量データ処理時は有効
+
+#### `memoryThresholdMB` (number)
+
+- **説明**: メモリ使用量の閾値（MB）
+- **デフォルト**: 100
+- **推奨値**:
+  - 低メモリ環境: 50-100MB
+  - 通常環境: 100-200MB
+  - 高メモリ環境: 200MB 以上
+
+#### `gcInterval` (number)
+
+- **説明**: ガベージコレクション実行間隔
+- **デフォルト**: 10
+- **推奨値**: 5-20
+
+### プログレス表示設定
+
+#### `enableEnhancedProgress` (boolean)
+
+- **説明**: 拡張プログレス表示の有効化
+- **デフォルト**: true
+- **推奨**: 開発時は有効、本番時は無効
+
+#### `progressUpdateInterval` (number)
+
+- **説明**: プログレス更新間隔（ミリ秒）
+- **デフォルト**: 1000
+- **推奨値**: 500-2000
+
+#### `showMemoryUsage` (boolean)
+
+- **説明**: メモリ使用量表示
+- **デフォルト**: true
+- **推奨**: デバッグ時のみ有効
+
+#### `showPerformanceMetrics` (boolean)
+
+- **説明**: パフォーマンス指標表示
+- **デフォルト**: true
+- **推奨**: 開発・テスト時のみ有効
+
+#### `showDetailedTiming` (boolean)
+
+- **説明**: 詳細タイミング情報表示
+- **デフォルト**: true
+- **推奨**: デバッグ時のみ有効
+
+#### `progressBarWidth` (number)
+
+- **説明**: プログレスバーの幅（文字数）
+- **デフォルト**: 40
+- **推奨値**: 20-60
+
+#### `useColors` (boolean)
+
+- **説明**: カラー出力の使用
+- **デフォルト**: true
+- **推奨**: ターミナル対応に応じて設定
+
+### ファイル設定
+
+#### `scrapingFilePath` (string)
+
+- **説明**: スクレイピング対象リストファイルのパス
+- **デフォルト**: "Scraping.md"
+- **推奨**: プロジェクトルートからの相対パス
+
+#### `outputFilePath` (string)
+
+- **説明**: 出力ファイルのパス
+- **デフォルト**:
+  - キャラクター: "data/characters.ts"
+  - ボンプ: "data/bomps.ts"
+- **推奨**: `data/` ディレクトリ内
+
+#### `enableReportGeneration` (boolean)
+
+- **説明**: 処理レポート生成の有効化
+- **デフォルト**: true
+- **推奨**: 本番環境でも有効
+
+#### `reportOutputPath` (string)
+
+- **説明**: 処理レポートの出力パス
+- **デフォルト**:
+  - キャラクター: "processing-report.md"
+  - ボンプ: "bomp-processing-report.md"
+
+### ログ設定
+
+#### `logLevel` (string)
+
+- **説明**: ログレベル
+- **選択肢**: "error", "warn", "info", "debug"
+- **デフォルト**: "info"
+- **推奨**:
+  - 開発: "debug"
+  - テスト: "info"
+  - 本番: "warn" または "error"
+
+#### `enableDebugMode` (boolean)
+
+- **説明**: デバッグモードの有効化
+- **デフォルト**: false
+- **推奨**: 開発時のみ有効
+
+#### `enableDetailedLogging` (boolean)
+
+- **説明**: 詳細ログの有効化
+- **デフォルト**: false
+- **推奨**: トラブルシューティング時のみ有効
+
+### 検証設定
+
+#### `enableValidation` (boolean)
+
+- **説明**: データ検証の有効化
+- **デフォルト**: true（ボンプのみ）
+- **推奨**: 常に有効
+
+#### `enableCharacterFiltering` (boolean)
+
+- **説明**: キャラクターフィルタリングの有効化
+- **デフォルト**: false（キャラクターのみ）
+- **推奨**: 部分処理時のみ有効
+
+#### `characterFilter` (object)
+
+- **説明**: キャラクターフィルター設定
+- **デフォルト**: {}
+- **例**:
 
 ```json
 {
-  "enableCharacterFiltering": true,
   "characterFilter": {
-    "includeCharacterIds": ["lycaon", "anby", "billy", "nicole", "corin"]
+    "ids": ["lycaon", "anby"],
+    "factions": [1, 2],
+    "rarities": ["S"]
   }
 }
 ```
 
-### 例 2: 高速処理設定
+## 環境別設定
+
+### 開発環境設定
 
 ```json
 {
-  "batchSize": 10,
-  "delayMs": 100,
-  "maxConcurrency": 10,
-  "enableEnhancedProgress": false
+  "environments": {
+    "development": {
+      "logLevel": "debug",
+      "enableDebugMode": true,
+      "enableDetailedLogging": true,
+      "delayMs": 1000,
+      "batchSize": 2,
+      "enableValidation": true,
+      "showMemoryUsage": true,
+      "showPerformanceMetrics": true,
+      "showDetailedTiming": true
+    }
+  }
 }
 ```
 
-### 例 3: 低メモリ環境向け設定
+### テスト環境設定
 
 ```json
 {
-  "batchSize": 2,
-  "maxConcurrency": 2,
+  "environments": {
+    "test": {
+      "logLevel": "warn",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 100,
+      "batchSize": 3,
+      "enableValidation": true,
+      "useMockData": true,
+      "enableEnhancedProgress": false
+    }
+  }
+}
+```
+
+### 本番環境設定
+
+```json
+{
+  "environments": {
+    "production": {
+      "logLevel": "error",
+      "enableDebugMode": false,
+      "enableDetailedLogging": false,
+      "delayMs": 300,
+      "batchSize": 5,
+      "enableValidation": false,
+      "showMemoryUsage": false,
+      "showPerformanceMetrics": false,
+      "showDetailedTiming": false,
+      "useColors": false
+    }
+  }
+}
+```
+
+## 設定の適用方法
+
+### 環境変数での設定
+
+```bash
+# 環境の指定
+export NODE_ENV=development
+npm run generate:bomps
+
+# カスタム設定ファイルの指定
+npm run generate:bomps -- --config custom-config.json
+```
+
+### プログラムでの設定読み込み
+
+```typescript
+import { BompProcessingConfig } from "./src/types";
+
+// 環境別設定の読み込み
+const config: BompProcessingConfig = {
+  ...baseConfig,
+  ...baseConfig.environments?.[process.env.NODE_ENV || "development"],
+};
+```
+
+## パフォーマンスチューニング
+
+### 高速処理設定
+
+```json
+{
+  "batchSize": 8,
+  "delayMs": 100,
+  "maxConcurrency": 6,
+  "enableEnhancedProgress": false,
+  "showDetailedTiming": false,
+  "enableMemoryOptimization": true
+}
+```
+
+### 安定処理設定
+
+```json
+{
+  "batchSize": 3,
+  "delayMs": 500,
+  "maxRetries": 5,
+  "maxConcurrency": 3,
+  "enableMemoryOptimization": true,
+  "memoryThresholdMB": 100
+}
+```
+
+### 低リソース設定
+
+```json
+{
+  "batchSize": 1,
+  "delayMs": 1000,
+  "maxConcurrency": 1,
+  "enableWorkerPool": false,
+  "enableEnhancedProgress": false,
   "memoryThresholdMB": 50,
   "gcInterval": 5
 }
 ```
 
-### 例 4: テスト用ランダムサンプリング
+## トラブルシューティング設定
+
+### デバッグ設定
 
 ```json
 {
-  "enableCharacterFiltering": true,
-  "characterFilter": {
-    "randomSample": {
-      "enabled": true,
-      "count": 5,
-      "seed": 12345
-    }
-  },
-  "enableDebugMode": true
+  "logLevel": "debug",
+  "enableDebugMode": true,
+  "enableDetailedLogging": true,
+  "showMemoryUsage": true,
+  "showPerformanceMetrics": true,
+  "showDetailedTiming": true,
+  "batchSize": 1,
+  "delayMs": 2000
 }
 ```
 
-### 例 5: 特定範囲のページ ID のみ処理
+### エラー診断設定
 
 ```json
 {
-  "enableCharacterFiltering": true,
-  "characterFilter": {
-    "pageIdRange": {
-      "min": 1,
-      "max": 50
-    },
-    "maxCharacters": 20
+  "maxRetries": 10,
+  "delayMs": 3000,
+  "enableValidation": true,
+  "enableReportGeneration": true,
+  "logLevel": "debug"
+}
+```
+
+## 設定の検証
+
+### 設定ファイルの妥当性確認
+
+```bash
+# JSON 形式の確認
+node -e "console.log(JSON.parse(require('fs').readFileSync('bomp-processing-config.json', 'utf8')))"
+
+# 設定値の確認
+npm run config:validate
+```
+
+### 推奨設定の確認
+
+```typescript
+// 設定値の妥当性チェック
+function validateConfig(config: BompProcessingConfig): boolean {
+  if (config.batchSize < 1 || config.batchSize > 10) {
+    console.warn("batchSize should be between 1 and 10");
+    return false;
   }
+
+  if (config.delayMs < 100) {
+    console.warn("delayMs should be at least 100ms to avoid rate limits");
+    return false;
+  }
+
+  return true;
 }
 ```
 
-## パフォーマンス調整
+## 関連ドキュメント
 
-### 高速化のための設定
-
-- `batchSize` を増やす (5-10)
-- `delayMs` を減らす (100-200ms)
-- `maxConcurrency` を増やす (5-10)
-- `enableEnhancedProgress` を無効化
-
-### 安定性重視の設定
-
-- `batchSize` を減らす (2-3)
-- `delayMs` を増やす (300-500ms)
-- `maxRetries` を増やす (5-10)
-- `minSuccessRate` を下げる (0.6-0.7)
-
-### メモリ使用量削減
-
-- `batchSize` を減らす (2-3)
-- `maxConcurrency` を減らす (2-3)
-- `memoryThresholdMB` を下げる (50-80MB)
-- `gcInterval` を減らす (5-8)
-
-## トラブルシューティング
-
-### よくある問題と解決方法
-
-1. **メモリ不足エラー**
-
-   - `batchSize` と `maxConcurrency` を減らす
-   - `memoryThresholdMB` を下げる
-   - `gcInterval` を減らす
-
-2. **API レート制限エラー**
-
-   - `delayMs` を増やす (500-1000ms)
-   - `batchSize` を減らす
-
-3. **処理が遅い**
-
-   - `batchSize` を増やす
-   - `delayMs` を減らす
-   - `maxConcurrency` を増やす
-
-4. **フィルタリングが効かない**
-   - `enableCharacterFiltering` が `true` になっているか確認
-   - キャラクター ID の綴りを確認
-   - フィルター設定の競合をチェック
-
-## 設定ファイルの管理
-
-### 複数の設定ファイルを使用
-
-```bash
-# 開発用設定
-npm run generate:configurable -- --config config/development.json
-
-# 本番用設定
-npm run generate:configurable -- --config config/production.json
-
-# テスト用設定
-npm run generate:configurable -- --config config/test.json
-```
-
-### 設定ファイルのバージョン管理
-
-設定ファイルは Git で管理することを推奨します：
-
-```bash
-# 設定ファイルをコミット
-git add processing-config.json
-git commit -m "Add processing configuration"
-```
-
-### 設定の検証
-
-設定ファイルの妥当性は自動的に検証されますが、手動で確認することも可能です：
-
-```bash
-# 設定ファイルを生成して内容を確認
-npm run generate:config
-cat processing-config.json
-```
-
-## 高度な使用方法
-
-### 環境変数との組み合わせ
-
-設定ファイルと環境変数を組み合わせて使用することも可能です：
-
-```bash
-# 環境変数で設定を上書き
-BATCH_SIZE=10 npm run generate:configurable
-```
-
-### CI/CD での使用
-
-継続的インテグレーション環境での使用例：
-
-```yaml
-# GitHub Actions の例
-- name: Generate character data
-  run: |
-    npm run generate:config
-    # 設定をカスタマイズ
-    jq '.batchSize = 3 | .enableDebugMode = false' processing-config.json > ci-config.json
-    npm run generate:configurable -- --config ci-config.json
-```
-
-このガイドを参考に、あなたの環境や要件に合わせて設定をカスタマイズしてください。
+- [ボンプデータ生成ガイド](./docs/BOMP_GENERATION.md)
+- [API 仕様](./docs/API.md)
+- [使用方法とトラブルシューティング](./docs/USAGE_AND_TROUBLESHOOTING.md)

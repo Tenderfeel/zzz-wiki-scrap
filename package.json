@@ -14,6 +14,11 @@
       "import": "./data/factions.ts",
       "require": "./data/factions.ts",
       "types": "./data/factions.ts"
+    },
+    "./bomps": {
+      "import": "./data/bomps.ts",
+      "require": "./data/bomps.ts",
+      "types": "./data/bomps.ts"
     }
   },
   "files": [
@@ -22,6 +27,7 @@
   "scripts": {
     "generate": "tsx src/main.ts",
     "generate:config": "ts-node --esm src/main-configurable.ts",
+    "generate:bomps": "tsx src/main-bomp-generation.ts",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

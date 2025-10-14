@@ -60,6 +60,14 @@ export type CharacterEntry = {
   wikiUrl: string; // wiki URL
 };
 
+// ボンプエントリー（Scraping.mdから抽出される情報）
+export type BompEntry = {
+  id: string; // リンクテキスト（例: "excaliboo"）
+  pageId: number; // API用ページID（例: 912）
+  wikiUrl: string; // wiki URL
+  jaName: string; // 日本語名（例: "セイケンボンプ"）
+};
+
 // list.json用の型定義
 export interface ValueType {
   id: string;
@@ -134,10 +142,92 @@ export type Bomp = {
   name: { [key in Lang]: string }; // 多言語名
   stats: Stats; // 属性
   releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
-  faction?: number[]; // 陣営ID
+  faction: number[]; // 陣営ID（空配列の場合は陣営なし）
   attr: Attributes; // ステータス
   extraAbility: string; // 『追加能力』
 };
+
+// ボンプ処理用の中間データ型
+export interface BasicBompInfo {
+  id: string;
+  name: string;
+  stats: string;
+  releaseVersion?: number;
+}
+
+export interface AttributesInfo {
+  hp: number[];
+  atk: number[];
+  def: number[];
+  impact: number;
+  critRate: number;
+  critDmg: number;
+  anomalyMastery: number;
+  anomalyProficiency: number;
+  penRatio: number;
+  energy: number;
+}
+
+export interface ProcessedBompData {
+  basicInfo: BasicBompInfo;
+  attributesInfo: AttributesInfo;
+  extraAbility: string;
+  factionIds?: number[];
+}
+
+// ボンプ処理設定
+export interface BompProcessingConfig {
+  batchSize: number;
+  delayMs: number;
+  maxRetries: number;
+  outputPath: string;
+  enableValidation: boolean;
+  scrapingFilePath: string;
+  reportOutputPath: string;
+  minSuccessRate: number;
+  logLevel: string;
+  enableDebugMode: boolean;
+  maxConcurrency?: number;
+  enableMemoryOptimization?: boolean;
+  memoryThresholdMB?: number;
+  gcInterval?: number;
+  enableEnhancedProgress?: boolean;
+  progressUpdateInterval?: number;
+  showMemoryUsage?: boolean;
+  showPerformanceMetrics?: boolean;
+  showDetailedTiming?: boolean;
+  progressBarWidth?: number;
+  useColors?: boolean;
+  enableDetailedLogging?: boolean;
+  environments?: {
+    [key: string]: Partial<BompProcessingConfig>;
+  };
+}
+
+// ボンプ処理結果
+export interface BompProcessingResult {
+  successful: Bomp[];
+  failed: {
+    bompId: string;
+    error: string;
+    partialData?: Partial<Bomp>;
+  }[];
+  statistics: ProcessingStatistics;
+}
+
+// 処理統計
+export interface ProcessingStatistics {
+  totalProcessed: number;
+  successful: number;
+  failed: number;
+  successRate: number;
+  totalTime: number;
+  averageTimePerItem: number;
+  memoryUsage?: {
+    peak: number;
+    average: number;
+  };
+}
 
 export type DeadlyAssultEnemy = {
   id: string;
