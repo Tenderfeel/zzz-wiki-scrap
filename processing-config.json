@@ -23,5 +23,14 @@
   "characterFilter": {},
   "enableDebugMode": false,
   "logLevel": "info",
-  "enableDetailedLogging": false
+  "enableDetailedLogging": false,
+  "bompIconDownload": {
+    "outputDirectory": "assets/images/bomps",
+    "maxConcurrency": 3,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000,
+    "requestDelayMs": 500,
+    "skipExisting": true,
+    "validateDownloads": true
+  }
 }

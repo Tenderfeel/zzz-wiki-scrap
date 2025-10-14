@@ -51,6 +51,42 @@ export const LogMessages = {
   ERROR_RECOVERY_FAILED: "エラーからの回復に失敗",
   CRITICAL_ERROR_DETECTED: "重大なエラーが検出されました",
   GRACEFUL_DEGRADATION: "機能の段階的縮退を実行",
+
+  // BompIconProcessor関連
+  BOMP_ICON_PROCESSING_START: "ボンプアイコン処理開始",
+  BOMP_ICON_PROCESSING_SUCCESS: "ボンプアイコン処理完了",
+  BOMP_ICON_PROCESSING_ERROR: "ボンプアイコン処理エラー",
+  BOMP_ICON_PROCESSING_RETRY: "ボンプアイコン処理リトライ",
+  BOMP_ICON_PROCESSING_FINAL_FAILURE: "ボンプアイコン処理最終失敗",
+  BOMP_ICON_URL_EXTRACTION_START: "アイコンURL抽出開始",
+  BOMP_ICON_URL_EXTRACTION_SUCCESS: "アイコンURL抽出成功",
+  BOMP_ICON_URL_EXTRACTION_ERROR: "アイコンURL抽出エラー",
+  BOMP_ICON_URL_NOT_FOUND: "アイコンURLが見つかりません",
+  BOMP_ICON_URL_INVALID: "無効なアイコンURL",
+  BOMP_ICON_DOWNLOAD_START: "アイコンダウンロード開始",
+  BOMP_ICON_DOWNLOAD_SUCCESS: "アイコンダウンロード完了",
+  BOMP_ICON_DOWNLOAD_ERROR: "アイコンダウンロードエラー",
+  BOMP_ICON_VALIDATION_START: "アイコンファイル検証開始",
+  BOMP_ICON_VALIDATION_SUCCESS: "アイコンファイル検証成功",
+  BOMP_ICON_VALIDATION_ERROR: "アイコンファイル検証エラー",
+  BOMP_ICON_FILE_EXISTS: "既存ファイルをスキップ",
+  BOMP_ICON_DIRECTORY_CREATED: "ディレクトリを作成しました",
+  BOMP_ICON_SECURITY_VALIDATION_ERROR: "セキュリティ検証に失敗",
+  BOMP_ICON_CONTENT_TYPE_INVALID: "無効なコンテンツタイプ",
+
+  // BompIconGenerator関連
+  BOMP_ICON_GENERATION_START: "ボンプアイコンダウンロード処理を開始",
+  BOMP_ICON_GENERATION_SUCCESS: "ボンプアイコンダウンロード処理完了",
+  BOMP_ICON_GENERATION_ERROR: "ボンプアイコンダウンロード処理でエラーが発生",
+  BOMP_ICON_BATCH_START: "バッチ処理開始",
+  BOMP_ICON_BATCH_PROGRESS: "バッチ処理進捗",
+  BOMP_ICON_BATCH_ERROR: "バッチ処理エラー",
+  BOMP_ICON_BATCH_INDIVIDUAL_FALLBACK: "個別処理にフォールバック",
+  BOMP_ICON_OUTPUT_DIRECTORY_VALIDATION: "出力ディレクトリ検証",
+  BOMP_ICON_OUTPUT_DIRECTORY_CREATED: "出力ディレクトリを作成",
+  BOMP_ICON_OUTPUT_DIRECTORY_WRITE_TEST: "出力ディレクトリ書き込み権限確認",
+  BOMP_ICON_STATISTICS_SUMMARY: "ボンプアイコンダウンロード統計",
+  BOMP_ICON_PERFORMANCE_METRICS: "パフォーマンス統計",
 } as const;
 
 /**

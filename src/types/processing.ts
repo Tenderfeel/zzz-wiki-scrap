@@ -98,3 +98,57 @@ export interface BompProcessingResult {
   }[];
   statistics: ProcessingStatistics;
 }
+
+// ボンプアイコンダウンロード用の型定義
+export interface BompIcon {
+  bompId: string; // Scraping.mdのリンクテキスト
+  iconUrl: string; // 元のHoyoLab画像URL
+  localPath: string; // ローカルファイルパス
+  fileSize: number; // ファイルサイズ（バイト）
+  downloadedAt: Date; // ダウンロード日時
+}
+
+export interface BompIconInfo {
+  bompId: string;
+  iconUrl: string;
+  localPath: string;
+  fileSize?: number;
+  downloadedAt?: Date;
+}
+
+export interface BompIconDownloadResult {
+  success: boolean;
+  bompId: string;
+  iconInfo?: BompIconInfo;
+  error?: string;
+  retryCount: number;
+}
+
+export interface BompIconConfig {
+  outputDirectory: string; // デフォルト: "assets/images/bomps"
+  maxConcurrency: number; // デフォルト: 3
+  retryAttempts: number; // デフォルト: 3
+  retryDelayMs: number; // デフォルト: 1000
+  requestDelayMs: number; // デフォルト: 500
+  skipExisting: boolean; // デフォルト: true
+  validateDownloads: boolean; // デフォルト: true
+  maxFileSizeMB?: number; // デフォルト: 10
+  allowedExtensions?: string[]; // デフォルト: [".png", ".jpg", ".jpeg", ".webp"]
+  strictSecurity?: boolean; // デフォルト: true
+}
+
+export interface BompIconProcessingResult {
+  successful: BompIconInfo[];
+  failed: {
+    bompId: string;
+    error: string;
+    iconUrl?: string;
+  }[];
+  statistics: {
+    total: number;
+    successful: number;
+    failed: number;
+    totalSizeBytes: number;
+    processingTimeMs: number;
+  };
+}

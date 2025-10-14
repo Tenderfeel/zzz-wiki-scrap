@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { BompIconConfig } from "../types/processing";
 
 /**
  * 処理設定インターフェース
@@ -43,6 +44,9 @@ export interface ProcessingConfig {
   enableDebugMode: boolean;
   logLevel: "error" | "warn" | "info" | "debug";
   enableDetailedLogging: boolean;
+
+  // ボンプアイコンダウンロード設定
+  bompIconDownload: BompIconConfig;
 }
 
 /**
@@ -118,6 +122,20 @@ export const DEFAULT_CONFIG: ProcessingConfig = {
   enableDebugMode: false,
   logLevel: "info",
   enableDetailedLogging: false,
+
+  // ボンプアイコンダウンロード設定
+  bompIconDownload: {
+    outputDirectory: "assets/images/bomps",
+    maxConcurrency: 3,
+    retryAttempts: 3,
+    retryDelayMs: 1000,
+    requestDelayMs: 500,
+    skipExisting: true,
+    validateDownloads: true,
+    maxFileSizeMB: 10,
+    allowedExtensions: [".png", ".jpg", ".jpeg", ".webp"],
+    strictSecurity: true,
+  },
 };
 
 /**
@@ -251,6 +269,9 @@ export class ConfigManager {
       this.validateCharacterFilter(config.characterFilter, errors);
     }
 
+    // ボンプアイコンダウンロード設定の検証
+    this.validateBompIconConfig(config.bompIconDownload, errors);
+
     if (errors.length > 0) {
       console.warn(`⚠️  設定に問題があります:`);
       errors.forEach((error) => console.warn(`  - ${error}`));
@@ -296,10 +317,90 @@ export class ConfigManager {
   }
 
   /**
+   * ボンプアイコンダウンロード設定を検証
+   */
+  private validateBompIconConfig(
+    config: BompIconConfig,
+    errors: string[]
+  ): void {
+    // outputDirectory の検証
+    if (!config.outputDirectory || config.outputDirectory.trim() === "") {
+      errors.push("bompIconDownload.outputDirectory は空にできません");
+    }
+
+    // maxConcurrency の検証
+    if (config.maxConcurrency < 1 || config.maxConcurrency > 10) {
+      errors.push(
+        "bompIconDownload.maxConcurrency は 1-10 の範囲内である必要があります"
+      );
+    }
+
+    // retryAttempts の検証
+    if (config.retryAttempts < 0 || config.retryAttempts > 10) {
+      errors.push(
+        "bompIconDownload.retryAttempts は 0-10 の範囲内である必要があります"
+      );
+    }
+
+    // retryDelayMs の検証
+    if (config.retryDelayMs < 0 || config.retryDelayMs > 30000) {
+      errors.push(
+        "bompIconDownload.retryDelayMs は 0-30000 の範囲内である必要があります"
+      );
+    }
+
+    // requestDelayMs の検証
+    if (config.requestDelayMs < 0 || config.requestDelayMs > 10000) {
+      errors.push(
+        "bompIconDownload.requestDelayMs は 0-10000 の範囲内である必要があります"
+      );
+    }
+
+    // パス安全性の検証
+    if (config.outputDirectory.includes("..")) {
+      errors.push(
+        "bompIconDownload.outputDirectory にディレクトリトラバーサル文字列が含まれています"
+      );
+    }
+
+    // maxFileSizeMB の検証
+    if (
+      config.maxFileSizeMB &&
+      (config.maxFileSizeMB < 1 || config.maxFileSizeMB > 100)
+    ) {
+      errors.push(
+        "bompIconDownload.maxFileSizeMB は 1-100 の範囲内である必要があります"
+      );
+    }
+
+    // allowedExtensions の検証
+    if (config.allowedExtensions) {
+      const validExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
+      const invalidExtensions = config.allowedExtensions.filter(
+        (ext) => !validExtensions.includes(ext.toLowerCase())
+      );
+      if (invalidExtensions.length > 0) {
+        errors.push(
+          `bompIconDownload.allowedExtensions に無効な拡張子が含まれています: ${invalidExtensions.join(
+            ", "
+          )}`
+        );
+      }
+    }
+  }
+
+  /**
    * 現在の設定を取得
    */
   getConfig(): ProcessingConfig {
     return { ...this.config };
+  }
+
+  /**
+   * ボンプアイコンダウンロード設定を取得
+   */
+  getBompIconConfig(): BompIconConfig {
+    return { ...this.config.bompIconDownload };
   }
 
   /**
@@ -372,6 +473,9 @@ export class ConfigManager {
       );
       console.log(`入力ファイル: ${this.config.scrapingFilePath}`);
       console.log(`出力ファイル: ${this.config.outputFilePath}`);
+      console.log(
+        `ボンプアイコン出力: ${this.config.bompIconDownload.outputDirectory}`
+      );
       console.log(`=======================\n`);
     }
   }
@@ -461,6 +565,33 @@ export class ConfigManager {
     report += `- ログレベル: ${this.config.logLevel}\n`;
     report += `- 詳細ログ: ${
       this.config.enableDetailedLogging ? "有効" : "無効"
+    }\n\n`;
+
+    report += `## ボンプアイコンダウンロード設定\n`;
+    report += `- 出力ディレクトリ: ${this.config.bompIconDownload.outputDirectory}\n`;
+    report += `- 最大並行数: ${this.config.bompIconDownload.maxConcurrency}\n`;
+    report += `- リトライ回数: ${this.config.bompIconDownload.retryAttempts}\n`;
+    report += `- リトライ遅延: ${this.config.bompIconDownload.retryDelayMs}ms\n`;
+    report += `- リクエスト遅延: ${this.config.bompIconDownload.requestDelayMs}ms\n`;
+    report += `- 既存ファイルスキップ: ${
+      this.config.bompIconDownload.skipExisting ? "有効" : "無効"
+    }\n`;
+    report += `- ダウンロード検証: ${
+      this.config.bompIconDownload.validateDownloads ? "有効" : "無効"
+    }\n`;
+    report += `- 最大ファイルサイズ: ${
+      this.config.bompIconDownload.maxFileSizeMB || 10
+    }MB\n`;
+    report += `- 許可拡張子: ${(
+      this.config.bompIconDownload.allowedExtensions || [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+      ]
+    ).join(", ")}\n`;
+    report += `- 厳格セキュリティ: ${
+      this.config.bompIconDownload.strictSecurity !== false ? "有効" : "無効"
     }\n`;
 
     return report;

@@ -8,6 +8,8 @@ inclusion: always
 
 Zenless Zone Zero (ZZZ) キャラクター情報を HoyoLab API から取得する TypeScript ベースのデータスクレイピングシステム。型安全性、エラー耐性、保守可能なアーキテクチャを重視。
 
+チャットと文書は日本語で記載する。
+
 ## 技術スタック
 
 - **Runtime**: Node.js + TypeScript

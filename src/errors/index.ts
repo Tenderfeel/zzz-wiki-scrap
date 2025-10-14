@@ -91,3 +91,54 @@ export class NameMappingError extends Error {
     this.cause = cause;
   }
 }
+
+// ボンプアイコンダウンロード専用エラークラス
+export class BompIconError extends Error {
+  constructor(
+    public type: "DOWNLOAD" | "VALIDATION" | "FILESYSTEM" | "SECURITY",
+    public bompId: string,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(`${type} (${bompId}): ${details}`);
+    this.name = "BompIconError";
+  }
+}
+
+export class BompIconDownloadError extends BompIconError {
+  constructor(bompId: string, details: string, originalError?: Error) {
+    super("DOWNLOAD", bompId, details, originalError);
+  }
+}
+
+export class BompIconValidationError extends BompIconError {
+  constructor(bompId: string, details: string, originalError?: Error) {
+    super("VALIDATION", bompId, details, originalError);
+  }
+}
+
+export class BompIconFileSystemError extends BompIconError {
+  constructor(bompId: string, details: string, originalError?: Error) {
+    super("FILESYSTEM", bompId, details, originalError);
+  }
+}
+
+export class BompIconSecurityError extends BompIconError {
+  constructor(bompId: string, details: string, originalError?: Error) {
+    super("SECURITY", bompId, details, originalError);
+  }
+}
+
+export class BompIconBatchError extends Error {
+  constructor(
+    public failedBomps: string[],
+    public totalBomps: number,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(
+      `ボンプアイコンバッチ処理エラー: ${failedBomps.length}/${totalBomps} 個が失敗 - ${details}`
+    );
+    this.name = "BompIconBatchError";
+  }
+}

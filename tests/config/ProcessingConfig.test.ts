@@ -217,5 +217,59 @@ describe("ProcessingConfig", () => {
       expect(DEFAULT_CONFIG.enableCharacterFiltering).toBe(false);
       expect(DEFAULT_CONFIG.enableDebugMode).toBe(false);
     });
+
+    it("should have valid bompIconDownload defaults", () => {
+      expect(DEFAULT_CONFIG.bompIconDownload).toBeDefined();
+      expect(DEFAULT_CONFIG.bompIconDownload.outputDirectory).toBe(
+        "assets/images/bomps"
+      );
+      expect(DEFAULT_CONFIG.bompIconDownload.maxConcurrency).toBe(3);
+      expect(DEFAULT_CONFIG.bompIconDownload.retryAttempts).toBe(3);
+      expect(DEFAULT_CONFIG.bompIconDownload.retryDelayMs).toBe(1000);
+      expect(DEFAULT_CONFIG.bompIconDownload.requestDelayMs).toBe(500);
+      expect(DEFAULT_CONFIG.bompIconDownload.skipExisting).toBe(true);
+      expect(DEFAULT_CONFIG.bompIconDownload.validateDownloads).toBe(true);
+    });
+  });
+
+  describe("BompIconDownload Configuration", () => {
+    it("should validate bompIconDownload configuration", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test valid configuration
+      expect(() => {
+        configManager.updateConfig({
+          bompIconDownload: {
+            outputDirectory: "assets/images/bomps",
+            maxConcurrency: 5,
+            retryAttempts: 2,
+            retryDelayMs: 1500,
+            requestDelayMs: 300,
+            skipExisting: false,
+            validateDownloads: true,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    it("should provide getBompIconConfig method", () => {
+      const configManager = ConfigManager.getInstance();
+      const bompIconConfig = configManager.getBompIconConfig();
+
+      expect(bompIconConfig).toBeDefined();
+      expect(bompIconConfig.outputDirectory).toBeDefined();
+      expect(bompIconConfig.maxConcurrency).toBeGreaterThan(0);
+      expect(bompIconConfig.retryAttempts).toBeGreaterThanOrEqual(0);
+    });
+
+    it("should include bompIconDownload in config report", () => {
+      const configManager = ConfigManager.getInstance();
+      const report = configManager.generateConfigReport();
+
+      expect(report).toContain("ボンプアイコンダウンロード設定");
+      expect(report).toContain("出力ディレクトリ:");
+      expect(report).toContain("最大並行数:");
+      expect(report).toContain("リトライ回数:");
+    });
   });
 });

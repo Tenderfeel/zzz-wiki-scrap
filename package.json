@@ -28,6 +28,7 @@
     "generate": "tsx src/main.ts",
     "generate:config": "ts-node --esm src/main-configurable.ts",
     "generate:bomps": "tsx src/main-bomp-generation.ts",
+    "generate:bomp-icons": "tsx src/main-bomp-icon-download.ts",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

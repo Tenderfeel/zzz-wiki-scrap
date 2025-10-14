@@ -11,6 +11,7 @@ export interface ApiResponse {
 export interface PageData {
   id: string;
   name: string;
+  icon_url?: string; // ボンプアイコンURL（ボンプAPI用）
   agent_specialties: { values: string[] };
   agent_stats: { values: string[] };
   agent_rarity: { values: string[] };
