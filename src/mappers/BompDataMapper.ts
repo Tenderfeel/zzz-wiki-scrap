@@ -313,9 +313,9 @@ export class BompDataMapper extends DataMapper {
    * @returns 属性文字列
    */
   private extractStatsStringFromModules(modules: Module[]): string {
-    // baseInfo モジュールから属性情報を探す
+    // ステータス モジュールから属性情報を探す（日本語名「ステータス」または英語名「baseInfo」）
     const baseInfoModule = modules?.find(
-      (module) => module.name === "baseInfo"
+      (module) => module.name === "ステータス" || module.name === "baseInfo"
     );
     if (baseInfoModule) {
       const baseInfoComponent = baseInfoModule.components?.find(
@@ -327,8 +327,50 @@ export class BompDataMapper extends DataMapper {
           const baseInfoData = JSON.parse(baseInfoComponent.data);
           if (baseInfoData.list) {
             for (const item of baseInfoData.list) {
-              if (item.key && item.key.includes("属性")) {
-                return item.key;
+              if (
+                item.key &&
+                item.key === "属性" &&
+                item.value &&
+                Array.isArray(item.value)
+              ) {
+                // HTMLタグを除去して属性名を抽出
+                const rawValue = item.value[0];
+                if (typeof rawValue === "string") {
+                  // HTMLタグを除去
+                  const cleanValue = rawValue.replace(/<[^>]*>/g, "").trim();
+
+                  // 属性名の正規化
+                  let attributeName: string;
+
+                  // 英語属性名の場合はそのまま返す
+                  if (
+                    [
+                      "ice",
+                      "fire",
+                      "electric",
+                      "physical",
+                      "ether",
+                      "frost",
+                      "auricInk",
+                    ].includes(cleanValue.toLowerCase())
+                  ) {
+                    attributeName = cleanValue;
+                  } else if (cleanValue.endsWith("属性")) {
+                    // 既に「属性」が含まれている場合
+                    attributeName = cleanValue;
+                  } else {
+                    // 日本語の属性名に「属性」を付加
+                    attributeName = cleanValue + "属性";
+                  }
+
+                  logger.debug("ボンプ属性をbaseInfoから抽出", {
+                    rawValue,
+                    cleanValue,
+                    attributeName,
+                  });
+
+                  return attributeName;
+                }
               }
             }
           }
@@ -338,9 +380,9 @@ export class BompDataMapper extends DataMapper {
       }
     }
 
-    // デフォルト値として physical を返す
+    // デフォルト値として物理属性を返す
     logger.warn(
-      "属性情報が見つからないため、デフォルト値 'physical' を使用します"
+      "属性情報が見つからないため、デフォルト値 '物理属性' を使用します"
     );
     return "物理属性";
   }

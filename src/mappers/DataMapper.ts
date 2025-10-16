@@ -38,6 +38,7 @@ export class DataMapper {
 
   // 属性マッピング
   private static readonly STATS_MAPPING: Record<string, Stats> = {
+    // 日本語属性名
     氷属性: "ice",
     炎属性: "fire",
     電気属性: "electric",
@@ -45,6 +46,23 @@ export class DataMapper {
     エーテル属性: "ether",
     霜烈属性: "frost",
     玄墨属性: "auricInk",
+    // 英語属性名（APIから直接返される場合）
+    ice: "ice",
+    fire: "fire",
+    electric: "electric",
+    physical: "physical",
+    ether: "ether",
+    frost: "frost",
+    auricInk: "auricInk",
+    // 英語属性名（大文字）
+    Ice: "ice",
+    Fire: "fire",
+    Electric: "electric",
+    Physical: "physical",
+    Ether: "ether",
+    Frost: "frost",
+    "Auric Ink": "auricInk",
+    "Frost Attribute": "frost",
   };
 
   // レア度マッピング

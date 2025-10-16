@@ -1,0 +1,16 @@
+{
+  "bomp": {
+    "batchSize": 2,
+    "delayMs": 500,
+    "maxRetries": 3,
+    "scrapingFilePath": "Scraping.md",
+    "outputPath": "data/bomps-debug.ts",
+    "enableReportGeneration": true,
+    "reportOutputPath": "bomp-debug-report.md",
+    "minSuccessRate": 0.5,
+    "enableValidation": true,
+    "enableDebugMode": true,
+    "logLevel": "debug",
+    "enableDetailedLogging": true
+  }
+}

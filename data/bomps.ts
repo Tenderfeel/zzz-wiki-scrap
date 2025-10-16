@@ -24,7 +24,7 @@ export default [
   {
     id: "mercury",
     name: { ja: "「マーキュリー」", en: "「マーキュリー」" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 2.2,
     faction: [4, 9],
     attr: {
@@ -104,7 +104,7 @@ export default [
   {
     id: "robin",
     name: { ja: "ロビン", en: "ロビン" },
-    stats: "physical",
+    stats: "ether",
     releaseVersion: 1.7,
     faction: [10],
     attr: {
@@ -124,7 +124,7 @@ export default [
   {
     id: "snap",
     name: { ja: "カチャコ", en: "カチャコ" },
-    stats: "physical",
+    stats: "ether",
     releaseVersion: 1.5,
     faction: [8],
     attr: {
@@ -144,7 +144,7 @@ export default [
   {
     id: "brawlerboo",
     name: { ja: "カクトウボンプ", en: "カクトウボンプ" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 1.4,
     faction: [],
     attr: {
@@ -164,7 +164,7 @@ export default [
   {
     id: "agentGulliver",
     name: { ja: "ガリバー隊員", en: "ガリバー隊員" },
-    stats: "physical",
+    stats: "electric",
     releaseVersion: 1.4,
     faction: [5],
     attr: {
@@ -184,7 +184,7 @@ export default [
   {
     id: "knightboo",
     name: { ja: "カチコミボンプ", en: "カチコミボンプ" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 1.3,
     faction: [],
     attr: {
@@ -204,7 +204,7 @@ export default [
   {
     id: "baddieboo",
     name: { ja: "カチコミボンプ", en: "カチコミボンプ" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 1.3,
     faction: [],
     attr: {
@@ -364,7 +364,7 @@ export default [
   {
     id: "cryboo",
     name: { ja: "ウルリンボンプ", en: "ウルリンボンプ" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -424,7 +424,7 @@ export default [
   {
     id: "electroboo",
     name: { ja: "ビリビリボンプ", en: "ビリビリボンプ" },
-    stats: "physical",
+    stats: "electric",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -484,7 +484,7 @@ export default [
   {
     id: "sharkboo",
     name: { ja: "ガブットボンプ", en: "ガブットボンプ" },
-    stats: "physical",
+    stats: "ice",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -504,7 +504,7 @@ export default [
   {
     id: "devilboo",
     name: { ja: "アクマデボンプ", en: "アクマデボンプ" },
-    stats: "physical",
+    stats: "ether",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -524,7 +524,7 @@ export default [
   {
     id: "rocketboo",
     name: { ja: "ハヤスギボンプ", en: "ハヤスギボンプ" },
-    stats: "physical",
+    stats: "fire",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -544,7 +544,7 @@ export default [
   {
     id: "plugboo",
     name: { ja: "プラグノボンプ", en: "プラグノボンプ" },
-    stats: "physical",
+    stats: "electric",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -564,7 +564,7 @@ export default [
   {
     id: "resonaboo",
     name: { ja: "レゾナンボンプ", en: "レゾナンボンプ" },
-    stats: "physical",
+    stats: "ether",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -664,7 +664,7 @@ export default [
   {
     id: "penguinboo",
     name: { ja: "ペンギンボンプ", en: "ペンギンボンプ" },
-    stats: "physical",
+    stats: "ice",
     releaseVersion: 1,
     faction: [],
     attr: {
@@ -680,5 +680,5 @@ export default [
       energy: 0,
     },
     extraAbility: "",
-  },
+  }
 ] as Bomp[];
