@@ -704,8 +704,8 @@ describe("BompGenerator", () => {
         );
       });
 
-      it("有効なstats値（frostAttribute、auricInk）を受け入れる", () => {
-        validBomp.stats = "frostAttribute";
+      it("有効なstats値（frost、auricInk）を受け入れる", () => {
+        validBomp.stats = "frost";
         let result = bompGenerator.validateBomp(validBomp);
         expect(result.isValid).toBe(true);
 

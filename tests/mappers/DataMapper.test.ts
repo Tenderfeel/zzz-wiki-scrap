@@ -71,7 +71,7 @@ describe("DataMapper", () => {
       expect(dataMapper.mapStats("電気属性")).toBe("electric");
       expect(dataMapper.mapStats("物理属性")).toBe("physical");
       expect(dataMapper.mapStats("エーテル属性")).toBe("ether");
-      expect(dataMapper.mapStats("霜烈属性")).toBe("frostAttribute");
+      expect(dataMapper.mapStats("霜烈属性")).toBe("frost");
       expect(dataMapper.mapStats("玄墨属性")).toBe("auricInk");
     });
 

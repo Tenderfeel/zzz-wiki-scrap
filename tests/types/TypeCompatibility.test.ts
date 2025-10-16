@@ -167,7 +167,7 @@ describe("型定義の互換性テスト", () => {
         "ice",
         "physical",
         "electric",
-        "frostAttribute",
+        "frost",
         "auricInk",
       ];
 

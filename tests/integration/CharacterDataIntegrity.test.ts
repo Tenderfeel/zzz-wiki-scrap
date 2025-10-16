@@ -170,7 +170,7 @@ describe("キャラクターデータの整合性テスト", () => {
         "ice",
         "physical",
         "electric",
-        "frostAttribute",
+        "frost",
         "auricInk",
       ];
 

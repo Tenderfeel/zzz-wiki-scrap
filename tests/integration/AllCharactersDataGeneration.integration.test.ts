@@ -640,7 +640,7 @@ ${characters}
           "ice",
           "physical",
           "electric",
-          "frostAttribute",
+          "frost",
           "auricInk",
         ]).toContain(character.stats);
 

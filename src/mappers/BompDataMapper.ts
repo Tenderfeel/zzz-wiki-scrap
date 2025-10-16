@@ -46,14 +46,17 @@ export class BompDataMapper extends DataMapper {
         throw new MappingError("ボンプ名が見つかりません");
       }
 
-      // 属性を抽出（文字列として保持、後でマッピング）
-      let stats: string;
+      // 属性を抽出してマッピング
+      let rawStats: string;
       if (page.agent_stats?.values?.[0]) {
-        stats = page.agent_stats.values[0];
+        rawStats = page.agent_stats.values[0];
       } else {
         // フォールバック: modulesから属性情報を探す
-        stats = this.extractStatsStringFromModules(page.modules);
+        rawStats = this.extractStatsStringFromModules(page.modules);
       }
+
+      // 日本語属性を英語にマッピング
+      const stats = this.mapStats(rawStats);
 
       // リリースバージョンを抽出（オプショナル）
       const releaseVersion = this.extractReleaseVersion(page.modules);

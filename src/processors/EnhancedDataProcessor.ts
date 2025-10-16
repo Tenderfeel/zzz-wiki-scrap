@@ -164,7 +164,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       電気属性: "electric",
       物理属性: "physical",
       エーテル属性: "ether",
-      霜烈属性: "frostAttribute",
+      霜烈属性: "frost",
       玄墨属性: "auricInk",
       // 「属性」なしバージョン
       氷: "ice",
@@ -172,7 +172,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       電気: "electric",
       物理: "physical",
       エーテル: "ether",
-      霜烈: "frostAttribute",
+      霜烈: "frost",
       玄墨: "auricInk",
     };
 
@@ -471,7 +471,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       "ice",
       "physical",
       "electric",
-      "frostAttribute",
+      "frost",
       "auricInk",
     ];
     if (!validStats.includes(character.stats)) {

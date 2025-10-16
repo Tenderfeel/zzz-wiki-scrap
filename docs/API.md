@@ -164,7 +164,7 @@ type Stats =
   | "ice"
   | "physical"
   | "electric"
-  | "frostAttribute"
+  | "frost"
   | "auricInk";
 ```
 

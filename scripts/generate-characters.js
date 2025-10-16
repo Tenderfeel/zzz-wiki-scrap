@@ -92,7 +92,7 @@ const STATS_MAP = {
   電気属性: "electric",
   物理属性: "physical",
   エーテル属性: "ether",
-  霜烈属性: "frostAttribute",
+  霜烈属性: "frost",
   玄墨属性: "auricInk",
 };
 

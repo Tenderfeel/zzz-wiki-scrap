@@ -13,7 +13,7 @@
 - **全キャラクターが必須フィールドを持つこと**: id, name, fullName, specialty, stats, faction, rarity, attr の存在確認
 - **name と fullName が多言語対応していること**: ja/en 両方の言語サポート検証
 - **specialty が有効な値であること**: attack, stun, anomaly, support, defense, rupture の検証
-- **stats が有効な値であること**: ether, fire, ice, physical, electric, frostAttribute, auricInk の検証
+- **stats が有効な値であること**: ether, fire, ice, physical, electric, frost, auricInk の検証
 - **rarity が有効な値であること**: A または S の検証
 - **attr フィールドが正しい構造を持つこと**: 配列フィールド（hp, atk, def）が 7 要素、単一値フィールドが数値
 

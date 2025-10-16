@@ -311,7 +311,7 @@ export class AllCharactersGenerator {
       "ice",
       "physical",
       "electric",
-      "frostAttribute",
+      "frost",
       "auricInk",
     ];
     if (character.stats && !validStats.includes(character.stats)) {

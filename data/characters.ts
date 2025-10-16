@@ -558,7 +558,7 @@ export default [
     name: { ja: "雅", en: "Miyabi" },
     fullName: { ja: "星見雅", en: "Hoshimi Miyabi" },
     specialty: "anomaly",
-    stats: "frostAttribute",
+    stats: "frost",
     assistType: "defensive",
     faction: 5,
     rarity: "S",

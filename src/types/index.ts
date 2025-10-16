@@ -17,7 +17,7 @@ export type Stats =
   | "ice" // 氷
   | "physical" // 物理
   | "electric" // 電気
-  | "frostAttribute" // 霜烈
+  | "frost" // 霜烈
   | "auricInk"; // 玄墨
 
 // レア度

@@ -200,7 +200,7 @@ export class BompGenerator {
         "ice",
         "physical",
         "electric",
-        "frostAttribute",
+        "frost",
         "auricInk",
       ];
       if (bomp.stats && !validStats.includes(bomp.stats)) {
