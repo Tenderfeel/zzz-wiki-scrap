@@ -476,7 +476,7 @@ ${bompEntries}
       // Verify data integrity
       expect(bomp.id).toBe("integrity-test-bomp-1");
       expect(bomp.name.ja).toBe("整合性テストボンプ");
-      expect(bomp.stats).toBe("fire");
+      expect(bomp.stats).toEqual(["fire"]);
       expect(bomp.faction).toEqual([1, 2]);
 
       // Verify attributes with specific values
@@ -496,7 +496,7 @@ ${bompEntries}
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
       expect(outputContent).toContain('"impact": 25');
       expect(outputContent).toContain('"critRate": 12');
-      expect(outputContent).toContain('"stats": "fire"');
+      expect(outputContent).toContain('"stats": ["fire"]');
     });
   });
 

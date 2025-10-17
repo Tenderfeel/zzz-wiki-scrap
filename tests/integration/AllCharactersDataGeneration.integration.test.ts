@@ -159,6 +159,21 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
         expect(character.fullName).toHaveProperty("ja");
         expect(character.fullName).toHaveProperty("en");
 
+        // stats が配列であることを確認
+        expect(Array.isArray(character.stats)).toBe(true);
+        expect(character.stats.length).toBeGreaterThan(0);
+        character.stats.forEach((stat) => {
+          expect([
+            "ether",
+            "fire",
+            "ice",
+            "physical",
+            "electric",
+            "frost",
+            "auricInk",
+          ]).toContain(stat);
+        });
+
         // 属性配列の長さ確認
         expect(character.attr.hp).toHaveLength(7);
         expect(character.attr.atk).toHaveLength(7);
@@ -634,15 +649,20 @@ ${characters}
           "defense",
           "rupture",
         ]).toContain(character.specialty);
-        expect([
-          "ether",
-          "fire",
-          "ice",
-          "physical",
-          "electric",
-          "frost",
-          "auricInk",
-        ]).toContain(character.stats);
+        // stats が配列であることを確認し、各要素が有効であることを確認
+        expect(Array.isArray(character.stats)).toBe(true);
+        expect(character.stats.length).toBeGreaterThan(0);
+        character.stats.forEach((stat) => {
+          expect([
+            "ether",
+            "fire",
+            "ice",
+            "physical",
+            "electric",
+            "frost",
+            "auricInk",
+          ]).toContain(stat);
+        });
 
         expect(["A", "S"]).toContain(character.rarity);
 

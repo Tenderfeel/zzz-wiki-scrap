@@ -138,7 +138,7 @@ export type Character = {
   name: { [key in Lang]: string }; // 多言語名
   fullName: { [key in Lang]: string }; // 多言語フルネーム
   specialty: Specialty; // 特性
-  stats: Stats; // 属性
+  stats: Stats[]; // 属性（配列形式）
   assistType?: AssistType; // 支援タイプ（オプショナル）
   faction: number; // 陣営ID
   rarity: Rarity; // レア度
@@ -150,7 +150,7 @@ export type Character = {
 export type Bomp = {
   id: string; // Scraping.mdのリンクテキストと同じ
   name: { [key in Lang]: string }; // 多言語名
-  stats: Stats; // 属性
+  stats: Stats[]; // 属性（配列形式）
   releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
   faction: number[]; // 陣営ID（空配列の場合は陣営なし）
   attr: Attributes; // ステータス
@@ -161,7 +161,7 @@ export type Bomp = {
 export interface BasicBompInfo {
   id: string;
   name: string;
-  stats: string;
+  stats: string; // 処理中は文字列、最終的にStats[]に変換される
   releaseVersion?: number;
 }
 

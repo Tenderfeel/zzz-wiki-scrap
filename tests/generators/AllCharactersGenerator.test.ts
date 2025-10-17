@@ -49,7 +49,7 @@ describe("AllCharactersGenerator", () => {
     name: { ja: "テストキャラクター", en: "Test Character" },
     fullName: { ja: "テストキャラクター", en: "Test Character" },
     specialty: "stun",
-    stats: "ice",
+    stats: ["ice"],
     faction: 1,
     rarity: "S",
     attr: {

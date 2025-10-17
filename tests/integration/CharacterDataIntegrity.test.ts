@@ -163,7 +163,7 @@ describe("キャラクターデータの整合性テスト", () => {
       expect(invalidSpecialties).toEqual([]);
     });
 
-    it("stats が有効な値であること", () => {
+    it("stats が有効な値の配列であること", () => {
       const validStats: Stats[] = [
         "ether",
         "fire",
@@ -174,9 +174,20 @@ describe("キャラクターデータの整合性テスト", () => {
         "auricInk",
       ];
 
-      const invalidStats = characters.filter(
-        (char) => !validStats.includes(char.stats)
-      );
+      const invalidStats = characters.filter((char) => {
+        // stats が配列であることを確認
+        if (!Array.isArray(char.stats)) {
+          return true;
+        }
+
+        // 配列が空でないことを確認
+        if (char.stats.length === 0) {
+          return true;
+        }
+
+        // 配列内の全ての値が有効であることを確認
+        return !char.stats.every((stat) => validStats.includes(stat));
+      });
 
       expect(invalidStats).toEqual([]);
     });

@@ -18,7 +18,7 @@ describe("型定義の互換性テスト", () => {
         name: { ja: "テストキャラ", en: "Test Character" },
         fullName: { ja: "テスト・キャラクター", en: "Test Character" },
         specialty: "attack",
-        stats: "physical",
+        stats: ["physical"],
         faction: 1,
         rarity: "A",
         attr: {
@@ -50,7 +50,7 @@ describe("型定義の互換性テスト", () => {
           en: "Assist Test Character",
         },
         specialty: "support",
-        stats: "ether",
+        stats: ["ether"],
         assistType: "evasive",
         faction: 2,
         rarity: "S",
@@ -80,7 +80,7 @@ describe("型定義の互換性テスト", () => {
           name: { ja: "旧キャラ", en: "Old Character" },
           fullName: { ja: "旧・キャラクター", en: "Old Character" },
           specialty: "attack",
-          stats: "fire",
+          stats: ["fire"],
           faction: 1,
           rarity: "A",
           attr: {
@@ -101,7 +101,7 @@ describe("型定義の互換性テスト", () => {
           name: { ja: "新キャラ", en: "New Character" },
           fullName: { ja: "新・キャラクター", en: "New Character" },
           specialty: "support",
-          stats: "ice",
+          stats: ["ice"],
           assistType: "defensive",
           faction: 2,
           rarity: "S",
@@ -174,6 +174,61 @@ describe("型定義の互換性テスト", () => {
       expect(stats).toHaveLength(7);
     });
 
+    it("Character.stats配列型が正常に動作することを確認", () => {
+      // 単一属性キャラクター
+      const singleStatsCharacter: Character = {
+        id: "single-stats",
+        name: { ja: "単一属性", en: "Single Stats" },
+        fullName: { ja: "単一属性キャラ", en: "Single Stats Character" },
+        specialty: "attack",
+        stats: ["physical"],
+        faction: 1,
+        rarity: "A",
+        attr: {
+          hp: [100, 200, 300, 400, 500, 600, 700],
+          atk: [50, 60, 70, 80, 90, 100, 110],
+          def: [30, 40, 50, 60, 70, 80, 90],
+          impact: 95,
+          critRate: 5,
+          critDmg: 50,
+          anomalyMastery: 90,
+          anomalyProficiency: 86,
+          penRatio: 0,
+          energy: 1.2,
+        },
+      };
+
+      // 複数属性キャラクター（霜烈属性）
+      const multiStatsCharacter: Character = {
+        id: "multi-stats",
+        name: { ja: "複数属性", en: "Multi Stats" },
+        fullName: { ja: "複数属性キャラ", en: "Multi Stats Character" },
+        specialty: "anomaly",
+        stats: ["ice", "frost"],
+        faction: 1,
+        rarity: "S",
+        attr: {
+          hp: [120, 220, 320, 420, 520, 620, 720],
+          atk: [55, 65, 75, 85, 95, 105, 115],
+          def: [35, 45, 55, 65, 75, 85, 95],
+          impact: 88,
+          critRate: 5,
+          critDmg: 50,
+          anomalyMastery: 93,
+          anomalyProficiency: 90,
+          penRatio: 0,
+          energy: 1.2,
+        },
+      };
+
+      expect(singleStatsCharacter.stats).toHaveLength(1);
+      expect(singleStatsCharacter.stats[0]).toBe("physical");
+
+      expect(multiStatsCharacter.stats).toHaveLength(2);
+      expect(multiStatsCharacter.stats).toContain("ice");
+      expect(multiStatsCharacter.stats).toContain("frost");
+    });
+
     it("Rarity型が正常に動作することを確認", () => {
       const rarities: Rarity[] = ["A", "S"];
 
@@ -226,7 +281,7 @@ describe("型定義の互換性テスト", () => {
         name: { ja: "テスト1", en: "Test1" },
         fullName: { ja: "テスト・ワン", en: "Test One" },
         specialty: "attack",
-        stats: "physical",
+        stats: ["physical"],
         faction: 1,
         rarity: "A",
         attr: {
@@ -265,7 +320,7 @@ describe("型定義の互換性テスト", () => {
           name: { ja: "キャラ1", en: "Char1" },
           fullName: { ja: "キャラクター・ワン", en: "Character One" },
           specialty: "support",
-          stats: "ether",
+          stats: ["ether"],
           assistType: "evasive",
           faction: 1,
           rarity: "S",
@@ -287,7 +342,7 @@ describe("型定義の互換性テスト", () => {
           name: { ja: "キャラ2", en: "Char2" },
           fullName: { ja: "キャラクター・ツー", en: "Character Two" },
           specialty: "attack",
-          stats: "fire",
+          stats: ["fire"],
           faction: 2,
           rarity: "A",
           attr: {
@@ -331,7 +386,7 @@ describe("型定義の互換性テスト", () => {
           en: "JSON Test Character",
         },
         specialty: "support",
-        stats: "ice",
+        stats: ["ice"],
         assistType: "defensive",
         faction: 1,
         rarity: "S",
@@ -365,7 +420,7 @@ describe("型定義の互換性テスト", () => {
           en: "JSON No Assist Character",
         },
         specialty: "attack",
-        stats: "physical",
+        stats: ["physical"],
         faction: 1,
         rarity: "A",
         attr: {

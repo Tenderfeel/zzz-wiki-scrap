@@ -47,8 +47,8 @@ export class BompGenerator {
         throw new ValidationError("ボンプIDが指定されていません");
       }
 
-      // 基本情報のマッピング（文字列をStats型に変換）
-      const stats = this.dataMapper.mapStats(jaData.basicInfo.stats);
+      // 基本情報の取得（既に配列形式）
+      const stats = jaData.basicInfo.stats;
 
       // 多言語名の作成（英語データがない場合は日本語をフォールバック）
       const enName = enData?.basicInfo?.name || jaData.basicInfo.name;
@@ -203,8 +203,16 @@ export class BompGenerator {
         "frost",
         "auricInk",
       ];
-      if (bomp.stats && !validStats.includes(bomp.stats)) {
-        errors.push(`stats "${bomp.stats}" は有効な値ではありません`);
+      if (bomp.stats) {
+        if (!Array.isArray(bomp.stats) || bomp.stats.length === 0) {
+          errors.push(`stats は空でない配列である必要があります`);
+        } else {
+          for (const stat of bomp.stats) {
+            if (!validStats.includes(stat)) {
+              errors.push(`stats "${stat}" は有効な値ではありません`);
+            }
+          }
+        }
       }
 
       const result = {
@@ -322,14 +330,21 @@ ${bompArrayCode}
     const indent = "  ";
 
     // faction フィールドの処理
-    const factionStr = `[${bomp.faction.join(", ")}]`;
+    const factionStr = Array.isArray(bomp.faction)
+      ? `[${bomp.faction.join(", ")}]`
+      : "[]";
+
+    // stats配列を適切にフォーマット
+    const statsArray = Array.isArray(bomp.stats)
+      ? `[${bomp.stats.map((stat) => `"${stat}"`).join(", ")}]`
+      : `["${bomp.stats}"]`; // 後方互換性のため
 
     return `${indent}{
 ${indent}  id: "${bomp.id}",
 ${indent}  name: { ja: "${this.escapeString(
       bomp.name.ja
     )}", en: "${this.escapeString(bomp.name.en)}" },
-${indent}  stats: "${bomp.stats}",
+${indent}  stats: ${statsArray},
 ${indent}  releaseVersion: ${bomp.releaseVersion || "undefined"},
 ${indent}  faction: ${factionStr},
 ${indent}  attr: {

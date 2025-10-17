@@ -30,7 +30,7 @@ export class BompDataMapper extends DataMapper {
   ): {
     id: string;
     name: string;
-    stats: string;
+    stats: Stats[];
     releaseVersion?: number;
   } {
     try {

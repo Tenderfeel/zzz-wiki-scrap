@@ -121,7 +121,7 @@ describe("CharacterGenerator", () => {
       id: "28",
       name: "Von Lycaon",
       specialty: "stun",
-      stats: "ice",
+      stats: ["ice"],
       rarity: "S",
     },
     factionInfo: {
@@ -137,7 +137,7 @@ describe("CharacterGenerator", () => {
     beforeEach(() => {
       // デフォルトのモック戻り値を設定
       mockDataMapper.mapSpecialty.mockReturnValue("stun");
-      mockDataMapper.mapStats.mockReturnValue("ice");
+      mockDataMapper.mapStats.mockReturnValue(["ice"]);
       mockDataMapper.mapRarity.mockReturnValue("S");
       mockDataMapper.createMultiLangName.mockReturnValue({
         ja: "フォン・ライカン",
@@ -163,7 +163,7 @@ describe("CharacterGenerator", () => {
         name: { ja: "フォン・ライカン", en: "Von Lycaon" },
         fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
         specialty: "stun",
-        stats: "ice",
+        stats: ["ice"],
         faction: 2,
         rarity: "S",
         releaseVersion: 1.0,
@@ -208,7 +208,7 @@ describe("CharacterGenerator", () => {
         name: { ja: "フォン・ライカン", en: "Von Lycaon" },
         fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
         specialty: "stun",
-        stats: "ice",
+        stats: ["ice"],
         faction: 2,
         rarity: "S",
         releaseVersion: 1.0,
@@ -457,7 +457,7 @@ describe("CharacterGenerator", () => {
       name: { ja: "フォン・ライカン", en: "Von Lycaon" },
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
-      stats: "ice" as const,
+      stats: ["ice"] as const,
       faction: 2,
       rarity: "S" as const,
       attr: {
@@ -613,7 +613,7 @@ describe("CharacterGenerator", () => {
       name: { ja: "フォン・ライカン", en: "Von Lycaon" },
       fullName: { ja: "フォン・ライカン", en: "Von Lycaon" },
       specialty: "stun" as const,
-      stats: "ice" as const,
+      stats: ["ice"] as const,
       faction: 2,
       rarity: "S" as const,
       attr: {

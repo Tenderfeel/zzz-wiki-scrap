@@ -748,7 +748,7 @@ function createMockCharacter(id: string, jaName: string, enName: string): any {
     name: { ja: jaName, en: enName },
     fullName: { ja: jaName, en: enName },
     specialty: "stun",
-    stats: "electric",
+    stats: ["electric"],
     faction: 1,
     rarity: "A",
     attr: {

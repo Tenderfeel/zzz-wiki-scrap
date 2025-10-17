@@ -278,7 +278,7 @@ describe("Bomp Debug Tests", () => {
     expect(result).toBeDefined();
     expect(result.id).toBe("generator-test-bomp");
     expect(result.name.ja).toBe("ジェネレーターテストボンプ");
-    expect(result.stats).toBe("ice"); // Should be mapped to English
+    expect(result.stats).toEqual(["ice"]); // Should be mapped to English and in array format
   });
 
   it("should test BompDataProcessor separately", async () => {

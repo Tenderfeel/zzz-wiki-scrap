@@ -886,7 +886,7 @@ ${bompEntries}
         // Comprehensive validation
         expect(bomp.id).toBe("final-test-bomp-1");
         expect(bomp.name.ja).toBe("検証テストボンプ");
-        expect(bomp.stats).toBe("electric");
+        expect(bomp.stats).toEqual(["electric"]);
 
         // Validate output file
         expect(fs.existsSync(testOutputPath)).toBe(true);

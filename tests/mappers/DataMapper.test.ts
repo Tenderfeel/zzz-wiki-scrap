@@ -65,14 +65,22 @@ describe("DataMapper", () => {
   });
 
   describe("mapStats", () => {
-    it("正常な属性マッピング", () => {
-      expect(dataMapper.mapStats("氷属性")).toBe("ice");
-      expect(dataMapper.mapStats("炎属性")).toBe("fire");
-      expect(dataMapper.mapStats("電気属性")).toBe("electric");
-      expect(dataMapper.mapStats("物理属性")).toBe("physical");
-      expect(dataMapper.mapStats("エーテル属性")).toBe("ether");
-      expect(dataMapper.mapStats("霜烈属性")).toBe("frost");
-      expect(dataMapper.mapStats("玄墨属性")).toBe("auricInk");
+    it("正常な属性マッピング（配列形式）", () => {
+      expect(dataMapper.mapStats("氷属性")).toEqual(["ice"]);
+      expect(dataMapper.mapStats("炎属性")).toEqual(["fire"]);
+      expect(dataMapper.mapStats("電気属性")).toEqual(["electric"]);
+      expect(dataMapper.mapStats("物理属性")).toEqual(["physical"]);
+      expect(dataMapper.mapStats("エーテル属性")).toEqual(["ether"]);
+      expect(dataMapper.mapStats("霜烈属性")).toEqual(["ice", "frost"]);
+      expect(dataMapper.mapStats("玄墨属性")).toEqual(["ether", "auricInk"]);
+    });
+
+    it("特別な属性の複数値マッピング", () => {
+      // 霜烈属性は氷と霜烈の両方を含む
+      expect(dataMapper.mapStats("霜烈属性")).toEqual(["ice", "frost"]);
+
+      // 玄墨属性はエーテルと玄墨の両方を含む
+      expect(dataMapper.mapStats("玄墨属性")).toEqual(["ether", "auricInk"]);
     });
 
     it("未知の属性値の場合はMappingErrorを投げる", () => {

@@ -567,7 +567,7 @@ export class BompDataProcessor extends DataProcessor {
       const basicInfo: BasicBompInfo = {
         id: bompEntry.id,
         name: bompEntry.jaName, // Scraping.mdから取得した日本語名を使用
-        stats: "physical", // デフォルト属性
+        stats: ["physical"], // デフォルト属性
         releaseVersion: undefined,
       };
 

@@ -2,6 +2,7 @@ import { Specialty, Stats, Rarity, Lang, AssistType } from "../types/index";
 import { MappingError } from "../errors";
 import { logger, LogMessages } from "../utils/Logger";
 import { NameResolver } from "./NameResolver";
+import { mapStatsToArray } from "../utils/StatsArrayMapper";
 
 /**
  * データマッピング機能を提供するクラス
@@ -98,12 +99,12 @@ export class DataMapper {
   }
 
   /**
-   * 日本語の属性名を英語の列挙値にマッピング
+   * 日本語の属性名を英語の列挙値配列にマッピング
    * @param rawStats 日本語の属性名
-   * @returns 対応するStats列挙値
+   * @returns 対応するStats配列
    * @throws MappingError 未知の属性名の場合
    */
-  public mapStats(rawStats: string): Stats {
+  public mapStats(rawStats: string): Stats[] {
     const mapped = DataMapper.STATS_MAPPING[rawStats];
     if (!mapped) {
       throw new MappingError(
@@ -112,7 +113,7 @@ export class DataMapper {
         ).join(", ")}`
       );
     }
-    return mapped;
+    return mapStatsToArray(mapped);
   }
 
   /**

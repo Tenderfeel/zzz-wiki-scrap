@@ -220,7 +220,7 @@ describe("Name List Integration Tests", () => {
 
       // その他のフィールドが正常に設定されることを確認
       expect(character.specialty).toBe("stun");
-      expect(character.stats).toBe("ice");
+      expect(character.stats).toEqual(["ice"]);
       expect(character.faction).toBe(1);
       expect(character.rarity).toBe("S");
 
@@ -351,7 +351,7 @@ describe("Name List Integration Tests", () => {
       expect(typeof character.name).toBe("object");
       expect(typeof character.fullName).toBe("object");
       expect(typeof character.specialty).toBe("string");
-      expect(typeof character.stats).toBe("string");
+      expect(Array.isArray(character.stats)).toBe(true);
       expect(typeof character.faction).toBe("number");
       expect(typeof character.rarity).toBe("string");
       expect(typeof character.attr).toBe("object");
@@ -402,7 +402,7 @@ describe("Name List Integration Tests", () => {
 
       // その他のフィールドは正常に処理されることを確認
       expect(character.specialty).toBe("stun");
-      expect(character.stats).toBe("ice");
+      expect(character.stats).toEqual(["ice"]);
       expect(character.faction).toBe(1);
       expect(character.rarity).toBe("S");
     });
@@ -531,7 +531,7 @@ describe("Name List Integration Tests", () => {
       // フォールバック処理でも正常なCharacterオブジェクトが生成されることを確認
       expect(character.id).toBe(characterId);
       expect(character.specialty).toBe("stun");
-      expect(character.stats).toBe("ice");
+      expect(character.stats).toEqual(["ice"]);
       expect(character.faction).toBe(1);
       expect(character.rarity).toBe("S");
 

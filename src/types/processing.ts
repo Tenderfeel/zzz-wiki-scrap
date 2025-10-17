@@ -4,7 +4,7 @@ export interface BasicCharacterInfo {
   id: string;
   name: string;
   specialty: string;
-  stats: string;
+  stats: string; // 処理中は文字列、最終的にStats[]に変換される
   rarity: string;
   releaseVersion?: number; // 実装バージョン（オプショナル、処理中に追加される）
 }
@@ -78,7 +78,7 @@ export interface ValidationResult {
 export interface BasicBompInfo {
   id: string;
   name: string;
-  stats: string;
+  stats: import("./index").Stats[]; // 配列形式の属性値
   releaseVersion?: number;
 }
 

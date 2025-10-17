@@ -350,7 +350,7 @@ describe("System Integration Tests", () => {
       expect(typeof character.name).toBe("object");
       expect(typeof character.fullName).toBe("object");
       expect(typeof character.specialty).toBe("string");
-      expect(typeof character.stats).toBe("string");
+      expect(Array.isArray(character.stats)).toBe(true);
       expect(typeof character.faction).toBe("number");
       expect(typeof character.rarity).toBe("string");
       expect(typeof character.attr).toBe("object");
@@ -434,7 +434,7 @@ describe("System Integration Tests", () => {
         // その他のデータが正常に処理されることを確認
         expect(character.id).toBe(test.id);
         expect(character.specialty).toBe("stun");
-        expect(character.stats).toBe("ice");
+        expect(character.stats).toEqual(["ice"]);
         expect(character.faction).toBe(1);
         expect(character.rarity).toBe("S");
 
@@ -481,7 +481,7 @@ describe("System Integration Tests", () => {
         'fullName: { ja: "フォン・ライカン", en: "Von Lycaon" }'
       );
       expect(fileContent).toContain('specialty: "stun"');
-      expect(fileContent).toContain('stats: "ice"');
+      expect(fileContent).toContain('stats: ["ice"]');
       expect(fileContent).toContain("faction: 1");
       expect(fileContent).toContain('rarity: "S"');
 
@@ -591,7 +591,7 @@ describe("System Integration Tests", () => {
         })
       );
       expect(character.specialty).toEqual(expect.any(String));
-      expect(character.stats).toEqual(expect.any(String));
+      expect(character.stats).toEqual(expect.any(Array));
       expect(character.faction).toEqual(expect.any(Number));
       expect(character.rarity).toEqual(expect.any(String));
       expect(character.attr).toEqual(
@@ -673,7 +673,7 @@ describe("System Integration Tests", () => {
 
       // 名前以外のプロパティが正常に処理されることを確認
       expect(character.specialty).toBe("stun"); // 日本語→英語マッピング
-      expect(character.stats).toBe("ice"); // 日本語→英語マッピング
+      expect(character.stats).toEqual(["ice"]); // 日本語→英語マッピング（配列形式）
       expect(character.rarity).toBe("S"); // そのまま
       expect(character.faction).toBe(1); // 数値
 
@@ -727,7 +727,7 @@ describe("System Integration Tests", () => {
 
         // その他の処理は正常に継続されることを確認
         expect(character.specialty).toBe("stun");
-        expect(character.stats).toBe("ice");
+        expect(character.stats).toEqual(["ice"]);
         expect(character.faction).toBe(1);
         expect(character.rarity).toBe("S");
       } catch (error) {

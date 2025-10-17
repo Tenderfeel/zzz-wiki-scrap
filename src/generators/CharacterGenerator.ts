@@ -255,8 +255,16 @@ export class CharacterGenerator {
       "frost",
       "auricInk",
     ];
-    if (character.stats && !validStats.includes(character.stats)) {
-      errors.push(`stats "${character.stats}" は有効な値ではありません`);
+    if (character.stats) {
+      if (!Array.isArray(character.stats) || character.stats.length === 0) {
+        errors.push(`stats は空でない配列である必要があります`);
+      } else {
+        for (const stat of character.stats) {
+          if (!validStats.includes(stat)) {
+            errors.push(`stats "${stat}" は有効な値ではありません`);
+          }
+        }
+      }
     }
 
     const validRarities = ["A", "S"];
@@ -342,6 +350,11 @@ ${characterCode}
   private formatCharacterObject(character: Character): string {
     const indent = "  ";
 
+    // stats配列を適切にフォーマット
+    const statsArray = Array.isArray(character.stats)
+      ? `[${character.stats.map((stat) => `"${stat}"`).join(", ")}]`
+      : `["${character.stats}"]`; // 後方互換性のため
+
     return `${indent}{
 ${indent}  id: "${character.id}",
 ${indent}  name: { ja: "${this.escapeString(
@@ -351,7 +364,7 @@ ${indent}  fullName: { ja: "${this.escapeString(
       character.fullName.ja
     )}", en: "${this.escapeString(character.fullName.en)}" },
 ${indent}  specialty: "${character.specialty}",
-${indent}  stats: "${character.stats}",
+${indent}  stats: ${statsArray},
 ${indent}  faction: ${character.faction},
 ${indent}  rarity: "${character.rarity}",
 ${indent}  releaseVersion: ${character.releaseVersion || 0},

@@ -19,6 +19,7 @@ import {
   AllCharactersError,
   ProcessingStage,
 } from "../errors";
+import { mapStatsToArray } from "../utils/StatsArrayMapper";
 
 /**
  * 拡張データプロセッサー - 複数キャラクターのデータ処理と陣営解決
@@ -156,7 +157,7 @@ export class EnhancedDataProcessor extends DataProcessor {
    * stats（属性）のマッピング
    * 要件: 2.5
    */
-  private mapStats(stats: string): Stats {
+  private mapStats(stats: string): Stats[] {
     const statsMap: Record<string, Stats> = {
       // 「属性」付きバージョン
       氷属性: "ice",
@@ -184,7 +185,7 @@ export class EnhancedDataProcessor extends DataProcessor {
         )}`
       );
     }
-    return mapped;
+    return mapStatsToArray(mapped);
   }
 
   /**
@@ -474,8 +475,32 @@ export class EnhancedDataProcessor extends DataProcessor {
       "frost",
       "auricInk",
     ];
-    if (!validStats.includes(character.stats)) {
-      errors.push(`無効な stats: ${character.stats}`);
+
+    // Stats[] 配列の検証
+    if (!Array.isArray(character.stats)) {
+      errors.push(`stats が配列ではありません: ${typeof character.stats}`);
+    } else if (character.stats.length === 0) {
+      errors.push("stats 配列が空です。少なくとも1つの属性値が必要です");
+    } else {
+      // 配列内の各要素を検証
+      for (let i = 0; i < character.stats.length; i++) {
+        const stat = character.stats[i];
+        if (!validStats.includes(stat)) {
+          errors.push(
+            `無効な stats[${i}] 値: "${stat}". 有効な値: ${validStats.join(
+              ", "
+            )}`
+          );
+        }
+      }
+
+      // 重複チェック
+      const uniqueStats = new Set(character.stats);
+      if (uniqueStats.size !== character.stats.length) {
+        warnings.push(
+          `stats 配列に重複した値があります: [${character.stats.join(", ")}]`
+        );
+      }
     }
 
     const validRarities: Rarity[] = ["A", "S"];

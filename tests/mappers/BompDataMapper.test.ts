@@ -33,7 +33,7 @@ describe("BompDataMapper", () => {
       expect(result).toEqual({
         id: "excaliboo",
         name: "セイケンボンプ",
-        stats: "ice",
+        stats: ["ice"],
         releaseVersion: undefined,
       });
     });

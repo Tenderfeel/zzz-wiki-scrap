@@ -3,3 +3,9 @@ export { AssistTypeStatistics } from "./AssistTypeStatistics";
 export { ReleaseVersionStatistics } from "./ReleaseVersionStatistics";
 export { GracefulDegradation } from "./GracefulDegradation";
 export { SecurityValidator } from "./SecurityValidator";
+export {
+  mapStatsToArray,
+  mapStatsArrayToArray,
+  mapStatsUsingConstant,
+  STATS_ARRAY_MAPPING,
+} from "./StatsArrayMapper";
