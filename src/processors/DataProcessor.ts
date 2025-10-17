@@ -13,6 +13,8 @@ import { logger } from "../utils/Logger";
 import { AssistTypeStatistics } from "../utils/AssistTypeStatistics";
 import { ReleaseVersionStatistics } from "../utils/ReleaseVersionStatistics";
 import { GracefulDegradation } from "../utils/GracefulDegradation";
+import { PartialDataHandler } from "../utils/PartialDataHandler";
+import { ErrorRecoveryHandler } from "../utils/ErrorRecoveryHandler";
 
 /**
  * データプロセッサー - API レスポンスからキャラクター情報を抽出
@@ -21,17 +23,24 @@ export class DataProcessor {
   protected dataMapper: DataMapper;
   protected assistTypeStatistics: AssistTypeStatistics;
   protected releaseVersionStatistics: ReleaseVersionStatistics;
+  protected partialDataHandler: PartialDataHandler;
+  protected errorRecoveryHandler: ErrorRecoveryHandler;
 
   constructor(
     dataMapper?: DataMapper,
     assistTypeStatistics?: AssistTypeStatistics,
-    releaseVersionStatistics?: ReleaseVersionStatistics
+    releaseVersionStatistics?: ReleaseVersionStatistics,
+    partialDataHandler?: PartialDataHandler,
+    errorRecoveryHandler?: ErrorRecoveryHandler
   ) {
     this.dataMapper = dataMapper || new DataMapper();
     this.assistTypeStatistics =
       assistTypeStatistics || new AssistTypeStatistics();
     this.releaseVersionStatistics =
       releaseVersionStatistics || new ReleaseVersionStatistics();
+    this.partialDataHandler = partialDataHandler || new PartialDataHandler();
+    this.errorRecoveryHandler =
+      errorRecoveryHandler || new ErrorRecoveryHandler(this.partialDataHandler);
   }
   /**
    * 基本キャラクター情報を抽出
@@ -947,6 +956,201 @@ export class DataProcessor {
   }
 
   /**
+   * 部分的なデータでキャラクター処理を実行（グレースフル劣化対応）
+   * 要件: 6.1, 6.2, 6.3, 6.4
+   */
+  processCharacterDataWithPartialSupport(
+    apiData: ApiResponse
+  ): ProcessedData | null {
+    const characterId = apiData.data?.page?.id || "unknown";
+
+    logger.info("部分データ対応キャラクター処理を開始", {
+      characterId,
+      timestamp: new Date().toISOString(),
+    });
+
+    try {
+      // まず通常の処理を試行
+      return this.processCharacterData(apiData);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      logger.warn("通常処理が失敗、部分データ処理に切り替え", {
+        characterId,
+        originalError: errorMessage,
+        fallbackMethod: "partial_data_processing",
+      });
+
+      // 欠損フィールドを検出
+      const missingFields =
+        this.partialDataHandler.detectMissingFields(apiData);
+
+      logger.info("データ欠損分析完了", {
+        characterId,
+        missingFields,
+        missingCount: missingFields.length,
+        dataCompleteness: this.calculateDataCompleteness(missingFields),
+      });
+
+      // 部分データ処理を実行
+      const partialData = this.partialDataHandler.handlePartialData(
+        apiData,
+        missingFields
+      );
+
+      if (!partialData) {
+        logger.error("部分データ処理も失敗", {
+          characterId,
+          missingFields,
+          reason: "insufficient_data",
+        });
+        return null;
+      }
+
+      // 部分データの妥当性を検証
+      const isValid = this.partialDataHandler.validatePartialData(
+        partialData,
+        characterId
+      );
+
+      if (!isValid) {
+        logger.error("部分データ検証に失敗", {
+          characterId,
+          missingFields,
+          reason: "validation_failed",
+        });
+        return null;
+      }
+
+      logger.info("部分データ処理成功", {
+        characterId,
+        missingFields,
+        recoveredFields: this.getRecoveredFields(partialData),
+        processingMethod: "graceful_degradation",
+      });
+
+      return partialData;
+    }
+  }
+
+  /**
+   * 欠損フィールドを検出してログに記録
+   * 要件: 6.1, 6.4
+   */
+  detectAndLogMissingFields(apiData: ApiResponse): string[] {
+    const characterId = apiData.data?.page?.id || "unknown";
+
+    logger.debug("欠損フィールド検出を開始", {
+      characterId,
+      timestamp: new Date().toISOString(),
+    });
+
+    const missingFields = this.partialDataHandler.detectMissingFields(apiData);
+
+    if (missingFields.length > 0) {
+      logger.warn("データ欠損を検出", {
+        characterId,
+        missingFields,
+        missingCount: missingFields.length,
+        dataCompleteness: this.calculateDataCompleteness(missingFields),
+        severity: this.assessDataLossSeverity(missingFields),
+      });
+
+      // 各欠損フィールドの詳細ログ
+      missingFields.forEach((field) => {
+        logger.debug("欠損フィールド詳細", {
+          characterId,
+          missingField: field,
+          fieldType: this.getFieldType(field),
+          isEssential: this.isEssentialField(field),
+          fallbackAvailable: this.hasFallbackValue(field),
+        });
+      });
+    } else {
+      logger.debug("データ欠損なし", {
+        characterId,
+        dataCompleteness: "100%",
+      });
+    }
+
+    return missingFields;
+  }
+
+  /**
+   * 非必須フィールドに対するグレースフル劣化処理
+   * 要件: 6.2, 6.3, 6.4
+   */
+  applyGracefulDegradation(
+    apiData: ApiResponse,
+    missingFields: string[]
+  ): ProcessedData | null {
+    const characterId = apiData.data?.page?.id || "unknown";
+
+    logger.info("グレースフル劣化処理を開始", {
+      characterId,
+      missingFields,
+      degradationLevel: this.assessDegradationLevel(missingFields),
+    });
+
+    try {
+      // 必須フィールドの欠損チェック
+      const essentialMissing = missingFields.filter((field) =>
+        this.isEssentialField(field)
+      );
+
+      if (essentialMissing.length > 0) {
+        logger.error("必須フィールドが欠損しているため処理を中止", {
+          characterId,
+          essentialMissing,
+          reason: "essential_fields_missing",
+        });
+        return null;
+      }
+
+      // 部分データ処理を実行
+      const partialData = this.partialDataHandler.handlePartialData(
+        apiData,
+        missingFields
+      );
+
+      if (!partialData) {
+        logger.error("グレースフル劣化処理に失敗", {
+          characterId,
+          missingFields,
+          reason: "partial_processing_failed",
+        });
+        return null;
+      }
+
+      // 劣化レベルに応じた追加処理
+      const degradationLevel = this.assessDegradationLevel(missingFields);
+      this.logDegradationDetails(characterId, degradationLevel, missingFields);
+
+      logger.info("グレースフル劣化処理完了", {
+        characterId,
+        degradationLevel,
+        appliedFallbacks: this.getAppliedFallbacks(missingFields),
+        dataQuality: this.assessDataQuality(partialData),
+      });
+
+      return partialData;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      logger.error("グレースフル劣化処理中にエラーが発生", {
+        characterId,
+        error: errorMessage,
+        missingFields,
+        degradationLevel: this.assessDegradationLevel(missingFields),
+      });
+
+      return null;
+    }
+  }
+
+  /**
    * 支援タイプ統計情報を取得
    */
   public getAssistTypeStatistics(): AssistTypeStatistics {
@@ -1003,5 +1207,433 @@ export class DataProcessor {
       }
     }
     return null;
+  }
+
+  // 部分データ処理用のヘルパーメソッド
+
+  /**
+   * データ完全性を計算（パーセンテージ）
+   */
+  private calculateDataCompleteness(missingFields: string[]): string {
+    const totalFields = 9; // page, filter_values, specialty, stats, rarity, faction, modules, ascension, baseInfo
+    const missingCount = missingFields.length;
+    const completeness = Math.max(
+      0,
+      ((totalFields - missingCount) / totalFields) * 100
+    );
+    return `${completeness.toFixed(1)}%`;
+  }
+
+  /**
+   * データ損失の深刻度を評価
+   */
+  private assessDataLossSeverity(
+    missingFields: string[]
+  ): "low" | "medium" | "high" | "critical" {
+    const essentialMissing = missingFields.filter((field) =>
+      this.isEssentialField(field)
+    );
+
+    if (essentialMissing.length > 0) {
+      return "critical";
+    }
+
+    if (missingFields.length >= 5) {
+      return "high";
+    }
+
+    if (missingFields.length >= 3) {
+      return "medium";
+    }
+
+    return "low";
+  }
+
+  /**
+   * フィールドタイプを取得
+   */
+  private getFieldType(field: string): "structural" | "content" | "metadata" {
+    const structuralFields = ["page", "filter_values", "modules"];
+    const contentFields = [
+      "specialty",
+      "stats",
+      "rarity",
+      "faction",
+      "ascension",
+    ];
+    const metadataFields = ["baseInfo"];
+
+    if (structuralFields.includes(field)) {
+      return "structural";
+    }
+
+    if (contentFields.includes(field)) {
+      return "content";
+    }
+
+    return "metadata";
+  }
+
+  /**
+   * 必須フィールドかどうかを判定
+   */
+  private isEssentialField(field: string): boolean {
+    const essentialFields = ["page", "filter_values"];
+    return essentialFields.includes(field);
+  }
+
+  /**
+   * フォールバック値が利用可能かどうかを判定
+   */
+  private hasFallbackValue(field: string): boolean {
+    const fallbackAvailableFields = [
+      "specialty",
+      "stats",
+      "rarity",
+      "faction",
+      "ascension",
+      "baseInfo",
+    ];
+    return fallbackAvailableFields.includes(field);
+  }
+
+  /**
+   * 劣化レベルを評価
+   */
+  private assessDegradationLevel(
+    missingFields: string[]
+  ): "none" | "minimal" | "moderate" | "severe" {
+    if (missingFields.length === 0) {
+      return "none";
+    }
+
+    if (missingFields.length <= 2) {
+      return "minimal";
+    }
+
+    if (missingFields.length <= 4) {
+      return "moderate";
+    }
+
+    return "severe";
+  }
+
+  /**
+   * 劣化詳細をログに記録
+   */
+  private logDegradationDetails(
+    characterId: string,
+    degradationLevel: string,
+    missingFields: string[]
+  ): void {
+    logger.info("データ劣化詳細分析", {
+      characterId,
+      degradationLevel,
+      missingFields,
+      fieldAnalysis: missingFields.map((field) => ({
+        field,
+        type: this.getFieldType(field),
+        essential: this.isEssentialField(field),
+        fallbackAvailable: this.hasFallbackValue(field),
+      })),
+      recommendedAction: this.getRecommendedAction(degradationLevel),
+    });
+  }
+
+  /**
+   * 推奨アクションを取得
+   */
+  private getRecommendedAction(degradationLevel: string): string {
+    switch (degradationLevel) {
+      case "none":
+        return "通常処理を継続";
+      case "minimal":
+        return "部分データ処理で対応可能";
+      case "moderate":
+        return "フォールバック値を適用して処理";
+      case "severe":
+        return "データ品質の確認が必要";
+      default:
+        return "処理方法を検討";
+    }
+  }
+
+  /**
+   * 回復されたフィールドを取得
+   */
+  private getRecoveredFields(partialData: ProcessedData): string[] {
+    const recoveredFields: string[] = [];
+
+    if (partialData.basicInfo) {
+      recoveredFields.push("basicInfo");
+    }
+
+    if (partialData.factionInfo) {
+      recoveredFields.push("factionInfo");
+    }
+
+    if (partialData.attributesInfo) {
+      recoveredFields.push("attributesInfo");
+    }
+
+    if (partialData.assistType) {
+      recoveredFields.push("assistType");
+    }
+
+    return recoveredFields;
+  }
+
+  /**
+   * 適用されたフォールバックを取得
+   */
+  private getAppliedFallbacks(missingFields: string[]): string[] {
+    return missingFields.filter((field) => this.hasFallbackValue(field));
+  }
+
+  /**
+   * データ品質を評価
+   */
+  private assessDataQuality(
+    partialData: ProcessedData
+  ): "high" | "medium" | "low" {
+    let qualityScore = 0;
+
+    if (partialData.basicInfo) qualityScore += 40;
+    if (partialData.factionInfo) qualityScore += 20;
+    if (partialData.attributesInfo) qualityScore += 30;
+    if (partialData.assistType) qualityScore += 10;
+
+    if (qualityScore >= 80) return "high";
+    if (qualityScore >= 50) return "medium";
+    return "low";
+  }
+
+  /**
+   * バージョン2.3キャラクター専用の処理（エラー回復機能付き）
+   * 要件: 4.1, 4.2, 4.3, 4.4
+   */
+  async processVersion23CharacterWithRecovery(
+    apiData: ApiResponse,
+    characterId: string
+  ): Promise<ProcessedData | null> {
+    logger.info("バージョン2.3キャラクター処理開始（エラー回復機能付き）", {
+      characterId,
+      timestamp: new Date().toISOString(),
+      processingMode: "version23_with_recovery",
+    });
+
+    try {
+      // まず通常の処理を試行
+      const processedData = this.processCharacterData(apiData);
+
+      logger.info("バージョン2.3キャラクター通常処理成功", {
+        characterId,
+        processingResult: "normal_success",
+        hasAssistType: !!processedData.assistType,
+      });
+
+      return processedData;
+    } catch (error) {
+      const originalError = error as Error;
+
+      logger.warn("バージョン2.3キャラクター通常処理失敗、エラー回復を開始", {
+        characterId,
+        originalError: originalError.message,
+        errorType: originalError.constructor.name,
+        recoveryMode: "error_recovery_initiated",
+      });
+
+      // エラー分類と対応策決定
+      const errorStrategy =
+        this.errorRecoveryHandler.classifyErrorAndDetermineStrategy(
+          originalError,
+          characterId
+        );
+
+      logger.info("エラー分析完了", {
+        characterId,
+        errorClassification: errorStrategy,
+        recoveryStrategy: errorStrategy.recoveryStrategy,
+      });
+
+      // 回復策に応じた処理
+      switch (errorStrategy.recoveryStrategy) {
+        case "partial_data_processing":
+        case "graceful_degradation":
+          return await this.errorRecoveryHandler.handlePartialProcessingFailure(
+            apiData,
+            originalError,
+            characterId
+          );
+
+        case "skip_character":
+          logger.warn("キャラクター処理をスキップ", {
+            characterId,
+            reason: errorStrategy.errorType,
+            severity: errorStrategy.severity,
+          });
+          return null;
+
+        case "abort_processing":
+          logger.error("重大なエラーにより処理を中止", {
+            characterId,
+            errorType: errorStrategy.errorType,
+            severity: errorStrategy.severity,
+          });
+          throw originalError;
+
+        default:
+          logger.warn("不明な回復策、キャラクターをスキップ", {
+            characterId,
+            recoveryStrategy: errorStrategy.recoveryStrategy,
+          });
+          return null;
+      }
+    }
+  }
+
+  /**
+   * バージョン2.3キャラクターのバッチ処理（エラー分離機能付き）
+   * 要件: 4.1, 4.2
+   */
+  async processVersion23CharactersBatch(
+    characterDataList: Array<{ characterId: string; apiData: ApiResponse }>
+  ): Promise<{
+    results: Array<{
+      characterId: string;
+      data: ProcessedData | null;
+      success: boolean;
+      error?: string;
+    }>;
+    summary: {
+      total: number;
+      successful: number;
+      failed: number;
+      skipped: number;
+      successRate: number;
+    };
+  }> {
+    const results: Array<{
+      characterId: string;
+      data: ProcessedData | null;
+      success: boolean;
+      error?: string;
+    }> = [];
+
+    let successCount = 0;
+    let failureCount = 0;
+    let skippedCount = 0;
+
+    logger.info("バージョン2.3キャラクターバッチ処理開始", {
+      totalCharacters: characterDataList.length,
+      characterIds: characterDataList.map((item) => item.characterId),
+      timestamp: new Date().toISOString(),
+    });
+
+    for (let i = 0; i < characterDataList.length; i++) {
+      const { characterId, apiData } = characterDataList[i];
+      const processingContext = {
+        totalCharacters: characterDataList.length,
+        processedCount: i + 1,
+        successCount,
+        failureCount,
+      };
+
+      try {
+        logger.debug("個別キャラクター処理開始", {
+          characterId,
+          progress: `${i + 1}/${characterDataList.length}`,
+          currentSuccessRate:
+            i > 0 ? `${Math.round((successCount / i) * 100)}%` : "N/A",
+        });
+
+        const processedData = await this.processVersion23CharacterWithRecovery(
+          apiData,
+          characterId
+        );
+
+        if (processedData) {
+          results.push({
+            characterId,
+            data: processedData,
+            success: true,
+          });
+          successCount++;
+
+          logger.info("個別キャラクター処理成功", {
+            characterId,
+            progress: `${i + 1}/${characterDataList.length}`,
+            successCount,
+            failureCount,
+          });
+        } else {
+          results.push({
+            characterId,
+            data: null,
+            success: false,
+            error: "処理がスキップされました",
+          });
+          skippedCount++;
+
+          logger.warn("個別キャラクター処理スキップ", {
+            characterId,
+            progress: `${i + 1}/${characterDataList.length}`,
+            reason: "processing_skipped",
+          });
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+
+        results.push({
+          characterId,
+          data: null,
+          success: false,
+          error: errorMessage,
+        });
+        failureCount++;
+
+        try {
+          // 個別キャラクター失敗処理
+          this.errorRecoveryHandler.handleIndividualCharacterFailure(
+            characterId,
+            error as Error,
+            processingContext
+          );
+        } catch (batchError) {
+          logger.error("バッチ処理中止", {
+            characterId,
+            batchError:
+              batchError instanceof Error
+                ? batchError.message
+                : String(batchError),
+            processedSoFar: i + 1,
+            successCount,
+            failureCount,
+          });
+          break;
+        }
+      }
+    }
+
+    const summary = {
+      total: characterDataList.length,
+      successful: successCount,
+      failed: failureCount,
+      skipped: skippedCount,
+      successRate: Math.round((successCount / characterDataList.length) * 100),
+    };
+
+    logger.info("バージョン2.3キャラクターバッチ処理完了", {
+      summary,
+      processingTime: new Date().toISOString(),
+      results: results.map((r) => ({
+        characterId: r.characterId,
+        success: r.success,
+        hasData: !!r.data,
+      })),
+    });
+
+    return { results, summary };
   }
 }

@@ -607,6 +607,323 @@ describe("CharacterGenerator", () => {
     });
   });
 
+  describe("generateCharacterFromPartialData", () => {
+    const mockPartialData: Partial<ProcessedData> = {
+      basicInfo: {
+        id: "yidhari",
+        name: "イドリー",
+        specialty: "", // 欠損
+        stats: "", // 欠損
+        rarity: "", // 欠損
+        releaseVersion: 2.3,
+      },
+      factionInfo: undefined, // 欠損
+      attributesInfo: {
+        ascensionData: JSON.stringify({
+          list: [
+            {
+              key: "1",
+              combatList: [
+                { key: "HP", values: ["500", "500"] },
+                { key: "攻撃力", values: ["100", "100"] },
+                { key: "防御力", values: ["50", "50"] },
+                { key: "衝撃力", values: ["100", "100"] },
+                { key: "会心率", values: ["5%", "5%"] },
+                { key: "会心ダメージ", values: ["50%", "50%"] },
+                { key: "異常マスタリー", values: ["80", "80"] },
+                { key: "異常掌握", values: ["80", "80"] },
+                { key: "貫通率", values: ["0%", "0%"] },
+                { key: "エネルギー自動回復", values: ["1.0", "1.0"] },
+              ],
+            },
+          ],
+        }),
+      },
+    };
+
+    beforeEach(() => {
+      // PartialDataHandlerのモックを設定
+      const mockPartialDataHandler = {
+        validatePartialData: vi.fn().mockReturnValue(true),
+        getEmptyValues: vi.fn().mockReturnValue({
+          specialty: undefined,
+          stats: [],
+          faction: 0,
+          rarity: undefined,
+          attr: {
+            hp: [0, 0, 0, 0, 0, 0, 0],
+            atk: [0, 0, 0, 0, 0, 0, 0],
+            def: [0, 0, 0, 0, 0, 0, 0],
+            impact: 0,
+            critRate: 0,
+            critDmg: 0,
+            anomalyMastery: 0,
+            anomalyProficiency: 0,
+            penRatio: 0,
+            energy: 0,
+          },
+          assistType: undefined,
+          releaseVersion: 2.3,
+        }),
+        fillMissingFieldsWithEmpty: vi.fn().mockImplementation((character) => ({
+          ...character,
+          specialty: character.specialty || undefined,
+          stats: character.stats || [],
+          faction: character.faction || 0,
+          rarity: character.rarity || undefined,
+        })),
+      };
+
+      // CharacterGeneratorのpartialDataHandlerプロパティをモック
+      (generator as any).partialDataHandler = mockPartialDataHandler;
+
+      // DataMapperのモックを設定
+      mockDataMapper.mapStats.mockReturnValue([]);
+      mockDataMapper.mapSpecialty.mockReturnValue(undefined);
+      mockDataMapper.mapRarity.mockReturnValue(undefined);
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "イドリー",
+        en: "Yidhari",
+      });
+    });
+
+    it("部分データから正常にCharacterオブジェクトを生成できる", () => {
+      const missingFields = ["specialty", "stats", "rarity", "faction"];
+
+      const result = generator.generateCharacterFromPartialData(
+        mockPartialData,
+        "yidhari",
+        missingFields
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe("yidhari");
+      expect(result?.name).toEqual({ ja: "イドリー", en: "Yidhari" });
+      expect(result?.releaseVersion).toBe(2.3);
+    });
+
+    it("基本情報が不足している場合はnullを返す", () => {
+      const invalidPartialData = {
+        ...mockPartialData,
+        basicInfo: undefined,
+      };
+
+      const result = generator.generateCharacterFromPartialData(
+        invalidPartialData,
+        "yidhari",
+        []
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("部分データ検証に失敗した場合はnullを返す", () => {
+      // validatePartialDataがfalseを返すようにモック
+      (generator as any).partialDataHandler.validatePartialData.mockReturnValue(
+        false
+      );
+
+      const result = generator.generateCharacterFromPartialData(
+        mockPartialData,
+        "yidhari",
+        []
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("欠損フィールドに対して適切なフォールバック処理を行う", () => {
+      const missingFields = ["specialty", "stats", "faction"];
+
+      const result = generator.generateCharacterFromPartialData(
+        mockPartialData,
+        "yidhari",
+        missingFields
+      );
+
+      expect(result).not.toBeNull();
+      // 欠損フィールドには空の値が適用される
+      expect(result?.specialty).toBeUndefined();
+      expect(result?.stats).toEqual([]);
+      expect(result?.faction).toBe(0);
+    });
+
+    it("属性データ処理でエラーが発生した場合は空の値を使用する", () => {
+      // AttributesProcessorがエラーを投げるようにモック
+      const mockAttributesProcessor = {
+        processAscensionData: vi.fn().mockImplementation(() => {
+          throw new Error("Ascension data processing failed");
+        }),
+      };
+      (generator as any).attributesProcessor = mockAttributesProcessor;
+
+      const result = generator.generateCharacterFromPartialData(
+        mockPartialData,
+        "yidhari",
+        []
+      );
+
+      expect(result).not.toBeNull();
+      // エラー時は空の属性値が使用される
+      expect(result?.attr).toEqual({
+        hp: [0, 0, 0, 0, 0, 0, 0],
+        atk: [0, 0, 0, 0, 0, 0, 0],
+        def: [0, 0, 0, 0, 0, 0, 0],
+        impact: 0,
+        critRate: 0,
+        critDmg: 0,
+        anomalyMastery: 0,
+        anomalyProficiency: 0,
+        penRatio: 0,
+        energy: 0,
+      });
+    });
+  });
+
+  describe("validatePartialCharacter", () => {
+    const mockCharacter = {
+      id: "yidhari",
+      name: { ja: "イドリー", en: "Yidhari" },
+      fullName: { ja: "イドリー", en: "Yidhari" },
+      specialty: undefined as any,
+      stats: [] as any,
+      faction: 0,
+      rarity: undefined as any,
+      attr: {
+        hp: [500, 0, 0, 0, 0, 0, 0],
+        atk: [100, 0, 0, 0, 0, 0, 0],
+        def: [50, 0, 0, 0, 0, 0, 0],
+        impact: 100,
+        critRate: 5,
+        critDmg: 50,
+        anomalyMastery: 80,
+        anomalyProficiency: 80,
+        penRatio: 0,
+        energy: 1.0,
+      },
+    };
+
+    it("必須フィールドのみの検証で成功する", () => {
+      const result = generator.validatePartialCharacter(
+        mockCharacter,
+        ["id", "name", "attr"],
+        ["specialty", "stats", "faction", "rarity"]
+      );
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+      expect(result.warnings).toContain(
+        "specialty フィールドが存在しません（オプショナル）"
+      );
+      expect(result.warnings).toContain(
+        "stats フィールドが存在しないか空です（オプショナル）"
+      );
+    });
+
+    it("必須フィールドが不足している場合はエラーを返す", () => {
+      const invalidCharacter = {
+        ...mockCharacter,
+        id: "",
+      };
+
+      const result = generator.validatePartialCharacter(
+        invalidCharacter,
+        ["id", "name", "attr"],
+        []
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("id フィールドが空または存在しません");
+    });
+
+    it("オプショナルフィールドの問題は警告として扱う", () => {
+      const result = generator.validatePartialCharacter(
+        mockCharacter,
+        ["id", "name"],
+        ["specialty", "stats", "rarity"]
+      );
+
+      expect(result.isValid).toBe(true);
+      expect(result.warnings).toContain(
+        "specialty フィールドが存在しません（オプショナル）"
+      );
+      expect(result.warnings).toContain(
+        "stats フィールドが存在しないか空です（オプショナル）"
+      );
+    });
+
+    it("属性配列の検証を行う", () => {
+      const invalidCharacter = {
+        ...mockCharacter,
+        attr: {
+          ...mockCharacter.attr,
+          hp: [500, 0, 0], // 7要素ではなく3要素
+        },
+      };
+
+      const result = generator.validatePartialCharacter(
+        invalidCharacter,
+        ["id", "name", "attr"],
+        []
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "attr.hp 配列は正確に 7 つの値を含む必要があります"
+      );
+    });
+  });
+
+  describe("generateMissingDataErrorMessage", () => {
+    it("欠損フィールドがない場合は完全メッセージを返す", () => {
+      const result = generator.generateMissingDataErrorMessage("yidhari", []);
+      expect(result).toBe("データは完全です");
+    });
+
+    it("重要なデータが欠損している場合は適切なメッセージを生成する", () => {
+      const result = generator.generateMissingDataErrorMessage("yidhari", [
+        "page",
+        "filter_values",
+      ]);
+
+      expect(result).toContain("重要なデータが欠損: page, filter_values");
+      expect(result).toContain("このキャラクターは処理をスキップします");
+    });
+
+    it("基本情報が欠損している場合は適切なメッセージを生成する", () => {
+      const result = generator.generateMissingDataErrorMessage("yidhari", [
+        "specialty",
+        "stats",
+        "faction",
+      ]);
+
+      expect(result).toContain("基本情報が欠損: specialty, stats, faction");
+      expect(result).toContain("空の値またはデフォルト値を適用します");
+    });
+
+    it("属性データが欠損している場合は適切なメッセージを生成する", () => {
+      const result = generator.generateMissingDataErrorMessage("yidhari", [
+        "ascension",
+        "modules",
+      ]);
+
+      expect(result).toContain("属性データが欠損: ascension, modules");
+      expect(result).toContain("ゼロ値の属性データを適用します");
+    });
+
+    it("複数種類の欠損がある場合は包括的なメッセージを生成する", () => {
+      const result = generator.generateMissingDataErrorMessage("yidhari", [
+        "page",
+        "specialty",
+        "ascension",
+      ]);
+
+      expect(result).toContain("重要なデータが欠損: page");
+      expect(result).toContain("基本情報が欠損: specialty");
+      expect(result).toContain("属性データが欠損: ascension");
+    });
+  });
+
   describe("outputCharacterFile", () => {
     const mockCharacter = {
       id: "lycaon",

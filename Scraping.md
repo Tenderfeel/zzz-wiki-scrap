@@ -62,6 +62,9 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - [alice](https://wiki.hoyolab.com/pc/zzz/entry/838) - pageId: 838
 - [seed](https://wiki.hoyolab.com/pc/zzz/entry/901) - pageId: 901
 - [orphie](https://wiki.hoyolab.com/pc/zzz/entry/902) - pageId: 902
+- [lucia](https://wiki.hoyolab.com/pc/zzz/entry/907) - pageId: 907
+- [manato](https://wiki.hoyolab.com/pc/zzz/entry/908) - pageId: 908
+- [yidhari](https://wiki.hoyolab.com/pc/zzz/entry/909) - pageId: 909
 
 ## ボンプページリスト
 
@@ -145,6 +148,9 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - alice: {ja: "アリス", en: "Alice"}
 - seed: {ja: "シード", en: "Seed"}
 - orphie: {ja: "オルペウス", en: "Orphie"}
+- lucia: {ja: "リュシア", en: "Lucia"}
+- manato: {ja: "狛野真斗", en: "Komano Manato"}
+- yidhari:{ja:"イドリー", en: "Yidhari" }
 ```
 
 ## 作成するデータ

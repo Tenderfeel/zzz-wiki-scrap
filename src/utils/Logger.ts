@@ -87,6 +87,38 @@ export const LogMessages = {
   BOMP_ICON_OUTPUT_DIRECTORY_WRITE_TEST: "出力ディレクトリ書き込み権限確認",
   BOMP_ICON_STATISTICS_SUMMARY: "ボンプアイコンダウンロード統計",
   BOMP_ICON_PERFORMANCE_METRICS: "パフォーマンス統計",
+
+  // Version 2.3 キャラクター処理関連
+  VERSION23_PROCESSING_START: "バージョン2.3キャラクター処理を開始",
+  VERSION23_PROCESSING_SUCCESS: "バージョン2.3キャラクター処理完了",
+  VERSION23_PROCESSING_ERROR: "バージョン2.3キャラクター処理でエラーが発生",
+  VERSION23_CHARACTER_START: "バージョン2.3キャラクター個別処理開始",
+  VERSION23_CHARACTER_SUCCESS: "バージョン2.3キャラクター個別処理成功",
+  VERSION23_CHARACTER_FAILURE: "バージョン2.3キャラクター個別処理失敗",
+  VERSION23_CHARACTER_PARTIAL_SUCCESS: "バージョン2.3キャラクター部分的成功",
+  VERSION23_CHARACTER_SKIPPED: "バージョン2.3キャラクター処理をスキップ",
+
+  // 部分データ処理関連
+  PARTIAL_DATA_DETECTION_START: "部分データ検出処理を開始",
+  PARTIAL_DATA_DETECTION_SUCCESS: "部分データ検出完了",
+  PARTIAL_DATA_PROCESSING_START: "部分データ処理を開始",
+  PARTIAL_DATA_PROCESSING_SUCCESS: "部分データ処理完了",
+  PARTIAL_DATA_PROCESSING_FAILURE: "部分データ処理失敗",
+  PARTIAL_DATA_FIELD_MISSING: "データフィールドが欠損",
+  PARTIAL_DATA_FIELD_RECOVERED: "欠損フィールドを回復",
+  PARTIAL_DATA_EMPTY_VALUE_APPLIED: "空の値を適用",
+  PARTIAL_DATA_VALIDATION_START: "部分データ検証開始",
+  PARTIAL_DATA_VALIDATION_SUCCESS: "部分データ検証成功",
+  PARTIAL_DATA_VALIDATION_FAILURE: "部分データ検証失敗",
+
+  // エラー回復機能関連
+  ERROR_RECOVERY_START: "エラー回復処理を開始",
+  ERROR_RECOVERY_COMPLETE: "エラー回復処理成功",
+  ERROR_RECOVERY_FAILURE: "エラー回復処理失敗",
+  ERROR_RECOVERY_RETRY_ATTEMPT: "リトライ処理を実行",
+  ERROR_RECOVERY_RETRY_SUCCESS: "リトライ処理成功",
+  ERROR_RECOVERY_RETRY_FAILURE: "リトライ処理失敗",
+  ERROR_RECOVERY_GRACEFUL_DEGRADATION: "グレースフル劣化を実行",
 } as const;
 
 /**
