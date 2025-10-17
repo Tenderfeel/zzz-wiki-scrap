@@ -10,6 +10,11 @@ export type Specialty =
   | "defense" // 防護
   | "rupture"; // 命破
 
+export type SpecialtyData = {
+  id: Specialty;
+  label: { [key in Lang]: string };
+};
+
 // 属性
 export type Stats =
   | "ether" // エーテル
@@ -19,6 +24,11 @@ export type Stats =
   | "electric" // 電気
   | "frost" // 霜烈
   | "auricInk"; // 玄墨
+
+export type StatsData = {
+  id: Stats;
+  label: { [key in Lang]: string };
+};
 
 // レア度
 export type Rarity = "A" | "S";
