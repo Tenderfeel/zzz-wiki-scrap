@@ -389,4 +389,5 @@ if (require.main === module) {
   });
 }
 
-export { main, loadConfig, BompProcessingConfig };
+export { main, loadConfig };
+export type { BompProcessingConfig };
