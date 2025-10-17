@@ -201,26 +201,7 @@ export default [
     },
     extraAbility: "",
   },
-  {
-    id: "baddieboo",
-    name: { ja: "カチコミボンプ", en: "カチコミボンプ" },
-    stats: ["fire"],
-    releaseVersion: 1.3,
-    faction: [],
-    attr: {
-      hp: [360, 933, 1549, 2166, 2782, 3399, 3827],
-      atk: [53, 342, 807, 1568, 3070, 6303, 6570],
-      def: [32, 156, 288, 422, 556, 688, 781],
-      impact: 94,
-      critRate: 5,
-      critDmg: 50,
-      anomalyMastery: 0,
-      anomalyProficiency: 100,
-      penRatio: 0,
-      energy: 0,
-    },
-    extraAbility: "",
-  },
+
   {
     id: "redMoccus",
     name: { ja: "真紅のモックス", en: "真紅のモックス" },
