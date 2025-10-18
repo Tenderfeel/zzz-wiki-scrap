@@ -77,7 +77,7 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - [snap](https://wiki.hoyolab.com/pc/zzz/entry/592) - カチャコ
 - [brawlerboo](https://wiki.hoyolab.com/pc/zzz/entry/543) - カクトウボンプ
 - [agentGulliver](https://wiki.hoyolab.com/pc/zzz/entry/542) - ガリバー隊員
-- [knightboo](https://wiki.hoyolab.com/pc/zzz/entry/532) - キシドウボンプ
+- [knightboo](https://wiki.hoyolab.com/pc/zzz/entry/533) - キシドウボンプ
 - [baddieboo](https://wiki.hoyolab.com/pc/zzz/entry/532) - カチコミボンプ
 - [redMoccus](https://wiki.hoyolab.com/pc/zzz/entry/390) - 真紅のモックス
 - [officerCui](https://wiki.hoyolab.com/pc/zzz/entry/356) - ツェイ巡査
