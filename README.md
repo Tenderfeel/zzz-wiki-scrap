@@ -162,7 +162,8 @@ export default [
   {
     id: "excaliboo",
     name: { ja: "セイケンボンプ", en: "Excaliboo" },
-    stats: "ice", // 氷属性
+    stats: ["physical"], // 属性（配列形式）
+    rarity: "A", // レア度（A級またはS級）
     releaseVersion: 1.0,
     faction: [1], // 陣営ID配列
     attr: {
@@ -233,6 +234,7 @@ export default [
 ### ボンプデータ生成
 
 - 全ボンプの基本情報、ステータス、追加能力を自動取得
+- **レア度情報の自動抽出**（A 級・S 級の分類）
 - 複数派閥への所属対応
 - バッチ処理とリトライ機能
 - 詳細な処理レポート生成

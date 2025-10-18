@@ -79,6 +79,7 @@ export interface BasicBompInfo {
   id: string;
   name: string;
   stats: import("./index").Stats[]; // 配列形式の属性値
+  rarity: string; // 処理中は文字列（"A級"、"S級"）、最終的にRarityに変換される
   releaseVersion?: number;
 }
 

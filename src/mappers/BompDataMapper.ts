@@ -12,10 +12,20 @@ import factions from "../../data/factions";
  */
 export class BompDataMapper extends DataMapper {
   private attributesProcessor: AttributesProcessor;
+  private rarityExtractionStats: {
+    successful: number;
+    failed: number;
+    total: number;
+  };
 
   constructor() {
     super();
     this.attributesProcessor = new AttributesProcessor();
+    this.rarityExtractionStats = {
+      successful: 0,
+      failed: 0,
+      total: 0,
+    };
   }
 
   /**
@@ -31,6 +41,7 @@ export class BompDataMapper extends DataMapper {
     id: string;
     name: string;
     stats: Stats[];
+    rarity: string;
     releaseVersion?: number;
   } {
     try {
@@ -61,10 +72,36 @@ export class BompDataMapper extends DataMapper {
       // リリースバージョンを抽出（オプショナル）
       const releaseVersion = this.extractReleaseVersion(page.modules);
 
+      // レア度を抽出（グレースフル劣化処理付き）
+      let rarity = "A級"; // デフォルト値
+      let rarityExtractionSuccess = false;
+      this.rarityExtractionStats.total++;
+
+      try {
+        const extractedRarity = this.extractRarityFromBaseInfo(page.modules);
+        rarity = extractedRarity;
+        rarityExtractionSuccess = true;
+        this.rarityExtractionStats.successful++;
+        logger.debug("レア度抽出成功", {
+          bompId,
+          rarity: extractedRarity,
+        });
+      } catch (error) {
+        this.rarityExtractionStats.failed++;
+        logger.warn("レア度抽出に失敗、デフォルト値を使用", {
+          bompId,
+          defaultRarity: rarity,
+          error: error instanceof Error ? error.message : String(error),
+          stats: this.getRarityExtractionStats(),
+        });
+      }
+
       logger.debug("基本ボンプ情報抽出成功", {
         bompId,
         name,
         stats,
+        rarity,
+        rarityExtractionSuccess,
         releaseVersion,
       });
 
@@ -72,6 +109,7 @@ export class BompDataMapper extends DataMapper {
         id: bompId,
         name,
         stats,
+        rarity,
         releaseVersion,
       };
     } catch (error) {
@@ -238,6 +276,122 @@ export class BompDataMapper extends DataMapper {
         "ボンプ属性データの抽出に失敗しました",
         error as Error
       );
+    }
+  }
+
+  /**
+   * baseInfoコンポーネントからレア度情報を抽出
+   * @param modules モジュール配列
+   * @returns レア度文字列（"A級"、"S級"）
+   */
+  public extractRarityFromBaseInfo(modules: Module[]): string {
+    try {
+      if (!modules || !Array.isArray(modules)) {
+        throw new MappingError("モジュールデータが無効です");
+      }
+
+      // baseInfoモジュールを検索（日本語名「ステータス」または英語名「baseInfo」）
+      const baseInfoModule = modules.find(
+        (module) => module.name === "ステータス" || module.name === "baseInfo"
+      );
+
+      if (!baseInfoModule) {
+        throw new MappingError("baseInfoモジュールが見つかりません");
+      }
+
+      const baseInfoComponent = baseInfoModule.components?.find(
+        (component) => component.component_id === "baseInfo"
+      );
+
+      if (!baseInfoComponent?.data) {
+        throw new MappingError("baseInfoデータが存在しません");
+      }
+
+      // JSON データを解析
+      let baseInfoData;
+      try {
+        baseInfoData = JSON.parse(baseInfoComponent.data);
+      } catch (parseError) {
+        logger.error("baseInfoデータのJSON解析に失敗しました", {
+          error:
+            parseError instanceof Error
+              ? parseError.message
+              : String(parseError),
+        });
+        throw new MappingError("baseInfoデータのJSON解析に失敗しました");
+      }
+
+      if (!baseInfoData.list || !Array.isArray(baseInfoData.list)) {
+        throw new MappingError("baseInfo.listが存在しません");
+      }
+
+      // レア度キーを検索
+      const rarityItem = baseInfoData.list.find(
+        (item: any) => item.key === "レア度" || item.key === "rarity"
+      );
+
+      if (
+        !rarityItem ||
+        !rarityItem.value ||
+        !Array.isArray(rarityItem.value)
+      ) {
+        throw new MappingError("レア度情報が見つかりません");
+      }
+
+      const rarityValue = rarityItem.value[0];
+      if (typeof rarityValue !== "string") {
+        throw new MappingError("レア度値が文字列ではありません");
+      }
+
+      // HTMLタグを除去してクリーンな値を取得
+      const cleanRarityValue = rarityValue.replace(/<[^>]*>/g, "").trim();
+
+      logger.debug("レア度抽出成功", {
+        rawRarityValue: rarityValue,
+        cleanRarityValue,
+        itemKey: rarityItem.key,
+      });
+
+      return cleanRarityValue; // "A級" または "S級"
+    } catch (error) {
+      logger.error("レア度抽出に失敗しました", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * レア度文字列を正規化（"A級" → "A", "S級" → "S"）
+   * @param rawRarity 生のレア度文字列
+   * @returns 正規化されたレア度文字列
+   */
+  public normalizeRarity(rawRarity: string): string {
+    try {
+      if (!rawRarity || typeof rawRarity !== "string") {
+        throw new MappingError("レア度値が無効です");
+      }
+
+      // "級"を除去してトリム
+      const normalized = rawRarity.replace(/級$/, "").trim();
+
+      // 有効なレア度値かチェック
+      if (!["A", "S"].includes(normalized)) {
+        throw new MappingError(`未知のレア度値: "${rawRarity}"`);
+      }
+
+      logger.debug("レア度正規化成功", {
+        rawRarity,
+        normalized,
+      });
+
+      return normalized;
+    } catch (error) {
+      logger.error("レア度正規化に失敗しました", {
+        rawRarity,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
     }
   }
 
@@ -498,6 +652,40 @@ export class BompDataMapper extends DataMapper {
       }
       throw new MappingError("陣営IDの解決に失敗しました", error as Error);
     }
+  }
+
+  /**
+   * レア度抽出統計を取得
+   * @returns レア度抽出統計
+   */
+  public getRarityExtractionStats(): {
+    successful: number;
+    failed: number;
+    total: number;
+    successRate: number;
+  } {
+    const successRate =
+      this.rarityExtractionStats.total > 0
+        ? (this.rarityExtractionStats.successful /
+            this.rarityExtractionStats.total) *
+          100
+        : 0;
+
+    return {
+      ...this.rarityExtractionStats,
+      successRate: Math.round(successRate * 100) / 100, // 小数点以下2桁まで
+    };
+  }
+
+  /**
+   * レア度抽出統計をリセット
+   */
+  public resetRarityExtractionStats(): void {
+    this.rarityExtractionStats = {
+      successful: 0,
+      failed: 0,
+      total: 0,
+    };
   }
 
   /**

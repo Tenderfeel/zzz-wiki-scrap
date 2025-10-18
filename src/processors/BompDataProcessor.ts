@@ -64,7 +64,7 @@ export class BompDataProcessor extends DataProcessor {
         factionIds,
       };
 
-      // データ検証
+      // データ検証（レア度チェックを統合）
       const validationResult = this.validateBompData(processedData);
       if (!validationResult.isValid) {
         logger.warn("ボンプデータ検証に失敗しましたが、処理を継続します", {
@@ -74,11 +74,15 @@ export class BompDataProcessor extends DataProcessor {
         });
       }
 
-      logger.info("ボンプデータ処理完了", {
+      // レア度処理の詳細ログ記録
+      const rarityStats = this.bompDataMapper.getRarityExtractionStats();
+      logger.info("ボンプデータ処理完了（レア度統合）", {
         bompId: bompEntry.id,
         hasExtraAbility: extraAbility.length > 0,
         factionCount: factionIds.length,
         validationPassed: validationResult.isValid,
+        rarity: basicInfo.rarity,
+        rarityExtractionStats: rarityStats,
       });
 
       return processedData;
@@ -241,10 +245,82 @@ export class BompDataProcessor extends DataProcessor {
   }
 
   /**
+   * レア度データの検証機能
+   * レア度値の妥当性を検証し、適切なエラーハンドリングを実装
+   * 要件: 3.4, 4.1
+   */
+  private validateRarityData(rarity: string): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    try {
+      if (!rarity || typeof rarity !== "string") {
+        errors.push("レア度データが存在しません");
+        return { isValid: false, errors, warnings };
+      }
+
+      // レア度値の正規化チェック
+      const trimmedRarity = rarity.trim();
+      if (!trimmedRarity) {
+        errors.push("レア度データが空です");
+        return { isValid: false, errors, warnings };
+      }
+
+      // 有効なレア度値の検証（処理中の形式）
+      const validRawRarities = ["A級", "S級"];
+      const validNormalizedRarities = ["A", "S"];
+
+      const isValidRaw = validRawRarities.includes(trimmedRarity);
+      const isValidNormalized = validNormalizedRarities.includes(trimmedRarity);
+
+      if (!isValidRaw && !isValidNormalized) {
+        errors.push(
+          `無効なレア度値: "${trimmedRarity}". 有効な値: ${validRawRarities.join(
+            ", "
+          )} または ${validNormalizedRarities.join(", ")}`
+        );
+      }
+
+      // 正規化が必要かどうかの警告
+      if (isValidRaw && trimmedRarity.endsWith("級")) {
+        warnings.push(`レア度値 "${trimmedRarity}" は正規化が必要です`);
+      }
+
+      const isValid = errors.length === 0;
+
+      logger.debug("レア度データ検証完了", {
+        rarity: trimmedRarity,
+        isValid,
+        isValidRaw,
+        isValidNormalized,
+        errorCount: errors.length,
+        warningCount: warnings.length,
+      });
+
+      return { isValid, errors, warnings };
+    } catch (error) {
+      logger.error("レア度データ検証中にエラーが発生しました", {
+        rarity,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      return {
+        isValid: false,
+        errors: [
+          "レア度データ検証中にエラーが発生しました: " +
+            (error instanceof Error ? error.message : String(error)),
+        ],
+        warnings,
+      };
+    }
+  }
+
+  /**
    * ProcessedBompData の妥当性検証機能
    * 必須フィールドの存在確認と型チェック
+   * レア度チェックを統合
    * グレースフル劣化とエラー回復機能の実装
-   * 要件: 4.2, 4.5
+   * 要件: 4.2, 4.5, 3.4, 4.1
    */
   public validateBompData(data: ProcessedBompData): ValidationResult {
     const errors: string[] = [];
@@ -263,8 +339,19 @@ export class BompDataProcessor extends DataProcessor {
           errors.push("ボンプ名が無効です");
         }
 
-        if (!data.basicInfo.stats || typeof data.basicInfo.stats !== "string") {
+        if (!data.basicInfo.stats || !Array.isArray(data.basicInfo.stats)) {
           errors.push("ボンプ属性が無効です");
+        }
+
+        // レア度データの検証を統合
+        if (data.basicInfo.rarity) {
+          const rarityValidation = this.validateRarityData(
+            data.basicInfo.rarity
+          );
+          errors.push(...rarityValidation.errors);
+          warnings.push(...(rarityValidation.warnings || []));
+        } else {
+          warnings.push("レア度データが存在しません");
         }
 
         if (
@@ -391,19 +478,43 @@ export class BompDataProcessor extends DataProcessor {
   }
 
   /**
-   * 基本ボンプ情報を抽出
+   * 基本ボンプ情報を抽出（レア度抽出を統合）
+   * レア度抽出失敗時のフォールバック処理を実装
+   * 要件: 3.1, 2.5
    */
   private extractBasicBompInfo(
     apiData: ApiResponse,
     bompId: string
   ): BasicBompInfo {
     try {
-      return this.bompDataMapper.extractBasicBompInfo(apiData, bompId);
+      const basicInfo = this.bompDataMapper.extractBasicBompInfo(
+        apiData,
+        bompId
+      );
+
+      // レア度処理の詳細ログ記録
+      logger.info("基本ボンプ情報抽出完了（レア度統合）", {
+        bompId,
+        name: basicInfo.name,
+        stats: basicInfo.stats,
+        rarity: basicInfo.rarity,
+        releaseVersion: basicInfo.releaseVersion,
+        rarityExtractionStats: this.bompDataMapper.getRarityExtractionStats(),
+      });
+
+      return basicInfo;
     } catch (error) {
       logger.error("基本ボンプ情報の抽出に失敗しました", {
         bompId,
         error: error instanceof Error ? error.message : String(error),
       });
+
+      // レア度抽出失敗時のフォールバック処理
+      logger.warn("レア度抽出失敗のフォールバック処理を実行", {
+        bompId,
+        fallbackRarity: "A級",
+      });
+
       throw new MappingError(
         `基本ボンプ情報の抽出に失敗しました (${bompId})`,
         error as Error
@@ -563,13 +674,24 @@ export class BompDataProcessor extends DataProcessor {
     });
 
     try {
-      // 最小限の基本情報を作成
+      // 最小限の基本情報を作成（レア度フォールバック処理付き）
       const basicInfo: BasicBompInfo = {
         id: bompEntry.id,
         name: bompEntry.jaName, // Scraping.mdから取得した日本語名を使用
         stats: ["physical"], // デフォルト属性
+        rarity: "A級", // レア度抽出失敗時のデフォルト値
         releaseVersion: undefined,
       };
+
+      // レア度フォールバック処理のログ記録
+      logger.warn("グレースフル劣化でレア度デフォルト値を使用", {
+        bompId: bompEntry.id,
+        fallbackRarity: basicInfo.rarity,
+        originalError:
+          originalError instanceof Error
+            ? originalError.message
+            : String(originalError),
+      });
 
       // 空の属性情報を作成
       const attributesInfo = {

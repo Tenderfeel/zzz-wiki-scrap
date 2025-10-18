@@ -151,6 +151,7 @@ export type Bomp = {
   id: string; // Scraping.mdのリンクテキストと同じ
   name: { [key in Lang]: string }; // 多言語名
   stats: Stats[]; // 属性（配列形式）
+  rarity: Rarity; // レア度
   releaseVersion?: number; // 実装バージョン（例: 1.0, 1.1）
   faction: number[]; // 陣営ID（空配列の場合は陣営なし）
   attr: Attributes; // ステータス
@@ -162,6 +163,7 @@ export interface BasicBompInfo {
   id: string;
   name: string;
   stats: string; // 処理中は文字列、最終的にStats[]に変換される
+  rarity: string; // 処理中は文字列（"A級"、"S級"）、最終的にRarityに変換される
   releaseVersion?: number;
 }
 

@@ -1,6 +1,7 @@
 import { Bomp } from "../types";
 import { ProcessedBompData, ValidationResult } from "../types/processing";
 import { DataMapper } from "../mappers/DataMapper";
+import { BompDataMapper } from "../mappers/BompDataMapper";
 import { AttributesProcessor } from "../processors/AttributesProcessor";
 import { ValidationError, ParsingError } from "../errors";
 import { logger } from "../utils/Logger";
@@ -12,10 +13,12 @@ import * as fs from "fs";
  */
 export class BompGenerator {
   private dataMapper: DataMapper;
+  private bompDataMapper: BompDataMapper;
   private attributesProcessor: AttributesProcessor;
 
   constructor() {
     this.dataMapper = new DataMapper();
+    this.bompDataMapper = new BompDataMapper();
     this.attributesProcessor = new AttributesProcessor();
   }
 
@@ -62,11 +65,34 @@ export class BompGenerator {
         jaData.attributesInfo.ascensionData
       );
 
+      // レア度マッピング（正規化してからマッピング）
+      let rarity: "A" | "S" = "A"; // デフォルト値
+      try {
+        const normalizedRarity = this.bompDataMapper.normalizeRarity(
+          jaData.basicInfo.rarity
+        );
+        rarity = this.dataMapper.mapRarity(normalizedRarity);
+        logger.debug("レア度マッピング成功", {
+          bompId,
+          rawRarity: jaData.basicInfo.rarity,
+          normalizedRarity,
+          mappedRarity: rarity,
+        });
+      } catch (error) {
+        logger.warn("レア度マッピングに失敗、デフォルト値を使用", {
+          bompId,
+          rawRarity: jaData.basicInfo.rarity,
+          defaultRarity: rarity,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+
       // Bomp オブジェクトを構築
       const bomp: Bomp = {
         id: bompId, // 明示的に受け取ったボンプIDを使用
         name,
         stats,
+        rarity, // レア度マッピングを統合
         attr: attributes,
         extraAbility: jaData.extraAbility || "",
         releaseVersion: jaData.basicInfo.releaseVersion,
@@ -116,6 +142,13 @@ export class BompGenerator {
 
       if (!bomp.stats) {
         errors.push("stats フィールドが存在しません");
+      }
+
+      // レア度フィールドの存在確認
+      if (bomp.rarity === null || bomp.rarity === undefined) {
+        errors.push("rarity フィールドが存在しません");
+      } else if (typeof bomp.rarity !== "string") {
+        errors.push("rarity フィールドは文字列である必要があります");
       }
 
       if (!bomp.attr) {
@@ -215,14 +248,40 @@ export class BompGenerator {
         }
       }
 
+      // レア度値の妥当性検証（"A"または"S"）
+      const validRarities: ("A" | "S")[] = ["A", "S"];
+      if (
+        bomp.rarity !== null &&
+        bomp.rarity !== undefined &&
+        !validRarities.includes(bomp.rarity)
+      ) {
+        errors.push(
+          `rarity "${bomp.rarity}" は有効な値ではありません（"A"または"S"である必要があります）`
+        );
+        logger.warn("レア度検証エラー", {
+          bompId: bomp.id,
+          invalidRarity: bomp.rarity,
+          validRarities,
+        });
+      }
+
       const result = {
         isValid: errors.length === 0,
         errors,
       };
 
-      // 検証失敗時の詳細ログ
+      // 検証結果のログ記録
       if (!result.isValid) {
-        logger.warn("Bomp検証エラー", { bompId: bomp.id, errors });
+        logger.warn("Bomp検証エラー", {
+          bompId: bomp.id,
+          errors,
+          rarityValue: bomp.rarity,
+        });
+      } else {
+        logger.debug("Bomp検証成功", {
+          bompId: bomp.id,
+          rarityValue: bomp.rarity,
+        });
       }
 
       return result;
@@ -325,6 +384,8 @@ ${bompArrayCode}
 
   /**
    * Bomp オブジェクトを整形された TypeScript コードとして出力
+   * レア度フィールドを含む完全なボンプオブジェクトの出力
+   * 要件: 5.3
    */
   private formatBompObject(bomp: Bomp): string {
     const indent = "  ";
@@ -339,12 +400,16 @@ ${bompArrayCode}
       ? `[${bomp.stats.map((stat) => `"${stat}"`).join(", ")}]`
       : `["${bomp.stats}"]`; // 後方互換性のため
 
+    // レア度フィールドの適切なフォーマット確保
+    const rarityValue = bomp.rarity || "A"; // フォールバック値
+
     return `${indent}{
 ${indent}  id: "${bomp.id}",
 ${indent}  name: { ja: "${this.escapeString(
       bomp.name.ja
     )}", en: "${this.escapeString(bomp.name.en)}" },
 ${indent}  stats: ${statsArray},
+${indent}  rarity: "${rarityValue}",
 ${indent}  releaseVersion: ${bomp.releaseVersion || "undefined"},
 ${indent}  faction: ${factionStr},
 ${indent}  attr: {

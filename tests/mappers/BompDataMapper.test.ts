@@ -34,6 +34,7 @@ describe("BompDataMapper", () => {
         id: "excaliboo",
         name: "セイケンボンプ",
         stats: ["ice"],
+        rarity: "A級", // TODO: Task 2で実際のレア度抽出機能を実装
         releaseVersion: undefined,
       });
     });

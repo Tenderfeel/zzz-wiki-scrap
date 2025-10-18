@@ -21,6 +21,7 @@ describe("BompGenerator", () => {
         id: "excaliboo",
         name: "セイケンボンプ",
         stats: "氷属性",
+        rarity: "A級", // レア度フィールドを追加
         releaseVersion: 1.0,
       },
       attributesInfo: {
@@ -101,6 +102,7 @@ describe("BompGenerator", () => {
         id: "excaliboo",
         name: "Excaliboo",
         stats: ["ice"],
+        rarity: "A級", // レア度フィールドを追加
         releaseVersion: 1.0,
       },
       attributesInfo: {
@@ -200,6 +202,7 @@ describe("BompGenerator", () => {
         id: "excaliboo",
         name: { ja: "セイケンボンプ", en: "Excaliboo" },
         stats: "氷属性", // Should be ["ice"] after BompGenerator is updated
+        rarity: "A", // レア度フィールドを追加
         releaseVersion: 1.0,
         faction: [1, 2],
         attr: {
@@ -263,6 +266,7 @@ describe("BompGenerator", () => {
         id: "excaliboo",
         name: { ja: "セイケンボンプ", en: "Excaliboo" },
         stats: ["ice"],
+        rarity: "A", // レア度フィールドを追加
         releaseVersion: 1.0,
         faction: [1, 2],
         attr: {
@@ -342,6 +346,7 @@ describe("BompGenerator", () => {
           id: "excaliboo",
           name: { ja: "セイケンボンプ", en: "Excaliboo" },
           stats: ["ice"],
+          rarity: "A", // レア度フィールドを追加
           releaseVersion: 1.0,
           faction: [1],
           attr: {
@@ -411,6 +416,8 @@ describe("BompGenerator", () => {
           id: "bomp1",
           name: { ja: "ボンプ1", en: "Bomp1" },
           stats: ["ice"],
+          rarity: "A", // レア度フィールドを追加
+          faction: [1], // 派閥フィールドを追加
           attr: {
             hp: [100, 200, 300, 400, 500, 600, 700],
             atk: [50, 100, 150, 200, 250, 300, 350],
@@ -429,6 +436,8 @@ describe("BompGenerator", () => {
           id: "bomp2",
           name: { ja: "ボンプ2", en: "Bomp2" },
           stats: ["fire"],
+          rarity: "S", // レア度フィールドを追加
+          faction: [2], // 派閥フィールドを追加
           attr: {
             hp: [110, 220, 330, 440, 550, 660, 770],
             atk: [55, 110, 165, 220, 275, 330, 385],
@@ -470,6 +479,8 @@ describe("BompGenerator", () => {
           id: "special-bomp",
           name: { ja: 'ボンプ"特殊"', en: 'Bomp\n"Special"' },
           stats: ["ice"],
+          rarity: "A", // レア度フィールドを追加
+          faction: [1], // 派閥フィールドを追加
           attr: {
             hp: [100, 200, 300, 400, 500, 600, 700],
             atk: [50, 100, 150, 200, 250, 300, 350],
@@ -499,6 +510,8 @@ describe("BompGenerator", () => {
           id: "bomp-no-version",
           name: { ja: "バージョンなし", en: "No Version" },
           stats: ["ice"],
+          rarity: "A", // レア度フィールドを追加
+          faction: [], // 派閥フィールドを追加（空配列）
           attr: {
             hp: [100, 200, 300, 400, 500, 600, 700],
             atk: [50, 100, 150, 200, 250, 300, 350],
@@ -520,6 +533,268 @@ describe("BompGenerator", () => {
 
       expect(result).toContain("releaseVersion: undefined");
       expect(result).toContain("faction: []");
+    });
+  });
+
+  describe("レア度統合機能テスト", () => {
+    describe("generateBomp - レア度マッピング", () => {
+      it("A級レア度を正しくマッピングする", () => {
+        const dataWithARarity = {
+          ...mockJaData,
+          basicInfo: {
+            ...mockJaData.basicInfo,
+            rarity: "A級",
+          },
+        };
+
+        const result = bompGenerator.generateBomp(
+          dataWithARarity,
+          mockEnData,
+          "excaliboo"
+        );
+
+        expect(result.rarity).toBe("A");
+      });
+
+      it("S級レア度を正しくマッピングする", () => {
+        const dataWithSRarity = {
+          ...mockJaData,
+          basicInfo: {
+            ...mockJaData.basicInfo,
+            rarity: "S級",
+          },
+        };
+
+        const result = bompGenerator.generateBomp(
+          dataWithSRarity,
+          mockEnData,
+          "excaliboo"
+        );
+
+        expect(result.rarity).toBe("S");
+      });
+
+      it("無効なレア度の場合、デフォルト値Aを使用する", () => {
+        const dataWithInvalidRarity = {
+          ...mockJaData,
+          basicInfo: {
+            ...mockJaData.basicInfo,
+            rarity: "無効なレア度",
+          },
+        };
+
+        const result = bompGenerator.generateBomp(
+          dataWithInvalidRarity,
+          mockEnData,
+          "excaliboo"
+        );
+
+        expect(result.rarity).toBe("A");
+      });
+
+      it("レア度が空文字列の場合、デフォルト値Aを使用する", () => {
+        const dataWithEmptyRarity = {
+          ...mockJaData,
+          basicInfo: {
+            ...mockJaData.basicInfo,
+            rarity: "",
+          },
+        };
+
+        const result = bompGenerator.generateBomp(
+          dataWithEmptyRarity,
+          mockEnData,
+          "excaliboo"
+        );
+
+        expect(result.rarity).toBe("A");
+      });
+
+      it("レア度がnullの場合、デフォルト値Aを使用する", () => {
+        const dataWithNullRarity = {
+          ...mockJaData,
+          basicInfo: {
+            ...mockJaData.basicInfo,
+            rarity: null as any,
+          },
+        };
+
+        const result = bompGenerator.generateBomp(
+          dataWithNullRarity,
+          mockEnData,
+          "excaliboo"
+        );
+
+        expect(result.rarity).toBe("A");
+      });
+    });
+
+    describe("validateBomp - レア度検証", () => {
+      let validBomp: Bomp;
+
+      beforeEach(() => {
+        validBomp = {
+          id: "excaliboo",
+          name: { ja: "セイケンボンプ", en: "Excaliboo" },
+          stats: ["ice"],
+          rarity: "A",
+          releaseVersion: 1.0,
+          faction: [1, 2],
+          attr: {
+            hp: [100, 200, 300, 400, 500, 600, 700],
+            atk: [50, 100, 150, 200, 250, 300, 350],
+            def: [30, 60, 90, 120, 150, 180, 210],
+            impact: 10,
+            critRate: 5,
+            critDmg: 50,
+            anomalyMastery: 0,
+            anomalyProficiency: 0,
+            penRatio: 0,
+            energy: 0,
+          },
+          extraAbility: "氷属性ダメージを与える",
+        };
+      });
+
+      it("有効なレア度A値を受け入れる", () => {
+        validBomp.rarity = "A";
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(true);
+        expect(result.errors).toHaveLength(0);
+      });
+
+      it("有効なレア度S値を受け入れる", () => {
+        validBomp.rarity = "S";
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(true);
+        expect(result.errors).toHaveLength(0);
+      });
+
+      it("レア度フィールドが存在しない場合、検証エラーを返す", () => {
+        validBomp.rarity = null as any;
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain("rarity フィールドが存在しません");
+      });
+
+      it("レア度フィールドが文字列でない場合、検証エラーを返す", () => {
+        validBomp.rarity = 123 as any;
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain(
+          "rarity フィールドは文字列である必要があります"
+        );
+      });
+
+      it("無効なレア度値の場合、検証エラーを返す", () => {
+        validBomp.rarity = "B" as any;
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain(
+          'rarity "B" は有効な値ではありません（"A"または"S"である必要があります）'
+        );
+      });
+
+      it("空文字列のレア度値の場合、検証エラーを返す", () => {
+        validBomp.rarity = "" as any;
+        const result = bompGenerator.validateBomp(validBomp);
+
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain(
+          'rarity "" は有効な値ではありません（"A"または"S"である必要があります）'
+        );
+      });
+    });
+
+    describe("formatBompObject - レア度出力", () => {
+      it("レア度フィールドを正しく出力する", () => {
+        const bompWithARarity: Bomp = {
+          id: "test-bomp",
+          name: { ja: "テストボンプ", en: "Test Bomp" },
+          stats: ["ice"],
+          rarity: "A",
+          releaseVersion: 1.0,
+          faction: [1],
+          attr: {
+            hp: [100, 200, 300, 400, 500, 600, 700],
+            atk: [50, 100, 150, 200, 250, 300, 350],
+            def: [30, 60, 90, 120, 150, 180, 210],
+            impact: 10,
+            critRate: 5,
+            critDmg: 50,
+            anomalyMastery: 0,
+            anomalyProficiency: 0,
+            penRatio: 0,
+            energy: 0,
+          },
+          extraAbility: "テスト能力",
+        };
+
+        const result = bompGenerator.formatBompArray([bompWithARarity]);
+
+        expect(result).toContain('rarity: "A"');
+      });
+
+      it("S級レア度を正しく出力する", () => {
+        const bompWithSRarity: Bomp = {
+          id: "s-rank-bomp",
+          name: { ja: "Sランクボンプ", en: "S Rank Bomp" },
+          stats: ["fire"],
+          rarity: "S",
+          releaseVersion: 1.1,
+          faction: [2],
+          attr: {
+            hp: [150, 250, 350, 450, 550, 650, 750],
+            atk: [75, 125, 175, 225, 275, 325, 375],
+            def: [45, 75, 105, 135, 165, 195, 225],
+            impact: 15,
+            critRate: 10,
+            critDmg: 60,
+            anomalyMastery: 5,
+            anomalyProficiency: 5,
+            penRatio: 5,
+            energy: 5,
+          },
+          extraAbility: "強力な能力",
+        };
+
+        const result = bompGenerator.formatBompArray([bompWithSRarity]);
+
+        expect(result).toContain('rarity: "S"');
+      });
+
+      it("レア度がnullの場合、デフォルト値Aを出力する", () => {
+        const bompWithNullRarity: Bomp = {
+          id: "null-rarity-bomp",
+          name: { ja: "レア度なしボンプ", en: "No Rarity Bomp" },
+          stats: ["electric"],
+          rarity: null as any,
+          releaseVersion: 1.0,
+          faction: [],
+          attr: {
+            hp: [100, 200, 300, 400, 500, 600, 700],
+            atk: [50, 100, 150, 200, 250, 300, 350],
+            def: [30, 60, 90, 120, 150, 180, 210],
+            impact: 10,
+            critRate: 5,
+            critDmg: 50,
+            anomalyMastery: 0,
+            anomalyProficiency: 0,
+            penRatio: 0,
+            energy: 0,
+          },
+          extraAbility: "デフォルト能力",
+        };
+
+        const result = bompGenerator.formatBompArray([bompWithNullRarity]);
+
+        expect(result).toContain('rarity: "A"');
+      });
     });
   });
 
@@ -592,6 +867,7 @@ describe("BompGenerator", () => {
           id: "excaliboo",
           name: { ja: "セイケンボンプ", en: "Excaliboo" },
           stats: ["ice"],
+          rarity: "A", // レア度フィールドを追加
           releaseVersion: 1.0,
           faction: [1, 2],
           attr: {
@@ -750,6 +1026,7 @@ describe("BompGenerator", () => {
             id: "excaliboo",
             name: { ja: "セイケンボンプ", en: "Excaliboo" },
             stats: ["ice"],
+            rarity: "A", // レア度フィールドを追加
             releaseVersion: 1.0,
             faction: [1],
             attr: {

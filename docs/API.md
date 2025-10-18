@@ -16,6 +16,18 @@ export class DataMapper {
 }
 ```
 
+## BompDataMapper
+
+ボンプ専用のデータマッピング機能を提供するクラスです。
+
+### クラス概要
+
+```typescript
+export class BompDataMapper extends DataMapper {
+  // ボンプ固有のマッピングメソッドを提供
+}
+```
+
 ### メソッド
 
 #### `mapSpecialty(rawSpecialty: string): Specialty`
@@ -85,6 +97,56 @@ export class DataMapper {
 - `"回避支援"` → `"evasive"`
 - `"パリィ支援"` → `"defensive"`
 - その他の値 → `undefined`
+
+### BompDataMapper メソッド
+
+#### `extractRarityFromBaseInfo(modules: Module[]): string`
+
+API レスポンスの baseInfo コンポーネントからレア度情報を抽出します。
+
+**パラメータ:**
+
+- `modules` (Module[]): API レスポンスのモジュール配列
+
+**戻り値:** `string` - 生のレア度文字列（"A 級" または "S 級"）
+
+**抽出パス:**
+
+```
+data.page.modules
+  → find(module => module.name === "ステータス" || module.name === "baseInfo")
+    → components
+      → find(component => component.component_id === "baseInfo")
+        → data (JSON文字列)
+          → JSON.parse()
+            → list[]
+              → find(item => item.key === "レア度")
+                → value[0] // "A級" または "S級"
+```
+
+**エラー:**
+
+- `MappingError`: baseInfo モジュール/コンポーネントが見つからない場合
+- `MappingError`: レア度情報が存在しない場合
+
+#### `normalizeRarity(rawRarity: string): string`
+
+生のレア度文字列を正規化します。
+
+**パラメータ:**
+
+- `rawRarity` (string): 生のレア度文字列（"A 級", "S 級"）
+
+**戻り値:** `string` - 正規化されたレア度文字列（"A", "S"）
+
+**変換:**
+
+- `"A級"` → `"A"`
+- `"S級"` → `"S"`
+
+**エラー:**
+
+- `MappingError`: 無効なレア度値の場合
 
 ## CharacterGenerator
 
@@ -176,6 +238,31 @@ type Stats =
 type AssistType =
   | "evasive" // 回避支援
   | "defensive"; // パリィ支援
+```
+
+### Bomp
+
+ボンプ情報を表現する型です。
+
+```typescript
+type Bomp = {
+  id: string; // ボンプID
+  name: { [key in Lang]: string }; // 多言語名
+  stats: Stats[]; // 属性（配列形式）
+  rarity: Rarity; // レア度（A級またはS級）
+  releaseVersion?: number; // 実装バージョン
+  faction: number[]; // 陣営ID配列
+  attr: Attributes; // ステータス
+  extraAbility: string; // 追加能力
+};
+```
+
+### Rarity
+
+レア度を表現する型です。
+
+```typescript
+type Rarity = "A" | "S";
 ```
 
 ### Attributes
