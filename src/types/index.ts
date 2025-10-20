@@ -341,3 +341,6 @@ export interface ProcessedWeaponData {
   attributesInfo: WeaponAttributesInfo;
   agentInfo: WeaponAgentInfo;
 }
+
+// 音動機処理設定（processing.tsから再エクスポート）
+export type { WeaponProcessingConfig } from "./processing";

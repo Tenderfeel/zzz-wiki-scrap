@@ -15,6 +15,11 @@
       "require": "./data/factions.ts",
       "types": "./data/factions.ts"
     },
+    "./weapons": {
+      "import": "./data/weapons.ts",
+      "require": "./data/weapons.ts",
+      "types": "./data/weapons.ts"
+    },
     "./bomps": {
       "import": "./data/bomps.ts",
       "require": "./data/bomps.ts",
@@ -27,6 +32,7 @@
   "scripts": {
     "generate": "tsx src/main.ts",
     "generate:config": "ts-node --esm src/main-configurable.ts",
+    "generate:weapons": "tsx src/main-weapon-generation.ts",
     "generate:bomps": "tsx src/main-bomp-generation.ts",
     "generate:bomp-icons": "tsx src/main-bomp-icon-download.ts",
     "test": "vitest --run",

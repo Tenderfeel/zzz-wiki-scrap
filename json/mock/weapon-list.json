@@ -1,0 +1,78 @@
+{
+  "data": {
+    "list": [
+      {
+        "entry_page_id": "85",
+        "name": "ディープシー・ビジター",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["S"]
+          },
+          "filter_key_13": {
+            "values": ["強攻"]
+          }
+        }
+      },
+      {
+        "entry_page_id": "76",
+        "name": "恥じらう悪面",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["S"]
+          },
+          "filter_key_13": {
+            "values": ["撃破"]
+          }
+        }
+      },
+      {
+        "entry_page_id": "74",
+        "name": "ドリルリグ-レッドシャフト",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["S"]
+          },
+          "filter_key_13": {
+            "values": ["強攻"]
+          }
+        }
+      },
+      {
+        "entry_page_id": "3",
+        "name": "デマラ式電池Ⅱ型",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["A"]
+          },
+          "filter_key_13": {
+            "values": ["支援"]
+          }
+        }
+      },
+      {
+        "entry_page_id": "72",
+        "name": "ハウスキーパー",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["A"]
+          },
+          "filter_key_13": {
+            "values": ["支援"]
+          }
+        }
+      },
+      {
+        "entry_page_id": "100",
+        "name": "テストB級音動機",
+        "filter_values": {
+          "w_engine_rarity": {
+            "values": ["B"]
+          },
+          "filter_key_13": {
+            "values": ["強攻"]
+          }
+        }
+      }
+    ]
+  }
+}
