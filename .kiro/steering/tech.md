@@ -4,69 +4,77 @@ inclusion: always
 
 # ZZZ Character Data Processing Guidelines
 
-## プロジェクト概要
+## Project Overview
 
-Zenless Zone Zero (ZZZ) キャラクター情報を HoyoLab API から取得する TypeScript ベースのデータスクレイピングシステム。型安全性、エラー耐性、保守可能なアーキテクチャを重視。
+TypeScript-based data scraping system for Zenless Zone Zero (ZZZ) character information from HoyoLab API. Emphasizes type safety, error resilience, and maintainable architecture.
 
-チャットと文書は日本語で記載する。
+**Communication**: Use Japanese for chat and documentation when working with domain-specific content.
 
-## 技術スタック
+## Tech Stack
 
 - **Runtime**: Node.js + TypeScript
-- **Testing**: Vitest (`--run`フラグ使用、watch モード禁止)
+- **Testing**: Vitest with `--run` flag (watch mode prohibited)
 - **Build**: TypeScript Compiler (`tsc`)
 - **Package Manager**: npm
 
-## アーキテクチャ（厳格遵守）
+## Architecture (Strict Adherence Required)
 
-レイヤー間のデータフローを厳密に守る：
+Follow layered data flow strictly:
 
 ```
 src/
-├── clients/     # API通信（HoyoLab専用）
-├── parsers/     # JSON解析・構造化
-├── mappers/     # API応答→内部型変換
-├── processors/  # データ変換・ビジネスロジック
-├── generators/  # TypeScriptファイル出力
-├── services/    # オーケストレーション
-└── utils/       # 共通ユーティリティ
+├── clients/     # API communication (HoyoLab only)
+├── parsers/     # JSON parsing & structuring
+├── mappers/     # API response → internal type conversion
+├── processors/  # Data transformation & business logic
+├── generators/  # TypeScript file output
+├── services/    # Orchestration layer
+└── utils/       # Shared utilities
 ```
 
-**データフロー**: Client → Parser → Mapper → Processor → Generator
+**Data Flow**: Client → Parser → Mapper → Processor → Generator
 
-## HoyoLab API 仕様（必須）
+**Rules**:
 
-### API 制約
+- Never skip layers in the data flow
+- Each layer has single responsibility
+- Use dependency injection between layers
+
+## HoyoLab API Specification (Critical)
+
+### API Constraints
 
 - **Base URL**: `https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page`
-- **認証**: 不要（パブリック API）
-- **レート制限**: リクエスト間の遅延必須
-- **パラメータ**: `entry_page_id` (2-902), `lang` (`ja-jp`/`en-us`)
+- **Authentication**: None required (public API)
+- **Rate Limiting**: Mandatory delays between requests
+- **Parameters**: `entry_page_id` (2-902), `lang` (`ja-jp`/`en-us`)
 
-### リクエストパターン（重要）
+### Request Pattern (Critical)
 
-1. **`ja-jp`を最初にリクエスト** - プライマリデータソース
-2. **`en-us`にフォールバック** - 日本語失敗時のみ
-3. **部分的失敗でも継続** - プロセス全体を中断しない
-4. **遅延実装** - API レート制限回避
+1. **Request `ja-jp` first** - Primary data source
+2. **Fallback to `en-us`** - Only on Japanese failure
+3. **Continue on partial failures** - Don't abort entire process
+4. **Implement delays** - Avoid API rate limits
 
-### データ抽出パス（正確に）
+### Data Extraction Paths (Exact)
 
 ```typescript
-// APIレスポンスからの抽出パス
-data.page.id → Character ID (数値変換)
-data.page.name → 多言語名オブジェクト
-data.page.agent_specialties.values[0] → 特技（マッピング必要）
-data.page.agent_stats.values[0] → 属性（マッピング必要）
-data.page.agent_attack_type.values[0] → 攻撃タイプ（マッピング必要）
-data.page.agent_faction.values[0] → 派閥参照
-data.page.agent_rarity.values[0] → レアリティ（"A"または"S"）
+// API response extraction paths
+data.page.id → Character ID (convert to number)
+data.page.name → Multi-language name object
+data.page.agent_specialties.values[0] → Specialty (requires mapping)
+data.page.agent_stats.values[0] → Attribute (requires mapping)
+data.page.agent_attack_type.values[0] → Attack type (requires mapping)
+data.page.agent_faction.values[0] → Faction reference
+data.page.agent_rarity.values[0] → Rarity ("A" or "S")
 ```
 
-## 日本語 → 英語マッピング（必須）
+## Japanese → English Mappings (Required)
+
+**Critical**: These mappings are exact and must not be modified.
 
 ```typescript
-// 特技 (agent_specialties)
+// Specialties (agent_specialties)
 "撃破" → "stun"
 "強攻" → "attack"
 "異常" → "anomaly"
@@ -74,39 +82,39 @@ data.page.agent_rarity.values[0] → レアリティ（"A"または"S"）
 "防護" → "defense"
 "命破" → "rupture"
 
-// 属性 (agent_stats)
+// Attributes (agent_stats)
 "氷属性" → "ice"
 "炎属性" → "fire"
 "電気属性" → "electric"
 "物理属性" → "physical"
 "エーテル属性" → "ether"
 
-// 攻撃タイプ (agent_attack_type)
+// Attack Types (agent_attack_type)
 "打撃" → "strike"
 "斬撃" → "slash"
 "刺突" → "pierce"
 ```
 
-## キャラクター属性処理
+## Character Attributes Processing
 
-**場所**: `data.page.modules` → `ascension`コンポーネント → `data`（JSON 文字列）を解析
+**Location**: `data.page.modules` → `ascension` component → parse `data` (JSON string)
 
-### レベル配列（7 要素必須）
+### Level Arrays (7 Elements Required)
 
-レベル: 1, 10, 20, 30, 40, 50, 60
+Levels: 1, 10, 20, 30, 40, 50, 60
 
-- `combatList`から`hp[]`, `atk[]`, `def[]`を抽出
-- **常に`values[1]`使用**（強化ステータス、ベースではない）
+- Extract `hp[]`, `atk[]`, `def[]` from `combatList`
+- **Always use `values[1]`** (enhanced stats, not base)
 
-### 単一値（レベル 1 のみ）
+### Single Values (Level 1 Only)
 
 `impact`, `critRate`, `critDmg`, `anomalyMastery`, `anomalyProficiency`, `penRatio`, `energy`
 
-### 値変換（必須）
+### Value Conversion (Required)
 
-- `"-"` → `0`（null/欠損値処理）
-- `"50%"` → `50`（パーセント記号除去）
-- 文字列から数値への適切な変換
+- `"-"` → `0` (null/missing value handling)
+- `"50%"` → `50` (remove percentage symbol)
+- Proper string to number conversion
 
 ## TypeScript 型定義（厳格遵守）
 
@@ -154,45 +162,59 @@ type Faction = {
 };
 ```
 
-## 出力要件（正確なファイル）
+## Output Requirements (Exact Files)
 
-**必須生成ファイル**:
+**Required Generated Files**:
 
 - `data/characters.ts` → `export default Character[]`
 - `data/factions.ts` → `export default Faction[]`
 
-## コーディング規約
+## Coding Conventions
 
-### 命名規則（厳格）
+### Naming Rules (Strict)
 
-- **ファイル**: `PascalCase.ts` (例: `CharacterGenerator.ts`)
-- **クラス**: `PascalCase` (例: `DataProcessor`)
-- **関数**: `camelCase` (例: `processCharacterData`)
-- **定数**: `UPPER_SNAKE_CASE` (例: `API_BASE_URL`)
-- **キャラクター ID**: 小文字、記号保持 (例: `lycaon`, `soldier11`)
+- **Files**: `PascalCase.ts` (e.g., `CharacterGenerator.ts`)
+- **Classes**: `PascalCase` (e.g., `DataProcessor`)
+- **Functions**: `camelCase` (e.g., `processCharacterData`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
+- **Character IDs**: lowercase, preserve symbols (e.g., `lycaon`, `soldier11`)
 
-### 言語使用規則
+### Language Usage Rules
 
-- **コード/変数**: 英語のみ
-- **コメント**: ドメインコンテキストは日本語推奨
-- **API リクエスト**: `ja-jp`優先、`en-us`フォールバック
+- **Code/Variables**: English only
+- **Comments**: Japanese preferred for domain context
+- **API Requests**: `ja-jp` priority, `en-us` fallback
 
-## エラーハンドリング
+## Error Handling
 
-- **カスタムエラークラス**: `src/errors/`を使用
-- **詳細ログ**: 全処理ステップをログ出力
-- **グレースフル劣化**: 部分的失敗でも継続
-- **入力検証**: 適切なデフォルト値提供
+- **Custom Error Classes**: Use `src/errors/` directory
+- **Detailed Logging**: Log all processing steps
+- **Graceful Degradation**: Continue on partial failures
+- **Input Validation**: Provide appropriate defaults
 
-## 型安全性（非交渉）
+## Type Safety (Non-Negotiable)
 
-- **厳格 TypeScript モード**: 緩い設定禁止
-- **`any`型禁止**: 明示的型付け必須
-- **インターフェース準拠**: 全データが定義型に適合
-- **ランタイム検証**: 境界でのデータ構造検証
+- **Strict TypeScript Mode**: No loose configurations
+- **No `any` Types**: Explicit typing required
+- **Interface Compliance**: All data must conform to defined types
+- **Runtime Validation**: Validate data structures at boundaries
 
-## 設定管理
+## Configuration Management
 
-- **外部設定ファイル**: `processing-config.json`
-- **環境サポート**: 異なる環境用の設定
-- **検証必須**: 設定値チェック、デフォルト提供
+- **External Config Files**: Use `processing-config.json`
+- **Environment Support**: Different configs for different environments
+- **Validation Required**: Check config values, provide defaults
+
+## Development Guidelines
+
+### Testing
+
+- Use Vitest with `--run` flag only (no watch mode)
+- Place tests in `tests/` directory matching source structure
+- Focus on integration tests for data processing pipelines
+
+### File Organization
+
+- Follow the layered architecture strictly
+- Use index files for clean exports
+- Keep related functionality grouped by layer
