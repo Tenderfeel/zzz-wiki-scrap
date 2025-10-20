@@ -26,6 +26,8 @@ export interface FilterValues {
   agent_rarity?: { values: string[] };
   agent_faction?: { values: string[] };
   agent_assist_type?: { values: string[] }; // 支援タイプ（オプショナル）
+  w_engine_rarity?: { values: string[] }; // 音動機レア度
+  filter_key_13?: { values: string[] }; // 音動機特性
 }
 
 export interface Module {
@@ -84,6 +86,9 @@ export interface BaseInfoData {
 
 export interface BaseInfoItem {
   key: string;
-  values: string[];
+  values?: string[]; // 新しいAPI形式
+  value?: string[]; // 古いAPI形式（モックデータ等）
   ep_id?: string; // 陣営ID
+  id?: string; // アイテムID
+  isMaterial?: boolean; // マテリアル判定
 }

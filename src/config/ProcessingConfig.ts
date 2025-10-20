@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { BompIconConfig } from "../types/processing";
+import { BompIconConfig, WeaponProcessingConfig } from "../types/processing";
 
 /**
  * 処理設定インターフェース
@@ -47,6 +47,9 @@ export interface ProcessingConfig {
 
   // ボンプアイコンダウンロード設定
   bompIconDownload: BompIconConfig;
+
+  // 音動機処理設定
+  weaponProcessing: WeaponProcessingConfig;
 }
 
 /**
@@ -135,6 +138,20 @@ export const DEFAULT_CONFIG: ProcessingConfig = {
     maxFileSizeMB: 10,
     allowedExtensions: [".png", ".jpg", ".jpeg", ".webp"],
     strictSecurity: true,
+  },
+
+  // 音動機処理設定
+  weaponProcessing: {
+    weaponListPath: "json/data/weapon-list.json",
+    outputPath: "data/weapons.ts",
+    includeRarities: ["A", "S"],
+    batchSize: 10,
+    delayMs: 1000,
+    maxRetries: 3,
+    skipAgentValidation: false,
+    enableSkillExtraction: true,
+    enableValidation: true,
+    logLevel: "info",
   },
 };
 
@@ -272,6 +289,9 @@ export class ConfigManager {
     // ボンプアイコンダウンロード設定の検証
     this.validateBompIconConfig(config.bompIconDownload, errors);
 
+    // 音動機処理設定の検証
+    this.validateWeaponProcessingConfig(config.weaponProcessing, errors);
+
     if (errors.length > 0) {
       console.warn(`⚠️  設定に問題があります:`);
       errors.forEach((error) => console.warn(`  - ${error}`));
@@ -313,6 +333,72 @@ export class ConfigManager {
       if (filter.randomSample.count < 1) {
         errors.push("randomSample.count は 1 以上である必要があります");
       }
+    }
+  }
+
+  /**
+   * 音動機処理設定を検証
+   */
+  private validateWeaponProcessingConfig(
+    config: WeaponProcessingConfig,
+    errors: string[]
+  ): void {
+    // weaponListPath の検証
+    if (!config.weaponListPath || config.weaponListPath.trim() === "") {
+      errors.push("weaponProcessing.weaponListPath は空にできません");
+    }
+
+    // outputPath の検証
+    if (!config.outputPath || config.outputPath.trim() === "") {
+      errors.push("weaponProcessing.outputPath は空にできません");
+    }
+
+    // includeRarities の検証
+    if (!config.includeRarities || config.includeRarities.length === 0) {
+      errors.push("weaponProcessing.includeRarities は空にできません");
+    } else {
+      const validRarities = ["A", "S"];
+      const invalidRarities = config.includeRarities.filter(
+        (rarity) => !validRarities.includes(rarity)
+      );
+      if (invalidRarities.length > 0) {
+        errors.push(
+          `weaponProcessing.includeRarities に無効なレア度が含まれています: ${invalidRarities.join(
+            ", "
+          )}`
+        );
+      }
+    }
+
+    // batchSize の検証
+    if (config.batchSize < 1 || config.batchSize > 50) {
+      errors.push(
+        "weaponProcessing.batchSize は 1-50 の範囲内である必要があります"
+      );
+    }
+
+    // delayMs の検証
+    if (config.delayMs < 0 || config.delayMs > 30000) {
+      errors.push(
+        "weaponProcessing.delayMs は 0-30000 の範囲内である必要があります"
+      );
+    }
+
+    // maxRetries の検証
+    if (config.maxRetries < 0 || config.maxRetries > 10) {
+      errors.push(
+        "weaponProcessing.maxRetries は 0-10 の範囲内である必要があります"
+      );
+    }
+
+    // logLevel の検証
+    const validLogLevels = ["error", "warn", "info", "debug"];
+    if (!validLogLevels.includes(config.logLevel)) {
+      errors.push(
+        `weaponProcessing.logLevel は次のいずれかである必要があります: ${validLogLevels.join(
+          ", "
+        )}`
+      );
     }
   }
 
@@ -404,6 +490,13 @@ export class ConfigManager {
   }
 
   /**
+   * 音動機処理設定を取得
+   */
+  getWeaponProcessingConfig(): WeaponProcessingConfig {
+    return { ...this.config.weaponProcessing };
+  }
+
+  /**
    * 設定を更新
    */
   updateConfig(updates: Partial<ProcessingConfig>): void {
@@ -476,6 +569,10 @@ export class ConfigManager {
       console.log(
         `ボンプアイコン出力: ${this.config.bompIconDownload.outputDirectory}`
       );
+      console.log(
+        `音動機リスト: ${this.config.weaponProcessing.weaponListPath}`
+      );
+      console.log(`音動機出力: ${this.config.weaponProcessing.outputPath}`);
       console.log(`=======================\n`);
     }
   }
@@ -592,7 +689,27 @@ export class ConfigManager {
     ).join(", ")}\n`;
     report += `- 厳格セキュリティ: ${
       this.config.bompIconDownload.strictSecurity !== false ? "有効" : "無効"
+    }\n\n`;
+
+    report += `## 音動機処理設定\n`;
+    report += `- 音動機リストパス: ${this.config.weaponProcessing.weaponListPath}\n`;
+    report += `- 出力パス: ${this.config.weaponProcessing.outputPath}\n`;
+    report += `- 処理対象レア度: ${this.config.weaponProcessing.includeRarities.join(
+      ", "
+    )}\n`;
+    report += `- バッチサイズ: ${this.config.weaponProcessing.batchSize}\n`;
+    report += `- 遅延時間: ${this.config.weaponProcessing.delayMs}ms\n`;
+    report += `- 最大リトライ回数: ${this.config.weaponProcessing.maxRetries}\n`;
+    report += `- エージェント検証スキップ: ${
+      this.config.weaponProcessing.skipAgentValidation ? "有効" : "無効"
     }\n`;
+    report += `- スキル情報抽出: ${
+      this.config.weaponProcessing.enableSkillExtraction ? "有効" : "無効"
+    }\n`;
+    report += `- データ検証: ${
+      this.config.weaponProcessing.enableValidation ? "有効" : "無効"
+    }\n`;
+    report += `- ログレベル: ${this.config.weaponProcessing.logLevel}\n`;
 
     return report;
   }

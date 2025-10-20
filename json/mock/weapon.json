@@ -1,0 +1,322 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "page": {
+      "id": "85",
+      "name": "ディープシー・ビジター",
+      "desc": "エレンがよく使う、特別製の高効率出力温度変換型音動機。冷却機能と大出力を兼ね備えたもの。",
+      "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/b029d3bf8295e848bf4bb3cee7bee635_8613743280973482624.png",
+      "header_img_url": "",
+      "modules": [
+        {
+          "name": "ステータス",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "baseInfo",
+              "layout": "",
+              "data": "{\"list\":[{\"key\":\"名称\",\"value\":[\"ディープシー・ビジター\"],\"id\":\"baseInfo42033\"},{\"key\":\"該当エージェント\",\"value\":[\"$[{\\\"ep_id\\\":29,\\\"icon\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/28/71b99a24f7864beec31370cf07cbcafb_7099117086480817211.png\\\",\\\"amount\\\":0,\\\"name\\\":\\\"エレン・ジョー\\\",\\\"menuId\\\":\\\"agent\\\",\\\"_menuId\\\":\\\"8\\\"}]$\"],\"id\":\"baseInfo31176\",\"isMaterial\":true},{\"key\":\"実装バージョン\",\"value\":[\"\u003cp\u003eVer.1.0「新エリー都へようこそ」\u003c/p\u003e\"],\"id\":\"baseInfo11830\"},{\"key\":\"基礎ステータス\",\"value\":[\"\u003cp\u003e基礎攻撃力\u003c/p\u003e\"],\"id\":\"baseInfo25801\"},{\"key\":\"上級ステータス\",\"value\":[\"\u003cp\u003e会心率\u003c/p\u003e\"],\"id\":\"baseInfo61956\"},{\"key\":\"音動機効果\",\"value\":[\"\u003cp\u003e\u003cspan style=\\\"color: rgb(255, 175, 44)\\\"\u003e[強攻]\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003eのエージェントに対し、以下の効果を発動可能\u003c/span\u003e\u003c/p\u003e\"],\"id\":\"baseInfo81517\"}]}",
+              "style": ""
+            },
+            {
+              "component_id": "equipment_skill",
+              "layout": "",
+              "data": "{\"skill_name\":\"諸海の王\",\"skill_desc\":\"\u003cp\u003e\u003cspan style=\\\"color: #98eff0\\\"\u003e氷属性ダメージ\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e+\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e25\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e31.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e38\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e44.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e50%\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e。『通常攻撃』が敵に命中した時、装備者の会心率\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e+\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e10\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e12.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e15\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e17.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e20%\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e、継続時間8秒。『ダッシュ攻撃』で\u003c/span\u003e\u003cspan style=\\\"color: #98eff0\\\"\u003e氷属性ダメージ\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003eを与えた時、装備者の会心率が追加で+\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e10\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e12.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e15\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e17.5\u003c/span\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e/\u003c/span\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e20%\u003c/span\u003e\u003cspan style=\\\"color: #FFFFFF\\\"\u003e、継続時間15秒、継続時間はバフ効果ごとに独立してカウントされる。\u003c/span\u003e\u003c/p\u003e\"}",
+              "style": ""
+            }
+          ],
+          "id": "24",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "突破",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "ascension",
+              "layout": "",
+              "data": "{\"list\":[{\"key\":\"0\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"-\",\"48\"]},{\"key\":\"会心率\",\"values\":[\"-\",\"9.6%\"]}],\"materials\":[],\"id\":\"ascension41127\"},{\"key\":\"10\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"123\",\"166\"]},{\"key\":\"会心率\",\"values\":[\"9.6%\",\"12.5%\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":12000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":323,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/05/5c4ad5b6f1c1fb6e2084a6c4f86d9378_199025115640696142.png\\\",\\\"amount\\\":4,\\\"nickname\\\":\\\"強攻キット\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension88400\"},{\"key\":\"20\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"241\",\"284\"]},{\"key\":\"会心率\",\"values\":[\"12.5%\",\"15.4%\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":28000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":340,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/05/5241db6304c121feda2141ae326bf70a_3184362103749807022.png\\\",\\\"amount\\\":12,\\\"nickname\\\":\\\"強化型強攻キット\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension61126\"},{\"key\":\"30\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"359\",\"402\"]},{\"key\":\"会心率\",\"values\":[\"15.4%\",\"18.2%\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":60000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":340,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/05/5241db6304c121feda2141ae326bf70a_3184362103749807022.png\\\",\\\"amount\\\":20,\\\"nickname\\\":\\\"強化型強攻キット\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension32114\"},{\"key\":\"40\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"477\",\"520\"]},{\"key\":\"会心率\",\"values\":[\"18.2%\",\"21.1%\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":100000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":345,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/05/e870272323f5403e3e2c927c11c79545_5611387632475354925.png\\\",\\\"amount\\\":10,\\\"nickname\\\":\\\"特化型強攻キット\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension77229\"},{\"key\":\"50\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"595\",\"638\"]},{\"key\":\"会心率\",\"values\":[\"21.1%\",\"24%\"]}],\"materials\":[\"$[{\\\"ep_id\\\":32,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/22/cd6682dd2d871dc93dfa28c3f281d527_7793444478727984954.png\\\",\\\"amount\\\":200000,\\\"nickname\\\":\\\"ディニー\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\",\"$[{\\\"ep_id\\\":345,\\\"img\\\":\\\"https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/07/05/e870272323f5403e3e2c927c11c79545_5611387632475354925.png\\\",\\\"amount\\\":20,\\\"nickname\\\":\\\"特化型強攻キット\\\",\\\"menuId\\\":\\\"enhancement\\\",\\\"_menuId\\\":\\\"14\\\"}]$\"],\"id\":\"ascension5787\"},{\"key\":\"60\",\"combatList\":[{\"key\":\"\",\"values\":[\"前\",\"後\"]},{\"key\":\"基礎攻撃力\",\"values\":[\"-\",\"713\"]},{\"key\":\"会心率\",\"values\":[\"-\",\"24%\"]}],\"materials\":[],\"id\":\"ascension21411\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "25",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "ギャラリー",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "gallery_character",
+              "layout": "",
+              "data": "{\"pic\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/08/24/59155606/a49fd698dc323b9bc6304e171a9ad623_6085896053924279146.gif\",\"list\":[{\"key\":\"ディープシー・ビジター\",\"img\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/b029d3bf8295e848bf4bb3cee7bee635_5090643328018545182.png\",\"imgDesc\":\"\",\"id\":\"gallery_character38176\"},{\"key\":\"音動機倉庫\",\"img\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/371243228f821da2c889cf6cb7cba4ef_4637581939050212424.png\",\"imgDesc\":\"\",\"id\":\"gallery_character79486\"},{\"key\":\"回転ビューア\",\"img\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/08/22/6595860/3dc72a694fd9656c6389b1c718158465_337822995219141670.gif\",\"imgDesc\":\"\",\"id\":\"gallery_character88911\"},{\"key\":\"専用エフェクト [エレン・ジョー]\",\"img\":\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/01/22/59155606/644322733d8ebf5aa893adcbe64d8855_8084310186960902710.gif\",\"imgDesc\":\"\",\"id\":\"gallery_character43117\"}]}",
+              "style": ""
+            }
+          ],
+          "id": "26",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "動画まとめ",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "video_collection",
+              "layout": "",
+              "data": "",
+              "style": ""
+            }
+          ],
+          "id": "146",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "もっと知る",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "textual_research",
+              "layout": "",
+              "data": "{\"list\":[{\"title\":\"詳細\",\"desc\":\"\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e特別製の高出力温度変換型音動機。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003e本体の冷却機能を利用して周囲の物体を一瞬で凍らせることができ、強力な冷却能力と出力を併せ持つハイスペックな戦術音動機だ。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003eとはいえエレンの使い道はもっぱら、開口部から氷を入れてかき氷にすることである。\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003c/p\u003e\u003cp\u003e「学校に持ってこうと思ってた、夏場に。でもライカンとリナからはダメだって…ほんとめんど」——エレン、かき氷をパクパク食べながら頭を振る\u003c/p\u003e\",\"audios\":[]},{\"title\":\"【インターノットセレクション】 Ver.1.0音動機新作入荷 | 第一弾\",\"desc\":\"\u003cp\u003e\u003cstrong\u003e\u003cspan style=\\\"color: #2bad00\\\"\u003e2024/06/30\u003c/span\u003e\u003c/strong\u003e\u003c/p\u003e\u003ccustom-post posts=\\\"30444659\\\"\u003e\u003c/custom-post\u003e\",\"audios\":[]}]}\n",
+              "style": ""
+            }
+          ],
+          "id": "95",
+          "is_customize_name": false,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "27",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "28",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "その他",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "{\"data\":\"\u003ch1\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 175, 44)\\\"\u003e▌チャンネル変調履歴\u003c/span\u003e\u003c/strong\u003e\u003c/h1\u003e\u003ctable\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cstrong\u003e変調期間\u003c/strong\u003e\u003c/p\u003e\u003c/td\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cstrong\u003e変調受信確率が大幅にアップ\u003c/strong\u003e\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003eVer.1.5「輝きのモーメント」前半\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e2025/01/22 Ver.1.5アップデート後 ～ 2025/02/12 12:59:59（JST）\u003c/span\u003e\u003c/p\u003e\u003c/td\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003ch3\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e「燦々たるハーモニー」音動機チャンネル\u003c/span\u003e\u003c/strong\u003e\u003c/h3\u003e\u003cp\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"85\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/b029d3bf8295e848bf4bb3cee7bee635_8613743280973482624.png\\\" name=\\\"ディープシー・ビジター\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"3\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/16/59155606/28100408291b1bddadd6c416dcc2e5e4_8939534631315664139.png\\\" name=\\\"デマラ式電池Ⅱ型\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"72\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/c5e3277e051b5ad10ec568c8ed62e472_3603367946966748963.png\\\" name=\\\"ハウスキーパー\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003cp\u003e\u003cspan style=\\\"color: rgba(255, 255, 255, 0.85)\\\"\u003eVer.1.0「新エリー都へようこそ」前半\u003c/span\u003e\u003cbr\u003e\u003cspan style=\\\"color: rgb(43, 173, 0)\\\"\u003e2024/07/04 正式リリース後 ～ 2024/07/24 12:59:59（JST））\u003c/span\u003e\u003c/p\u003e\u003c/td\u003e\u003ctd colspan=\\\"1\\\" rowspan=\\\"1\\\"\u003e\u003ch3\u003e\u003cstrong\u003e\u003cspan style=\\\"color: rgb(255, 255, 255)\\\"\u003e「喧噪のソナタ」音動機チャンネル\u003c/span\u003e\u003c/strong\u003e\u003c/h3\u003e\u003cp\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"85\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/b029d3bf8295e848bf4bb3cee7bee635_8613743280973482624.png\\\" name=\\\"ディープシー・ビジター\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"76\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/9fed705aa18fdde455ded51e4f907096_6619749083742542092.png\\\" name=\\\"恥じらう悪面\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003ccustom-entry amount=\\\"0\\\" epid=\\\"74\\\" icon=\\\"https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/11/17/59155606/51cfdbcf65d8bca2826acec5ba5bd34c_8674847623930692474.png\\\" name=\\\"ドリルリグ-レッドシャフト\\\" displaystyle=\\\"card\\\" menuid=\\\"w_engine\\\"\u003e\u003c/custom-entry\u003e\u003c/p\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e\"}\n",
+              "style": ""
+            }
+          ],
+          "id": "29",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        },
+        {
+          "name": "",
+          "is_poped": false,
+          "components": [
+            {
+              "component_id": "customize",
+              "layout": "",
+              "data": "",
+              "style": ""
+            }
+          ],
+          "id": "147",
+          "is_customize_name": true,
+          "is_abstract": false,
+          "is_show_switch": false,
+          "switch": false,
+          "desc": "",
+          "repeated": false,
+          "is_submodule": false,
+          "origin_module_id": "0",
+          "without_border": false,
+          "can_delete": false,
+          "is_hidden": false,
+          "rich_text_editing": false
+        }
+      ],
+      "filter_values": {
+        "w_engine_rarity": {
+          "values": ["S"],
+          "value_types": [
+            {
+              "id": "22",
+              "value": "S",
+              "mi18n_key": "filter_custom_48",
+              "icon": "",
+              "enum_string": "s"
+            }
+          ],
+          "key": {
+            "key": "w_engine_rarity",
+            "text": "レア度",
+            "values": [],
+            "mi18n_key": "filter_custom_45",
+            "is_multi_select": false,
+            "id": "6",
+            "is_hidden": false,
+            "updated_at": "1715150520"
+          }
+        },
+        "filter_key_13": {
+          "values": ["強攻"],
+          "value_types": [
+            {
+              "id": "48",
+              "value": "強攻",
+              "mi18n_key": "filter_custom_50",
+              "icon": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2024/05/08/78d407e2839038da13d26ad84b99a6b8_2409576953869346295.png",
+              "enum_string": ""
+            }
+          ],
+          "key": {
+            "key": "filter_key_13",
+            "text": "エージェント特性",
+            "values": [],
+            "mi18n_key": "filter_custom_31",
+            "is_multi_select": false,
+            "id": "13",
+            "is_hidden": false,
+            "updated_at": "1743404170"
+          }
+        }
+      },
+      "menu_id": "11",
+      "menu_name": "音動機",
+      "version": "1746883465",
+      "langs": [],
+      "template_layout": null,
+      "edit_lock_status": "Unlock",
+      "correct_lock_status": "Unlock",
+      "menus": [],
+      "template_id": "68b509c851b6d37261184640",
+      "ext": {
+        "fe_ext": "",
+        "post_ext": {
+          "post_id": "",
+          "post_user_name": "",
+          "post_time": "0",
+          "post_avatar_url": "",
+          "url": ""
+        },
+        "server_ext": "",
+        "personalized_color": "",
+        "scrolling_text": "",
+        "corner_mark": "None"
+      },
+      "alias_name": "",
+      "lang": "",
+      "beta": false,
+      "page_type": "Default",
+      "menu_style": "w_engine",
+      "status": "Online",
+      "enable_staff_online": false
+    }
+  }
+}

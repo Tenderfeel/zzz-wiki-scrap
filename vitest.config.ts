@@ -8,9 +8,10 @@ export default defineConfig({
     exclude: ["node_modules", "dist"],
     setupFiles: ["./tests/setup.ts"],
     // ログ出力を最小限に抑制
-    silent: true,
+    silent: false,
     reporter: "basic",
     logHeapUsage: false,
+    testTimeout: 10000, // 10秒のタイムアウト
     outputFile: {
       json: "./test-results.json",
     },
