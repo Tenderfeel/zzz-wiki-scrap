@@ -153,3 +153,17 @@ export interface BompIconProcessingResult {
     processingTimeMs: number;
   };
 }
+
+// 音動機処理用の型定義
+export interface WeaponProcessingConfig {
+  weaponListPath: string; // weapon-list.jsonのパス
+  outputPath: string; // 出力ファイルパス
+  includeRarities: ("A" | "S")[]; // 処理対象レア度
+  batchSize: number; // バッチサイズ
+  delayMs: number; // 遅延時間
+  maxRetries: number; // 最大リトライ回数
+  skipAgentValidation: boolean; // エージェント検証スキップ
+  enableSkillExtraction: boolean; // スキル情報抽出の有効化
+  enableValidation: boolean; // データ検証の有効化
+  logLevel: "error" | "warn" | "info" | "debug"; // ログレベル
+}

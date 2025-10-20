@@ -26,6 +26,8 @@ export interface FilterValues {
   agent_rarity?: { values: string[] };
   agent_faction?: { values: string[] };
   agent_assist_type?: { values: string[] }; // 支援タイプ（オプショナル）
+  w_engine_rarity?: { values: string[] }; // 音動機レア度
+  filter_key_13?: { values: string[] }; // 音動機特性
 }
 
 export interface Module {

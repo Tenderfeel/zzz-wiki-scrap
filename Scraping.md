@@ -4,22 +4,21 @@
 
 #### API エンドポイント
 
-Request Header に`x-rpc-wiki_app:zzz`が必要
+Request Header に`x-rpc-wiki_app:zzz`が必要.
 
-キャラクター・エネミー・ボンプデータが格納されている JSON は下記 URL で取得可能：
+キャラクター・エネミー・ボンプ・音動機データが格納されている JSON は下記 URL で取得可能：
 
 ```
 https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_id={pageId}
 ```
 
-言語別クエリパラメータ：
+Request Header `x-rpc-language` が必要
 
-- 日本語: `?lang=ja-jp`
-- 英語: `?lang=en-us`
+- 日本語: `ja-jp`
+- 英語: `en-us`
 
 ### キャラクターページリスト
 
-日本語クエリ `?lang=ja-jp`、英語クエリ `?lang=en-us` を末尾に追加する。  
 リンクテキストはキャラクター ID として使用する。
 
 - [anby](https://wiki.hoyolab.com/pc/zzz/entry/2) - pageId: 2
@@ -403,6 +402,7 @@ type Specialty =
   | "defense" // 防護
   | "rupture"; // 命破 ;
 
+// 属性
 type Stats =
   | "ether" // エーテル
   | "fire" // 炎
@@ -444,7 +444,7 @@ type Attributes = {
 
 // キャラクター
 type Character = {
-  id: number;
+  id: string;
   name: { [key in Lang]: string };
   fullName: { [key in Lang]: string };
   specialty: Specialty; // 特性
@@ -454,4 +454,45 @@ type Character = {
   rarity: Rarity; // レア度
   attr: Attributes; // ステータス
 };
+
+// 音動機（武器）
+type Weapon = {
+  id: number; // pageId
+  name: { [key in Lang]: string };
+  equipmentSkillName:  { [key in Lang]: string }; // equipment_skill > skill_name
+  equipmentSkillDesc:  { [key in Lang]: string }; // equipment_skill > skill_desc
+  rarity: Rarity; // レア度
+  attr: WeaponAttributes; // 突破ステータス
+  specialty: Specialty; // 特性（音動機効果に含まれている特性を設定）
+  stats: Stats[]; // 属性（スキルの説明に含まれている属性を設定）
+  agentId: string; // 該当エージェントID
+  baseAttr: Attribute; // 基礎ステータス
+  advancedAttr: Attribute; // 上級ステータス
+}
+
+type Attribute = 'hp' | 'atk' | 'def' | 'impact' | 'critRate' | 'critDmg' | 'anomalyMastery' | 'anomalyProficiency' | 'penRatio' | 'energy'
+
+// 音動機突破ステータス
+type WeaponAttributes = {
+  // HP
+  hp: number[];
+  // 攻撃力
+  atk: number[];
+  // 防御力
+  def: number[];
+  // 衝撃力
+  impact: number[];
+  // 会心率
+  critRate: number[];
+  // 会心ダメージ
+  critDmg: number[];
+  // 異常マスタリー
+  anomalyMastery: number[];
+  // 異常掌握
+  anomalyProficiency:number[];
+  // 貫通率
+  penRatio: number[];
+  // エネルギー自動回復
+  energy: number[];
+}
 ```

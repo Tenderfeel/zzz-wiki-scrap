@@ -252,3 +252,92 @@ export type DeadlyAssultEnemy = {
     speciality: Specialty[];
   };
 };
+
+// 音動機関連の型定義
+
+// 音動機エントリー（weapon-list.jsonから抽出される情報）
+export type WeaponEntry = {
+  id: string; // entry_page_id
+  name: string; // 日本語名
+  rarity: "A" | "S"; // レア度（Bは除外）
+  specialty?: string; // 特性（filter_valuesから抽出）
+};
+
+// 音動機属性データ
+export type WeaponAttributes = {
+  hp: number[]; // 7レベル分（該当データなしの場合は空配列）
+  atk: number[]; // 7レベル分（該当データなしの場合は空配列）
+  def: number[]; // 7レベル分（該当データなしの場合は空配列）
+  impact: number[]; // 7レベル分（該当データなしの場合は空配列）
+  critRate: number[]; // 7レベル分（該当データなしの場合は空配列）
+  critDmg: number[]; // 7レベル分（該当データなしの場合は空配列）
+  anomalyMastery: number[]; // 7レベル分（該当データなしの場合は空配列）
+  anomalyProficiency: number[]; // 7レベル分（該当データなしの場合は空配列）
+  penRatio: number[]; // 7レベル分（該当データなしの場合は空配列）
+  energy: number[]; // 7レベル分（該当データなしの場合は空配列）
+};
+
+// 属性タイプ
+export type Attribute =
+  | "hp"
+  | "atk"
+  | "def"
+  | "impact"
+  | "critRate"
+  | "critDmg"
+  | "anomalyMastery"
+  | "anomalyProficiency"
+  | "penRatio"
+  | "energy";
+
+// 音動機
+export type Weapon = {
+  id: number; // pageId
+  name: { [key in Lang]: string }; // 多言語名
+  equipmentSkillName: { [key in Lang]: string }; // スキル名
+  equipmentSkillDesc: { [key in Lang]: string }; // スキル説明
+  rarity: Rarity; // レア度（AまたはS）
+  attr: WeaponAttributes; // 突破ステータス
+  specialty: Specialty; // 特性
+  stats: Stats[]; // 属性配列
+  agentId: string; // 該当エージェントID
+  baseAttr: Attribute; // 基礎ステータス
+  advancedAttr: Attribute; // 上級ステータス
+};
+
+// 音動機処理用の中間データ型
+export interface BasicWeaponInfo {
+  id: string;
+  name: string;
+  rarity: string; // 処理中は文字列（"A"、"S"）、最終的にRarityに変換される
+  specialty?: string; // 処理中は文字列、最終的にSpecialtyに変換される
+}
+
+export interface WeaponSkillInfo {
+  equipmentSkillName: string;
+  equipmentSkillDesc: string;
+}
+
+export interface WeaponAttributesInfo {
+  hp: number[];
+  atk: number[];
+  def: number[];
+  impact: number[];
+  critRate: number[];
+  critDmg: number[];
+  anomalyMastery: number[];
+  anomalyProficiency: number[];
+  penRatio: number[];
+  energy: number[];
+}
+
+export interface WeaponAgentInfo {
+  agentId?: string; // 該当エージェントID（存在しない場合はundefined）
+}
+
+export interface ProcessedWeaponData {
+  basicInfo: BasicWeaponInfo;
+  skillInfo: WeaponSkillInfo;
+  attributesInfo: WeaponAttributesInfo;
+  agentInfo: WeaponAgentInfo;
+}
