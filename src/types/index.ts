@@ -250,5 +250,7 @@ export type DeadlyAssultEnemy = {
   reccomend: {
     assistType: AssistType[];
     speciality: Specialty[];
+    faction: number[];
   };
+  releaseVersion: number;
 };

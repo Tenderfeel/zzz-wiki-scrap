@@ -13,9 +13,11 @@ export default [
         "「裁断」1重につき、エージェントの会心ダメージ+8%",
       ],
     },
+    releaseVersion: 2.2,
     reccomend: {
       assistType: ["defensive"],
-      speciality: ["attack"],
+      speciality: ["attack", "stun", "support", "defense", "rupture"],
+      faction: [4, 9],
     },
   },
 ] as DeadlyAssultEnemy[];
