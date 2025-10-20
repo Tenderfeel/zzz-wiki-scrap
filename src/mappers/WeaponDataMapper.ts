@@ -12,10 +12,10 @@ import {
   WeaponAttributesInfo,
   WeaponAgentInfo,
   Attribute,
-  Lang,
 } from "../types/index";
 import { MappingError } from "../errors";
 import { logger } from "../utils/Logger";
+import { getAgentIdByName } from "../utils/AgentMapping";
 
 /**
  * 音動機データマッピング機能を提供するクラス
@@ -193,38 +193,93 @@ export class WeaponDataMapper extends DataMapper {
 
       if (!baseInfoComponent) {
         logger.warn("baseInfoコンポーネントが見つかりません");
-        return { agentId: undefined };
+        return { agentId: "" };
       }
 
       const baseInfoData: BaseInfoData = JSON.parse(baseInfoComponent.data);
+      logger.debug("baseInfoデータ解析成功", {
+        itemCount: baseInfoData.list.length,
+      });
 
       // 該当エージェント情報を検索
       const agentItem = baseInfoData.list.find(
         (item) => item.key === "該当エージェント"
       );
 
-      if (!agentItem || !agentItem.values || agentItem.values.length === 0) {
-        logger.debug("該当エージェント情報が見つかりません");
-        return { agentId: undefined };
+      // agentItemのnull安全性チェックを追加
+      if (!agentItem) {
+        logger.debug("該当エージェント情報が見つかりません", {
+          availableKeys: baseInfoData.list.map((item) => item.key),
+        });
+        return { agentId: "" };
       }
 
-      // エージェント情報からep_idを抽出
-      const agentValue = agentItem.values[0];
-      const epIdMatch = agentValue.match(/"ep_id":\s*(\d+)/);
+      logger.debug("該当エージェント項目発見", {
+        key: agentItem.key,
+        hasValues: !!agentItem.values,
+        hasValue: !!agentItem.value,
+      });
 
-      if (epIdMatch && epIdMatch[1]) {
-        const agentId = epIdMatch[1];
-        logger.debug("エージェント情報抽出成功", { agentId });
+      // value配列の存在確認と型チェックを実装
+      const agentValues = agentItem.value || agentItem.values;
+
+      if (!agentValues) {
+        logger.debug("該当エージェントのvalue/valuesプロパティが存在しません", {
+          agentItem: JSON.stringify(agentItem),
+        });
+        return { agentId: "" };
+      }
+
+      if (!Array.isArray(agentValues)) {
+        logger.debug("該当エージェントのvalueが配列ではありません", {
+          valueType: typeof agentValues,
+          value: agentValues,
+        });
+        return { agentId: "" };
+      }
+
+      if (agentValues.length === 0) {
+        logger.debug("該当エージェントのvalue配列が空です");
+        return { agentId: "" };
+      }
+
+      logger.debug("value配列確認成功", {
+        arrayLength: agentValues.length,
+        firstValueLength: agentValues[0]?.length || 0,
+      });
+
+      // エージェント情報からエージェント名を抽出
+      const agentValue = agentValues[0];
+      const agentName = this.extractAgentNameFromValue(agentValue);
+
+      if (!agentName) {
+        logger.debug("エージェント名が抽出できませんでした", {
+          agentValue: agentValue.substring(0, 100) + "...",
+        });
+        return { agentId: "" };
+      }
+
+      logger.debug("エージェント名抽出成功", { agentName });
+
+      // エージェント名からagentIdを取得
+      const agentId = getAgentIdByName(agentName);
+
+      if (agentId) {
+        logger.debug("エージェント情報抽出成功", { agentName, agentId });
         return { agentId };
+      } else {
+        logger.warn("未知のエージェント名が検出されました", {
+          agentName,
+          agentValue: agentValue.substring(0, 100) + "...",
+        });
+        return { agentId: "" };
       }
-
-      logger.debug("ep_idが見つかりません", { agentValue });
-      return { agentId: undefined };
     } catch (error) {
       logger.error("エージェント情報抽出中にエラーが発生しました", {
         error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       });
-      return { agentId: undefined };
+      return { agentId: "" };
     }
   }
 
@@ -256,15 +311,14 @@ export class WeaponDataMapper extends DataMapper {
       const baseStatItem = baseInfoData.list.find(
         (item) => item.key === "基礎ステータス"
       );
-      if (
-        baseStatItem &&
-        baseStatItem.values &&
-        baseStatItem.values.length > 0
-      ) {
-        const baseStatValue = this.cleanHtmlText(baseStatItem.values[0]);
-        const mappedBaseAttr = this.mapBaseStatToAttribute(baseStatValue);
-        if (mappedBaseAttr) {
-          baseAttr = mappedBaseAttr;
+      if (baseStatItem) {
+        const baseStatValues = baseStatItem.values || baseStatItem.value;
+        if (baseStatValues && baseStatValues.length > 0) {
+          const baseStatValue = this.cleanHtmlText(baseStatValues[0]);
+          const mappedBaseAttr = this.mapBaseStatToAttribute(baseStatValue);
+          if (mappedBaseAttr) {
+            baseAttr = mappedBaseAttr;
+          }
         }
       }
 
@@ -272,18 +326,16 @@ export class WeaponDataMapper extends DataMapper {
       const advancedStatItem = baseInfoData.list.find(
         (item) => item.key === "上級ステータス"
       );
-      if (
-        advancedStatItem &&
-        advancedStatItem.values &&
-        advancedStatItem.values.length > 0
-      ) {
-        const advancedStatValue = this.cleanHtmlText(
-          advancedStatItem.values[0]
-        );
-        const mappedAdvancedAttr =
-          this.mapStatNameToAttribute(advancedStatValue);
-        if (mappedAdvancedAttr) {
-          advancedAttr = mappedAdvancedAttr;
+      if (advancedStatItem) {
+        const advancedStatValues =
+          advancedStatItem.values || advancedStatItem.value;
+        if (advancedStatValues && advancedStatValues.length > 0) {
+          const advancedStatValue = this.cleanHtmlText(advancedStatValues[0]);
+          const mappedAdvancedAttr =
+            this.mapStatNameToAttribute(advancedStatValue);
+          if (mappedAdvancedAttr) {
+            advancedAttr = mappedAdvancedAttr;
+          }
         }
       }
 
@@ -302,6 +354,95 @@ export class WeaponDataMapper extends DataMapper {
   }
 
   // プライベートヘルパーメソッド
+
+  /**
+   * value配列の要素からエージェント名を抽出
+   * @param agentValue value配列の要素（JSON文字列）
+   * @returns エージェント名（抽出失敗時は空文字）
+   */
+  private extractAgentNameFromValue(agentValue: string): string {
+    try {
+      logger.debug("エージェント名抽出開始", {
+        valueLength: agentValue.length,
+        valuePreview: agentValue.substring(0, 50) + "...",
+      });
+
+      // $[{...}]$形式の解析
+      const jsonMatch = agentValue.match(/\$\[(.*?)\]\$/);
+      if (!jsonMatch || !jsonMatch[1]) {
+        logger.debug("JSON形式のマッチに失敗", { agentValue });
+        return this.fallbackNameExtraction(agentValue);
+      }
+
+      logger.debug("JSON形式マッチ成功", {
+        extractedJson: jsonMatch[1].substring(0, 100) + "...",
+      });
+
+      // JSONオブジェクトの解析
+      const agentData = JSON.parse(jsonMatch[1]);
+      if (agentData && typeof agentData === "object" && agentData.name) {
+        logger.debug("エージェント名抽出成功", {
+          name: agentData.name,
+          ep_id: agentData.ep_id,
+        });
+        return agentData.name;
+      }
+
+      logger.debug("JSONオブジェクトにnameフィールドが存在しません", {
+        agentData: JSON.stringify(agentData),
+      });
+      return this.fallbackNameExtraction(agentValue);
+    } catch (error) {
+      logger.debug("JSON解析エラー、フォールバック処理を実行", {
+        agentValue: agentValue.substring(0, 100) + "...",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return this.fallbackNameExtraction(agentValue);
+    }
+  }
+
+  /**
+   * フォールバック：正規表現によるname抽出
+   * @param agentValue 元の文字列
+   * @returns エージェント名（抽出失敗時は空文字）
+   */
+  private fallbackNameExtraction(agentValue: string): string {
+    try {
+      logger.debug("フォールバック処理開始", {
+        valueLength: agentValue.length,
+      });
+
+      // パターン1: "name":"値" の形式
+      const nameMatch = agentValue.match(/"name":\s*"([^"]+)"/);
+      if (nameMatch && nameMatch[1]) {
+        logger.debug("フォールバック処理でエージェント名抽出成功", {
+          name: nameMatch[1],
+        });
+        return nameMatch[1];
+      }
+
+      // パターン2: 'name':'値' の形式（シングルクォート）
+      const nameMatchSingle = agentValue.match(/'name':\s*'([^']+)'/);
+      if (nameMatchSingle && nameMatchSingle[1]) {
+        logger.debug(
+          "フォールバック処理（シングルクォート）でエージェント名抽出成功",
+          {
+            name: nameMatchSingle[1],
+          }
+        );
+        return nameMatchSingle[1];
+      }
+
+      logger.debug(
+        "フォールバック処理でもエージェント名が見つかりませんでした"
+      );
+    } catch (error) {
+      logger.debug("フォールバック処理も失敗", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+    return "";
+  }
 
   /**
    * 指定されたタイプのコンポーネントを検索

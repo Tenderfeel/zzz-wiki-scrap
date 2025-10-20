@@ -1,5 +1,5 @@
-import { WeaponDataMapper } from "./src/mappers/WeaponDataMapper";
-import weaponMockData from "./json/mock/weapon.json";
+import { WeaponDataMapper } from "../../src/mappers/WeaponDataMapper";
+import weaponMockData from "../../json/mock/weapon.json";
 
 // 簡単なテスト実行
 const mapper = new WeaponDataMapper();

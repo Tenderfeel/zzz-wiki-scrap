@@ -12,7 +12,7 @@ Request Header に`x-rpc-wiki_app:zzz`が必要.
 https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_id={pageId}
 ```
 
-Request Header `x-rpc-language` が必要
+言語指定は Request Header `x-rpc-language` が必要
 
 - 日本語: `ja-jp`
 - 英語: `en-us`

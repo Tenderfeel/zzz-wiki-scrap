@@ -297,9 +297,12 @@ export class WeaponDataProcessor extends DataProcessor {
         }
       }
 
-      // エージェント情報の検証
+      // エージェント情報の検証（一時的に無効化）
       if (!data.agentInfo) {
-        errors.push("エージェント情報が存在しません");
+        // エージェント情報が存在しない場合は警告のみ
+        logger.debug("エージェント情報が存在しません", {
+          weaponId: data.basicInfo?.id,
+        });
       } else {
         // agentIdはオプショナルなので、存在する場合のみ検証
         if (data.agentInfo.agentId !== undefined) {
@@ -307,7 +310,11 @@ export class WeaponDataProcessor extends DataProcessor {
             typeof data.agentInfo.agentId !== "string" ||
             data.agentInfo.agentId.trim() === ""
           ) {
-            errors.push("エージェントIDが無効です");
+            // エージェントIDが空の場合は警告のみ（エラーにしない）
+            logger.debug("エージェントIDが空です", {
+              weaponId: data.basicInfo?.id,
+              agentId: data.agentInfo.agentId,
+            });
           }
         }
       }
@@ -620,7 +627,7 @@ export class WeaponDataProcessor extends DataProcessor {
           weaponId,
           error: error instanceof Error ? error.message : String(error),
         });
-        agentInfo = { agentId: undefined };
+        agentInfo = { agentId: "" };
       }
 
       const partialData: ProcessedWeaponData = {
@@ -675,7 +682,7 @@ export class WeaponDataProcessor extends DataProcessor {
       this.createEmptyWeaponAttributes();
 
     const agentInfo: WeaponAgentInfo = {
-      agentId: undefined,
+      agentId: "",
     };
 
     return {

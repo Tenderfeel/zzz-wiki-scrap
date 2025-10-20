@@ -4,16 +4,9 @@ import { MappingError } from "../../src/errors";
 import {
   ApiResponse,
   Module,
-  Component,
   AscensionData,
   BaseInfoData,
 } from "../../src/types/api";
-import {
-  BasicWeaponInfo,
-  WeaponSkillInfo,
-  WeaponAttributesInfo,
-  WeaponAgentInfo,
-} from "../../src/types/index";
 
 // Mock Logger
 vi.mock("../../src/utils/Logger", () => ({
@@ -23,6 +16,26 @@ vi.mock("../../src/utils/Logger", () => ({
     warn: vi.fn(),
     error: vi.fn(),
   },
+}));
+
+// Mock AgentMapping
+vi.mock("../../src/utils/AgentMapping", () => ({
+  getAgentIdByName: vi.fn((name: string) => {
+    // テスト用のマッピング
+    const testMapping: Record<string, string> = {
+      "エレン・ジョー": "ellen",
+      エレン: "ellen",
+      "リュシア・プラム": "lucia",
+      リュシア: "lucia",
+      Lucia: "lucia",
+      "Lucia Plum": "lucia",
+      ライカオン: "lycaon",
+      "フォン・ライカオン": "lycaon",
+      "ビリー・キッド": "billy",
+      ビリー: "billy",
+    };
+    return testMapping[name] || "";
+  }),
 }));
 
 describe("WeaponDataMapper", () => {
@@ -376,12 +389,14 @@ describe("WeaponDataMapper", () => {
   });
 
   describe("extractAgentInfo", () => {
-    it("baseInfoから該当エージェント情報を正常に抽出する", () => {
+    it("baseInfoから該当エージェント情報を正常に抽出する（value配列使用）", () => {
       const baseInfoData: BaseInfoData = {
         list: [
           {
             key: "該当エージェント",
-            values: ['{"ep_id": 123, "name": "テストエージェント"}'],
+            value: [
+              '$[{"ep_id": 29, "name": "エレン・ジョー", "icon": "test.png"}]$',
+            ],
           },
         ],
       };
@@ -401,16 +416,18 @@ describe("WeaponDataMapper", () => {
       const result = weaponDataMapper.extractAgentInfo(mockModules);
 
       expect(result).toEqual({
-        agentId: "123",
+        agentId: "ellen",
       });
     });
 
-    it("ep_idが含まれていない場合はundefinedを返す", () => {
+    it("新キャラクター（リュシア）のagentId抽出をテストする", () => {
       const baseInfoData: BaseInfoData = {
         list: [
           {
             key: "該当エージェント",
-            values: ['{"name": "テストエージェント"}'],
+            value: [
+              '$[{"ep_id": 50, "name": "リュシア・プラム", "icon": "lucia.png"}]$',
+            ],
           },
         ],
       };
@@ -430,16 +447,45 @@ describe("WeaponDataMapper", () => {
       const result = weaponDataMapper.extractAgentInfo(mockModules);
 
       expect(result).toEqual({
-        agentId: undefined,
+        agentId: "lucia",
       });
     });
 
-    it("該当エージェント項目が存在しない場合はundefinedを返す", () => {
+    it("後方互換性：valuesプロパティも正常に処理する", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            values: ['$[{"ep_id": 29, "name": "エレン・ジョー"}]$'],
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "ellen",
+      });
+    });
+
+    it("agentItemが存在しない場合は空のagentIdを返す", () => {
       const baseInfoData: BaseInfoData = {
         list: [
           {
             key: "その他の項目",
-            values: ["テスト値"],
+            value: ["テスト値"],
           },
         ],
       };
@@ -459,11 +505,185 @@ describe("WeaponDataMapper", () => {
       const result = weaponDataMapper.extractAgentInfo(mockModules);
 
       expect(result).toEqual({
-        agentId: undefined,
+        agentId: "",
       });
     });
 
-    it("baseInfoコンポーネントが見つからない場合はundefinedを返す", () => {
+    it("value配列が存在しない場合は空のagentIdを返す", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            // valueもvaluesも存在しない
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("value配列が空の場合は空のagentIdを返す", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: [], // 空配列
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("valueが配列でない場合は空のagentIdを返す", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: "文字列データ" as any, // 配列ではない
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("JSON解析失敗時にフォールバック処理を実行する", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: ['$[不正なJSON形式]$ "name":"ライカオン"'],
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "lycaon",
+      });
+    });
+
+    it("フォールバック処理でシングルクォートも処理する", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: ["不正な形式 'name':'ビリー・キッド' その他"],
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "billy",
+      });
+    });
+
+    it("未知のエージェント名の場合は空のagentIdを返す", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: ['$[{"ep_id": 999, "name": "未知のキャラクター"}]$'],
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("baseInfoコンポーネントが見つからない場合は空のagentIdを返す", () => {
       const mockModules: Module[] = [
         {
           name: "test-module",
@@ -479,7 +699,472 @@ describe("WeaponDataMapper", () => {
       const result = weaponDataMapper.extractAgentInfo(mockModules);
 
       expect(result).toEqual({
-        agentId: undefined,
+        agentId: "",
+      });
+    });
+
+    it("baseInfoデータのJSON解析エラー時は空のagentIdを返す", () => {
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: "不正なJSON形式",
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("nameフィールドが存在しないJSONの場合は空のagentIdを返す", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: ['$[{"ep_id": 29, "icon": "test.png"}]$'], // nameフィールドなし
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "",
+      });
+    });
+
+    it("部分一致でエージェント名を正しくマッピングする", () => {
+      const baseInfoData: BaseInfoData = {
+        list: [
+          {
+            key: "該当エージェント",
+            value: ['$[{"ep_id": 29, "name": "エレン"}]$'], // 短縮名
+          },
+        ],
+      };
+
+      const mockModules: Module[] = [
+        {
+          name: "test-module",
+          components: [
+            {
+              component_id: "baseInfo",
+              data: JSON.stringify(baseInfoData),
+            },
+          ],
+        },
+      ];
+
+      const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+      expect(result).toEqual({
+        agentId: "ellen",
+      });
+    });
+
+    // Task 5.1 specific test cases
+    describe("Task 5.1: 追加テストケース", () => {
+      it("agentItemが存在しない場合のテスト - 該当エージェント項目なし", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "その他の項目1",
+              value: ["テスト値1"],
+            },
+            {
+              key: "その他の項目2",
+              value: ["テスト値2"],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("agentItemが存在しない場合のテスト - 空のlist", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("value配列が空の場合のテスト", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: [], // 空配列
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("value配列がnullの場合のテスト", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: null as any,
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("value配列がundefinedの場合のテスト", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              // valueプロパティが存在しない
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("JSON解析失敗時のフォールバック処理テスト - 不正なJSON形式", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: ['$[{不正なJSON形式}]$ "name":"ライカオン"'],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lycaon",
+        });
+      });
+
+      it("JSON解析失敗時のフォールバック処理テスト - $[]$形式なし", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: [
+                '不正な形式データ "name":"ビリー・キッド" その他のデータ',
+              ],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "billy",
+        });
+      });
+
+      it("JSON解析失敗時のフォールバック処理テスト - シングルクォート形式", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: ["データ 'name':'フォン・ライカオン' 追加データ"],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lycaon",
+        });
+      });
+
+      it("JSON解析失敗時のフォールバック処理テスト - nameフィールドなし", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: ['不正な形式データ "other":"値" 追加データ'],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "",
+        });
+      });
+
+      it("新キャラクター（リュシア）のテスト - フルネーム", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: [
+                '$[{"ep_id": 50, "name": "リュシア・プラム", "icon": "lucia.png"}]$',
+              ],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lucia",
+        });
+      });
+
+      it("新キャラクター（リュシア）のテスト - 短縮名", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: [
+                '$[{"ep_id": 50, "name": "リュシア", "icon": "lucia.png"}]$',
+              ],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lucia",
+        });
+      });
+
+      it("新キャラクター（リュシア）のテスト - 英語名", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: [
+                '$[{"ep_id": 50, "name": "Lucia", "icon": "lucia.png"}]$',
+              ],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lucia",
+        });
+      });
+
+      it("新キャラクター（リュシア）のテスト - フォールバック処理経由", () => {
+        const baseInfoData: BaseInfoData = {
+          list: [
+            {
+              key: "該当エージェント",
+              value: ['不正な形式 "name":"リュシア・プラム" その他'],
+            },
+          ],
+        };
+
+        const mockModules: Module[] = [
+          {
+            name: "test-module",
+            components: [
+              {
+                component_id: "baseInfo",
+                data: JSON.stringify(baseInfoData),
+              },
+            ],
+          },
+        ];
+
+        const result = weaponDataMapper.extractAgentInfo(mockModules);
+
+        expect(result).toEqual({
+          agentId: "lucia",
+        });
       });
     });
   });

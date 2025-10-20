@@ -16,15 +16,15 @@ export class WeaponListParser {
       const content = readFileSync(filePath, "utf-8");
       const jsonData = JSON.parse(content);
 
-      if (!jsonData.data || !Array.isArray(jsonData.data.list)) {
+      if (!Array.isArray(jsonData)) {
         throw new Error(
-          "weapon-list.jsonの形式が無効です: data.listが配列ではありません"
+          "weapon-list.jsonの形式が無効です: ルートが配列ではありません"
         );
       }
 
       const entries: WeaponEntry[] = [];
 
-      for (const item of jsonData.data.list) {
+      for (const item of jsonData) {
         const weaponEntry = this.extractWeaponEntry(item);
 
         if (weaponEntry && this.validateWeaponEntry(weaponEntry)) {

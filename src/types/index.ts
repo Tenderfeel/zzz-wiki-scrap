@@ -332,7 +332,7 @@ export interface WeaponAttributesInfo {
 }
 
 export interface WeaponAgentInfo {
-  agentId?: string; // 該当エージェントID（存在しない場合はundefined）
+  agentId: string; // 該当エージェントID（存在しない場合は空文字）
 }
 
 export interface ProcessedWeaponData {

@@ -26,39 +26,33 @@ describe("WeaponListParser", () => {
 
   describe("parseWeaponList", () => {
     it("有効な weapon-list.json を正しく解析する", async () => {
-      // 有効なテストデータを作成
-      const validWeaponListData = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "936",
-              name: "燔火の朧夜",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-                filter_key_13: {
-                  values: ["命破"],
-                },
-              },
+      // 有効なテストデータを作成（新しい配列構造）
+      const validWeaponListData = [
+        {
+          entry_page_id: "936",
+          name: "燔火の朧夜",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            {
-              entry_page_id: "935",
-              name: "炉で歌い上げられる夢",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-                filter_key_13: {
-                  values: ["支援"],
-                },
-              },
+            filter_key_13: {
+              values: ["命破"],
             },
-          ],
+          },
         },
-      };
+        {
+          entry_page_id: "935",
+          name: "炉で歌い上げられる夢",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+            filter_key_13: {
+              values: ["支援"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(validWeaponListData));
 
@@ -80,41 +74,35 @@ describe("WeaponListParser", () => {
     });
 
     it("レア度Bの音動機を除外する", async () => {
-      const weaponListWithRarityB = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "100",
-              name: "レア度A音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
+      const weaponListWithRarityB = [
+        {
+          entry_page_id: "100",
+          name: "レア度A音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            {
-              entry_page_id: "200",
-              name: "レア度B音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["B"],
-                },
-              },
-            },
-            {
-              entry_page_id: "300",
-              name: "レア度S音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        {
+          entry_page_id: "200",
+          name: "レア度B音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["B"],
+            },
+          },
+        },
+        {
+          entry_page_id: "300",
+          name: "レア度S音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(weaponListWithRarityB));
 
@@ -134,24 +122,18 @@ describe("WeaponListParser", () => {
     });
 
     it("specialtyが存在しない場合でも正しく処理する", async () => {
-      const weaponListWithoutSpecialty = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "400",
-              name: "特性なし音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-                // filter_key_13が存在しない
-              },
+      const weaponListWithoutSpecialty = [
+        {
+          entry_page_id: "400",
+          name: "特性なし音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-          ],
+            // filter_key_13が存在しない
+          },
         },
-      };
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(weaponListWithoutSpecialty));
 
@@ -180,7 +162,7 @@ describe("WeaponListParser", () => {
       );
     });
 
-    it("data.listが配列でない場合にエラーをスローする", async () => {
+    it("ルートが配列でない場合にエラーをスローする", async () => {
       const invalidStructure = {
         retcode: 0,
         message: "OK",
@@ -192,51 +174,45 @@ describe("WeaponListParser", () => {
       writeFileSync(testFilePath, JSON.stringify(invalidStructure));
 
       await expect(parser.parseWeaponList(testFilePath)).rejects.toThrow(
-        "weapon-list.jsonの形式が無効です: data.listが配列ではありません"
+        "weapon-list.jsonの形式が無効です: ルートが配列ではありません"
       );
     });
 
-    it("dataプロパティが存在しない場合にエラーをスローする", async () => {
+    it("ルートがオブジェクトの場合にエラーをスローする", async () => {
       const noDataProperty = {
         retcode: 0,
         message: "OK",
-        // dataプロパティが存在しない
+        // 配列ではなくオブジェクト
       };
 
       writeFileSync(testFilePath, JSON.stringify(noDataProperty));
 
       await expect(parser.parseWeaponList(testFilePath)).rejects.toThrow(
-        "weapon-list.jsonの形式が無効です: data.listが配列ではありません"
+        "weapon-list.jsonの形式が無効です: ルートが配列ではありません"
       );
     });
 
     it("有効な音動機情報が存在しない場合にエラーをスローする", async () => {
-      const noValidWeapons = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              // entry_page_idが存在しない
-              name: "無効な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
+      const noValidWeapons = [
+        {
+          // entry_page_idが存在しない
+          name: "無効な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            {
-              entry_page_id: "500",
-              // nameが存在しない
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        {
+          entry_page_id: "500",
+          // nameが存在しない
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(noValidWeapons));
 
@@ -246,41 +222,35 @@ describe("WeaponListParser", () => {
     });
 
     it("部分的に無効なデータが含まれていても有効なデータは処理する", async () => {
-      const mixedValidityData = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "600",
-              name: "有効な音動機1",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
+      const mixedValidityData = [
+        {
+          entry_page_id: "600",
+          name: "有効な音動機1",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            {
-              // entry_page_idが存在しない（無効）
-              name: "無効な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-              },
-            },
-            {
-              entry_page_id: "700",
-              name: "有効な音動機2",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        {
+          // entry_page_idが存在しない（無効）
+          name: "無効な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+          },
+        },
+        {
+          entry_page_id: "700",
+          name: "有効な音動機2",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(mixedValidityData));
 
@@ -521,32 +491,26 @@ describe("WeaponListParser", () => {
 
   describe("extractWeaponEntry (private method behavior)", () => {
     it("無効なデータに対してnullを返す（間接的テスト）", async () => {
-      const weaponListWithInvalidData = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              // entry_page_idが存在しない
-              name: "無効な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
+      const weaponListWithInvalidData = [
+        {
+          // entry_page_idが存在しない
+          name: "無効な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            {
-              entry_page_id: "800",
-              name: "有効な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        {
+          entry_page_id: "800",
+          name: "有効な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(weaponListWithInvalidData));
 
@@ -558,32 +522,26 @@ describe("WeaponListParser", () => {
     });
 
     it("レア度が無効な場合にnullを返す（間接的テスト）", async () => {
-      const weaponListWithInvalidRarity = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "900",
-              name: "無効レア度音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["X"], // 無効なレア度
-                },
-              },
+      const weaponListWithInvalidRarity = [
+        {
+          entry_page_id: "900",
+          name: "無効レア度音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["X"], // 無効なレア度
             },
-            {
-              entry_page_id: "901",
-              name: "有効レア度音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        {
+          entry_page_id: "901",
+          name: "有効レア度音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(weaponListWithInvalidRarity));
 
@@ -600,33 +558,27 @@ describe("WeaponListParser", () => {
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       // 異常な構造のデータを含むテストケース
-      const weaponListWithCorruptedData = {
-        retcode: 0,
-        message: "OK",
-        data: {
-          list: [
-            {
-              entry_page_id: "1000",
-              name: "正常な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["A"],
-                },
-              },
+      const weaponListWithCorruptedData = [
+        {
+          entry_page_id: "1000",
+          name: "正常な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["A"],
             },
-            null, // nullデータ
-            {
-              entry_page_id: "1001",
-              name: "別の正常な音動機",
-              filter_values: {
-                w_engine_rarity: {
-                  values: ["S"],
-                },
-              },
-            },
-          ],
+          },
         },
-      };
+        null, // nullデータ
+        {
+          entry_page_id: "1001",
+          name: "別の正常な音動機",
+          filter_values: {
+            w_engine_rarity: {
+              values: ["S"],
+            },
+          },
+        },
+      ];
 
       writeFileSync(testFilePath, JSON.stringify(weaponListWithCorruptedData));
 

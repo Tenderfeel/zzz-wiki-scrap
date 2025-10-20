@@ -86,6 +86,9 @@ export interface BaseInfoData {
 
 export interface BaseInfoItem {
   key: string;
-  values: string[];
+  values?: string[]; // 新しいAPI形式
+  value?: string[]; // 古いAPI形式（モックデータ等）
   ep_id?: string; // 陣営ID
+  id?: string; // アイテムID
+  isMaterial?: boolean; // マテリアル判定
 }

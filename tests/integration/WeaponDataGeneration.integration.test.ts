@@ -318,37 +318,33 @@ describe("Weapon Data Generation Integration", () => {
       fs.mkdirSync(testOutputDir, { recursive: true });
     }
 
-    // テスト用weapon-list.jsonファイルを作成
-    const testWeaponList = {
-      data: {
-        list: [
-          {
-            entry_page_id: "85",
-            name: "ディープシー・ビジター",
-            filter_values: {
-              w_engine_rarity: { values: ["S"] },
-              filter_key_13: { values: ["強攻"] },
-            },
-          },
-          {
-            entry_page_id: "76",
-            name: "恥じらう悪面",
-            filter_values: {
-              w_engine_rarity: { values: ["S"] },
-              filter_key_13: { values: ["撃破"] },
-            },
-          },
-          {
-            entry_page_id: "3",
-            name: "デマラ式電池Ⅱ型",
-            filter_values: {
-              w_engine_rarity: { values: ["A"] },
-              filter_key_13: { values: ["支援"] },
-            },
-          },
-        ],
+    // テスト用weapon-list.jsonファイルを作成（新しい配列構造）
+    const testWeaponList = [
+      {
+        entry_page_id: "85",
+        name: "ディープシー・ビジター",
+        filter_values: {
+          w_engine_rarity: { values: ["S"] },
+          filter_key_13: { values: ["強攻"] },
+        },
       },
-    };
+      {
+        entry_page_id: "76",
+        name: "恥じらう悪面",
+        filter_values: {
+          w_engine_rarity: { values: ["S"] },
+          filter_key_13: { values: ["撃破"] },
+        },
+      },
+      {
+        entry_page_id: "3",
+        name: "デマラ式電池Ⅱ型",
+        filter_values: {
+          w_engine_rarity: { values: ["A"] },
+          filter_key_13: { values: ["支援"] },
+        },
+      },
+    ];
     fs.writeFileSync(
       testWeaponListPath,
       JSON.stringify(testWeaponList, null, 2)
@@ -514,36 +510,32 @@ describe("Weapon Data Generation Integration", () => {
 
     it("should handle rarity filtering correctly", async () => {
       // Arrange - Create weapon list with different rarities
-      const mixedRarityWeaponList = {
-        data: {
-          list: [
-            {
-              entry_page_id: "85",
-              name: "S級音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["S"] },
-                filter_key_13: { values: ["強攻"] },
-              },
-            },
-            {
-              entry_page_id: "3",
-              name: "A級音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["A"] },
-                filter_key_13: { values: ["支援"] },
-              },
-            },
-            {
-              entry_page_id: "100",
-              name: "B級音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["B"] },
-                filter_key_13: { values: ["強攻"] },
-              },
-            },
-          ],
+      const mixedRarityWeaponList = [
+        {
+          entry_page_id: "85",
+          name: "S級音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["S"] },
+            filter_key_13: { values: ["強攻"] },
+          },
         },
-      };
+        {
+          entry_page_id: "3",
+          name: "A級音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["A"] },
+            filter_key_13: { values: ["支援"] },
+          },
+        },
+        {
+          entry_page_id: "100",
+          name: "B級音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["B"] },
+            filter_key_13: { values: ["強攻"] },
+          },
+        },
+      ];
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(mixedRarityWeaponList, null, 2)
@@ -600,20 +592,16 @@ describe("Weapon Data Generation Integration", () => {
 
     it("should maintain data integrity throughout the pipeline", async () => {
       // Arrange - Create a single weapon list for integrity testing
-      const singleWeaponList = {
-        data: {
-          list: [
-            {
-              entry_page_id: "85",
-              name: "整合性テスト音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["S"] },
-                filter_key_13: { values: ["強攻"] },
-              },
-            },
-          ],
+      const singleWeaponList = [
+        {
+          entry_page_id: "85",
+          name: "整合性テスト音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["S"] },
+            filter_key_13: { values: ["強攻"] },
+          },
         },
-      };
+      ];
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(singleWeaponList, null, 2)
@@ -739,20 +727,16 @@ describe("Weapon Data Generation Integration", () => {
 
     it("should handle API errors and retry logic", async () => {
       // Arrange
-      const singleWeaponList = {
-        data: {
-          list: [
-            {
-              entry_page_id: "85",
-              name: "エラーテスト音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["S"] },
-                filter_key_13: { values: ["強攻"] },
-              },
-            },
-          ],
+      const singleWeaponList = [
+        {
+          entry_page_id: "85",
+          name: "エラーテスト音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["S"] },
+            filter_key_13: { values: ["強攻"] },
+          },
         },
-      };
+      ];
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(singleWeaponList, null, 2)
@@ -811,20 +795,16 @@ describe("Weapon Data Generation Integration", () => {
 
     it("should handle malformed API responses gracefully", async () => {
       // Arrange
-      const singleWeaponList = {
-        data: {
-          list: [
-            {
-              entry_page_id: "85",
-              name: "不正形式テスト音動機",
-              filter_values: {
-                w_engine_rarity: { values: ["S"] },
-                filter_key_13: { values: ["強攻"] },
-              },
-            },
-          ],
+      const singleWeaponList = [
+        {
+          entry_page_id: "85",
+          name: "不正形式テスト音動機",
+          filter_values: {
+            w_engine_rarity: { values: ["S"] },
+            filter_key_13: { values: ["強攻"] },
+          },
         },
-      };
+      ];
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(singleWeaponList, null, 2)
@@ -982,18 +962,14 @@ describe("Weapon Data Generation Integration", () => {
   describe("Performance and Memory", () => {
     it("should complete processing within acceptable time limits", async () => {
       // Arrange
-      const largeWeaponList = {
-        data: {
-          list: Array.from({ length: 5 }, (_, i) => ({
-            entry_page_id: `${85 + i}`,
-            name: `パフォーマンステスト音動機${i + 1}`,
-            filter_values: {
-              w_engine_rarity: { values: ["S"] },
-              filter_key_13: { values: ["強攻"] },
-            },
-          })),
+      const largeWeaponList = Array.from({ length: 5 }, (_, i) => ({
+        entry_page_id: `${85 + i}`,
+        name: `パフォーマンステスト音動機${i + 1}`,
+        filter_values: {
+          w_engine_rarity: { values: ["S"] },
+          filter_key_13: { values: ["強攻"] },
         },
-      };
+      }));
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(largeWeaponList, null, 2)
@@ -1044,18 +1020,14 @@ describe("Weapon Data Generation Integration", () => {
 
     it("should maintain reasonable memory usage during processing", async () => {
       // Arrange
-      const memoryTestWeaponList = {
-        data: {
-          list: Array.from({ length: 8 }, (_, i) => ({
-            entry_page_id: `${85 + i}`,
-            name: `メモリテスト音動機${i + 1}`,
-            filter_values: {
-              w_engine_rarity: { values: ["A"] },
-              filter_key_13: { values: ["支援"] },
-            },
-          })),
+      const memoryTestWeaponList = Array.from({ length: 8 }, (_, i) => ({
+        entry_page_id: `${85 + i}`,
+        name: `メモリテスト音動機${i + 1}`,
+        filter_values: {
+          w_engine_rarity: { values: ["A"] },
+          filter_key_13: { values: ["支援"] },
         },
-      };
+      }));
       fs.writeFileSync(
         testWeaponListPath,
         JSON.stringify(memoryTestWeaponList, null, 2)
