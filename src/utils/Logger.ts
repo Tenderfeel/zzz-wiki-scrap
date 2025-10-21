@@ -119,6 +119,64 @@ export const LogMessages = {
   ERROR_RECOVERY_RETRY_SUCCESS: "リトライ処理成功",
   ERROR_RECOVERY_RETRY_FAILURE: "リトライ処理失敗",
   ERROR_RECOVERY_GRACEFUL_DEGRADATION: "グレースフル劣化を実行",
+
+  // WeaponIconProcessor関連
+  WEAPON_ICON_PROCESSING_START: "武器アイコン処理開始",
+  WEAPON_ICON_PROCESSING_SUCCESS: "武器アイコン処理完了",
+  WEAPON_ICON_PROCESSING_ERROR: "武器アイコン処理エラー",
+  WEAPON_ICON_PROCESSING_RETRY: "武器アイコン処理リトライ",
+  WEAPON_ICON_PROCESSING_FINAL_FAILURE: "武器アイコン処理最終失敗",
+  WEAPON_ICON_URL_EXTRACTION_START: "武器アイコンURL抽出開始",
+  WEAPON_ICON_URL_EXTRACTION_SUCCESS: "武器アイコンURL抽出成功",
+  WEAPON_ICON_URL_EXTRACTION_ERROR: "武器アイコンURL抽出エラー",
+  WEAPON_ICON_URL_NOT_FOUND: "武器アイコンURLが見つかりません",
+  WEAPON_ICON_URL_INVALID: "無効な武器アイコンURL",
+  WEAPON_ICON_DOWNLOAD_START: "武器アイコンダウンロード開始",
+  WEAPON_ICON_DOWNLOAD_SUCCESS: "武器アイコンダウンロード完了",
+  WEAPON_ICON_DOWNLOAD_ERROR: "武器アイコンダウンロードエラー",
+  WEAPON_ICON_VALIDATION_START: "武器アイコンファイル検証開始",
+  WEAPON_ICON_VALIDATION_SUCCESS: "武器アイコンファイル検証成功",
+  WEAPON_ICON_VALIDATION_ERROR: "武器アイコンファイル検証エラー",
+  WEAPON_ICON_FILE_EXISTS: "既存武器アイコンファイルをスキップ",
+  WEAPON_ICON_DIRECTORY_CREATED: "武器アイコンディレクトリを作成しました",
+  WEAPON_ICON_SECURITY_VALIDATION_ERROR: "武器アイコンセキュリティ検証に失敗",
+  WEAPON_ICON_CONTENT_TYPE_INVALID: "無効な武器アイコンコンテンツタイプ",
+  WEAPON_ICON_RARITY_FILTERED: "レアリティフィルタにより武器をスキップ",
+
+  // WeaponIconGenerator関連
+  WEAPON_ICON_GENERATION_START: "武器アイコンダウンロード処理を開始",
+  WEAPON_ICON_GENERATION_SUCCESS: "武器アイコンダウンロード処理完了",
+  WEAPON_ICON_GENERATION_ERROR: "武器アイコンダウンロード処理でエラーが発生",
+  WEAPON_ICON_BATCH_START: "武器アイコンバッチ処理開始",
+  WEAPON_ICON_BATCH_PROGRESS: "武器アイコンバッチ処理進捗",
+  WEAPON_ICON_BATCH_ERROR: "武器アイコンバッチ処理エラー",
+  WEAPON_ICON_BATCH_INDIVIDUAL_FALLBACK: "武器アイコン個別処理にフォールバック",
+  WEAPON_ICON_OUTPUT_DIRECTORY_VALIDATION: "武器アイコン出力ディレクトリ検証",
+  WEAPON_ICON_OUTPUT_DIRECTORY_CREATED: "武器アイコン出力ディレクトリを作成",
+  WEAPON_ICON_OUTPUT_DIRECTORY_WRITE_TEST:
+    "武器アイコン出力ディレクトリ書き込み権限確認",
+  WEAPON_ICON_STATISTICS_SUMMARY: "武器アイコンダウンロード統計",
+  WEAPON_ICON_PERFORMANCE_METRICS: "武器アイコンパフォーマンス統計",
+
+  // 詳細デバッグ関連
+  WEAPON_ICON_DEBUG_PROCESSING_START: "武器アイコン処理開始 - デバッグ情報",
+  WEAPON_ICON_DEBUG_PROCESSING_SUCCESS: "武器アイコン処理成功 - デバッグ情報",
+  WEAPON_ICON_DEBUG_PROCESSING_ERROR: "武器アイコン処理エラー - デバッグ情報",
+  WEAPON_ICON_DEBUG_FINAL_FAILURE: "武器アイコン処理最終失敗 - デバッグ情報",
+  WEAPON_ICON_DEBUG_GENERATION_COMPLETE: "武器アイコン生成完了 - デバッグ情報",
+  WEAPON_ICON_DEBUG_GENERATION_ERROR: "武器アイコン生成エラー - デバッグ情報",
+  WEAPON_ICON_DEBUG_MAIN_ERROR: "メイン処理エラー - デバッグ情報",
+
+  // パフォーマンス監視関連
+  WEAPON_ICON_PERFORMANCE_START: "武器アイコン処理パフォーマンス監視開始",
+  WEAPON_ICON_PERFORMANCE_END: "武器アイコン処理パフォーマンス監視終了",
+  WEAPON_ICON_MEMORY_USAGE: "武器アイコン処理メモリ使用量",
+  WEAPON_ICON_TIMING_METRICS: "武器アイコン処理タイミング統計",
+
+  // エラー回復関連
+  WEAPON_ICON_ERROR_RECOVERY_START: "武器アイコンエラー回復処理開始",
+  WEAPON_ICON_ERROR_RECOVERY_SUCCESS: "武器アイコンエラー回復処理成功",
+  WEAPON_ICON_ERROR_RECOVERY_FAILURE: "武器アイコンエラー回復処理失敗",
 } as const;
 
 /**

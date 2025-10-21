@@ -167,3 +167,74 @@ export interface WeaponProcessingConfig {
   enableValidation: boolean; // データ検証の有効化
   logLevel: "error" | "warn" | "info" | "debug"; // ログレベル
 }
+
+// 武器アイコンダウンロード用の型定義
+export interface WeaponIcon {
+  weaponId: string; // 生成された武器ID（entry_page_id）
+  weaponName: string; // 武器の名前
+  entryPageId: string; // entry_page_id
+  iconUrl: string; // 元のHoyoLab画像URL
+  localPath: string; // ローカルファイルパス
+  fileSize: number; // ファイルサイズ（バイト）
+  downloadedAt: Date; // ダウンロード日時
+}
+
+export interface WeaponIconInfo {
+  weaponId: string;
+  weaponName: string;
+  iconUrl: string;
+  localPath: string;
+  fileSize?: number;
+  downloadedAt?: Date;
+}
+
+export interface WeaponIconDownloadResult {
+  success: boolean;
+  weaponId: string;
+  iconInfo?: WeaponIconInfo;
+  error?: string;
+  retryCount: number;
+}
+
+export interface WeaponIconConfig {
+  outputDirectory: string; // デフォルト: "assets/images/weapons"
+  maxConcurrency: number; // デフォルト: 3
+  retryAttempts: number; // デフォルト: 3
+  retryDelayMs: number; // デフォルト: 1000
+  requestDelayMs: number; // デフォルト: 500
+  skipExisting: boolean; // デフォルト: true
+  validateDownloads: boolean; // デフォルト: true
+  maxFileSizeMB?: number; // デフォルト: 10
+  allowedExtensions?: string[]; // デフォルト: [".png", ".jpg", ".jpeg", ".webp"]
+  strictSecurity?: boolean; // デフォルト: true
+}
+
+export interface WeaponIconProcessingResult {
+  successful: WeaponIconInfo[];
+  failed: {
+    weaponId: string;
+    weaponName: string;
+    error: string;
+    iconUrl?: string;
+  }[];
+  statistics: {
+    total: number;
+    successful: number;
+    failed: number;
+    totalSizeBytes: number;
+    processingTimeMs: number;
+  };
+}
+
+export interface WeaponEntry {
+  entry_page_id: string;
+  name: string;
+  icon_url: string;
+  display_field?: any;
+  filter_values?: {
+    w_engine_rarity?: {
+      values?: string[];
+    };
+  };
+  desc?: string;
+}

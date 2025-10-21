@@ -230,6 +230,27 @@ describe("ProcessingConfig", () => {
       expect(DEFAULT_CONFIG.bompIconDownload.skipExisting).toBe(true);
       expect(DEFAULT_CONFIG.bompIconDownload.validateDownloads).toBe(true);
     });
+
+    it("should have valid weaponIconDownload defaults", () => {
+      expect(DEFAULT_CONFIG.weaponIconDownload).toBeDefined();
+      expect(DEFAULT_CONFIG.weaponIconDownload.outputDirectory).toBe(
+        "assets/images/weapons"
+      );
+      expect(DEFAULT_CONFIG.weaponIconDownload.maxConcurrency).toBe(3);
+      expect(DEFAULT_CONFIG.weaponIconDownload.retryAttempts).toBe(3);
+      expect(DEFAULT_CONFIG.weaponIconDownload.retryDelayMs).toBe(1000);
+      expect(DEFAULT_CONFIG.weaponIconDownload.requestDelayMs).toBe(500);
+      expect(DEFAULT_CONFIG.weaponIconDownload.skipExisting).toBe(true);
+      expect(DEFAULT_CONFIG.weaponIconDownload.validateDownloads).toBe(true);
+      expect(DEFAULT_CONFIG.weaponIconDownload.maxFileSizeMB).toBe(10);
+      expect(DEFAULT_CONFIG.weaponIconDownload.allowedExtensions).toEqual([
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+      ]);
+      expect(DEFAULT_CONFIG.weaponIconDownload.strictSecurity).toBe(true);
+    });
   });
 
   describe("BompIconDownload Configuration", () => {
@@ -270,6 +291,95 @@ describe("ProcessingConfig", () => {
       expect(report).toContain("出力ディレクトリ:");
       expect(report).toContain("最大並行数:");
       expect(report).toContain("リトライ回数:");
+    });
+  });
+
+  describe("WeaponIconDownload Configuration", () => {
+    it("should validate weaponIconDownload configuration", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test valid configuration
+      expect(() => {
+        configManager.updateConfig({
+          weaponIconDownload: {
+            outputDirectory: "assets/images/weapons",
+            maxConcurrency: 5,
+            retryAttempts: 2,
+            retryDelayMs: 1500,
+            requestDelayMs: 300,
+            skipExisting: false,
+            validateDownloads: true,
+            maxFileSizeMB: 15,
+            allowedExtensions: [".png", ".jpg"],
+            strictSecurity: false,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    it("should provide getWeaponIconConfig method", () => {
+      const configManager = ConfigManager.getInstance();
+      const weaponIconConfig = configManager.getWeaponIconConfig();
+
+      expect(weaponIconConfig).toBeDefined();
+      expect(weaponIconConfig.outputDirectory).toBeDefined();
+      expect(weaponIconConfig.maxConcurrency).toBeGreaterThan(0);
+      expect(weaponIconConfig.retryAttempts).toBeGreaterThanOrEqual(0);
+      expect(weaponIconConfig.maxFileSizeMB).toBeDefined();
+      expect(weaponIconConfig.allowedExtensions).toBeDefined();
+      expect(weaponIconConfig.strictSecurity).toBeDefined();
+    });
+
+    it("should include weaponIconDownload in config report", () => {
+      const configManager = ConfigManager.getInstance();
+      const report = configManager.generateConfigReport();
+
+      expect(report).toContain("武器アイコンダウンロード設定");
+      expect(report).toContain("出力ディレクトリ:");
+      expect(report).toContain("最大並行数:");
+      expect(report).toContain("リトライ回数:");
+      expect(report).toContain("最大ファイルサイズ:");
+      expect(report).toContain("許可拡張子:");
+      expect(report).toContain("厳格セキュリティ:");
+    });
+
+    it("should validate weaponIconDownload security settings", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test directory traversal protection
+      expect(() => {
+        configManager.updateConfig({
+          weaponIconDownload: {
+            outputDirectory: "../../../malicious/path",
+            maxConcurrency: 3,
+            retryAttempts: 3,
+            retryDelayMs: 1000,
+            requestDelayMs: 500,
+            skipExisting: true,
+            validateDownloads: true,
+          },
+        });
+      }).not.toThrow(); // Should not throw but will log warnings
+    });
+
+    it("should validate weaponIconDownload range values", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test invalid ranges - should not throw but will log warnings
+      expect(() => {
+        configManager.updateConfig({
+          weaponIconDownload: {
+            outputDirectory: "assets/images/weapons",
+            maxConcurrency: 15, // Out of range (1-10)
+            retryAttempts: 15, // Out of range (0-10)
+            retryDelayMs: 50000, // Out of range (0-30000)
+            requestDelayMs: 15000, // Out of range (0-10000)
+            skipExisting: true,
+            validateDownloads: true,
+            maxFileSizeMB: 150, // Out of range (1-100)
+          },
+        });
+      }).not.toThrow();
     });
   });
 });

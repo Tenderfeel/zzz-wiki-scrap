@@ -32,5 +32,17 @@
     "requestDelayMs": 500,
     "skipExisting": true,
     "validateDownloads": true
+  },
+  "weaponIconDownload": {
+    "outputDirectory": "assets/images/weapons",
+    "maxConcurrency": 3,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000,
+    "requestDelayMs": 500,
+    "skipExisting": true,
+    "validateDownloads": true,
+    "maxFileSizeMB": 10,
+    "allowedExtensions": [".png", ".jpg", ".jpeg", ".webp"],
+    "strictSecurity": true
   }
 }

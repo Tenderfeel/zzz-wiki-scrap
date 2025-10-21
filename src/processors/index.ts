@@ -5,3 +5,4 @@ export { BatchProcessor } from "./BatchProcessor";
 export { BompDataProcessor } from "./BompDataProcessor";
 export { BompIconProcessor } from "./BompIconProcessor";
 export { WeaponDataProcessor } from "./WeaponDataProcessor";
+export { WeaponIconProcessor } from "./WeaponIconProcessor";

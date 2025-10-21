@@ -35,6 +35,7 @@
     "generate:weapons": "tsx src/main-weapon-generation.ts",
     "generate:bomps": "tsx src/main-bomp-generation.ts",
     "generate:bomp-icons": "tsx src/main-bomp-icon-download.ts",
+    "generate:weapon-icons": "tsx src/main-weapon-icon-download.ts",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

@@ -142,3 +142,54 @@ export class BompIconBatchError extends Error {
     this.name = "BompIconBatchError";
   }
 }
+
+// 武器アイコンダウンロード専用エラークラス
+export class WeaponIconError extends Error {
+  constructor(
+    public type: "DOWNLOAD" | "VALIDATION" | "FILESYSTEM" | "SECURITY",
+    public weaponId: string,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(`${type} (${weaponId}): ${details}`);
+    this.name = "WeaponIconError";
+  }
+}
+
+export class WeaponIconDownloadError extends WeaponIconError {
+  constructor(weaponId: string, details: string, originalError?: Error) {
+    super("DOWNLOAD", weaponId, details, originalError);
+  }
+}
+
+export class WeaponIconValidationError extends WeaponIconError {
+  constructor(weaponId: string, details: string, originalError?: Error) {
+    super("VALIDATION", weaponId, details, originalError);
+  }
+}
+
+export class WeaponIconFileSystemError extends WeaponIconError {
+  constructor(weaponId: string, details: string, originalError?: Error) {
+    super("FILESYSTEM", weaponId, details, originalError);
+  }
+}
+
+export class WeaponIconSecurityError extends WeaponIconError {
+  constructor(weaponId: string, details: string, originalError?: Error) {
+    super("SECURITY", weaponId, details, originalError);
+  }
+}
+
+export class WeaponIconBatchError extends Error {
+  constructor(
+    public failedWeapons: string[],
+    public totalWeapons: number,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(
+      `武器アイコンバッチ処理エラー: ${failedWeapons.length}/${totalWeapons} 個が失敗 - ${details}`
+    );
+    this.name = "WeaponIconBatchError";
+  }
+}

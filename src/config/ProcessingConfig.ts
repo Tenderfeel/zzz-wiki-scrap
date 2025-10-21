@@ -1,6 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
-import { BompIconConfig, WeaponProcessingConfig } from "../types/processing";
+import {
+  BompIconConfig,
+  WeaponProcessingConfig,
+  WeaponIconConfig,
+} from "../types/processing";
 
 /**
  * 処理設定インターフェース
@@ -47,6 +51,9 @@ export interface ProcessingConfig {
 
   // ボンプアイコンダウンロード設定
   bompIconDownload: BompIconConfig;
+
+  // 武器アイコンダウンロード設定
+  weaponIconDownload: WeaponIconConfig;
 
   // 音動機処理設定
   weaponProcessing: WeaponProcessingConfig;
@@ -129,6 +136,20 @@ export const DEFAULT_CONFIG: ProcessingConfig = {
   // ボンプアイコンダウンロード設定
   bompIconDownload: {
     outputDirectory: "assets/images/bomps",
+    maxConcurrency: 3,
+    retryAttempts: 3,
+    retryDelayMs: 1000,
+    requestDelayMs: 500,
+    skipExisting: true,
+    validateDownloads: true,
+    maxFileSizeMB: 10,
+    allowedExtensions: [".png", ".jpg", ".jpeg", ".webp"],
+    strictSecurity: true,
+  },
+
+  // 武器アイコンダウンロード設定
+  weaponIconDownload: {
+    outputDirectory: "assets/images/weapons",
     maxConcurrency: 3,
     retryAttempts: 3,
     retryDelayMs: 1000,
@@ -289,6 +310,9 @@ export class ConfigManager {
     // ボンプアイコンダウンロード設定の検証
     this.validateBompIconConfig(config.bompIconDownload, errors);
 
+    // 武器アイコンダウンロード設定の検証
+    this.validateWeaponIconConfig(config.weaponIconDownload, errors);
+
     // 音動機処理設定の検証
     this.validateWeaponProcessingConfig(config.weaponProcessing, errors);
 
@@ -403,6 +427,79 @@ export class ConfigManager {
   }
 
   /**
+   * 武器アイコンダウンロード設定を検証
+   */
+  private validateWeaponIconConfig(
+    config: WeaponIconConfig,
+    errors: string[]
+  ): void {
+    // outputDirectory の検証
+    if (!config.outputDirectory || config.outputDirectory.trim() === "") {
+      errors.push("weaponIconDownload.outputDirectory は空にできません");
+    }
+
+    // maxConcurrency の検証
+    if (config.maxConcurrency < 1 || config.maxConcurrency > 10) {
+      errors.push(
+        "weaponIconDownload.maxConcurrency は 1-10 の範囲内である必要があります"
+      );
+    }
+
+    // retryAttempts の検証
+    if (config.retryAttempts < 0 || config.retryAttempts > 10) {
+      errors.push(
+        "weaponIconDownload.retryAttempts は 0-10 の範囲内である必要があります"
+      );
+    }
+
+    // retryDelayMs の検証
+    if (config.retryDelayMs < 0 || config.retryDelayMs > 30000) {
+      errors.push(
+        "weaponIconDownload.retryDelayMs は 0-30000 の範囲内である必要があります"
+      );
+    }
+
+    // requestDelayMs の検証
+    if (config.requestDelayMs < 0 || config.requestDelayMs > 10000) {
+      errors.push(
+        "weaponIconDownload.requestDelayMs は 0-10000 の範囲内である必要があります"
+      );
+    }
+
+    // パス安全性の検証
+    if (config.outputDirectory.includes("..")) {
+      errors.push(
+        "weaponIconDownload.outputDirectory にディレクトリトラバーサル文字列が含まれています"
+      );
+    }
+
+    // maxFileSizeMB の検証
+    if (
+      config.maxFileSizeMB &&
+      (config.maxFileSizeMB < 1 || config.maxFileSizeMB > 100)
+    ) {
+      errors.push(
+        "weaponIconDownload.maxFileSizeMB は 1-100 の範囲内である必要があります"
+      );
+    }
+
+    // allowedExtensions の検証
+    if (config.allowedExtensions) {
+      const validExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
+      const invalidExtensions = config.allowedExtensions.filter(
+        (ext) => !validExtensions.includes(ext.toLowerCase())
+      );
+      if (invalidExtensions.length > 0) {
+        errors.push(
+          `weaponIconDownload.allowedExtensions に無効な拡張子が含まれています: ${invalidExtensions.join(
+            ", "
+          )}`
+        );
+      }
+    }
+  }
+
+  /**
    * ボンプアイコンダウンロード設定を検証
    */
   private validateBompIconConfig(
@@ -490,6 +587,13 @@ export class ConfigManager {
   }
 
   /**
+   * 武器アイコンダウンロード設定を取得
+   */
+  getWeaponIconConfig(): WeaponIconConfig {
+    return { ...this.config.weaponIconDownload };
+  }
+
+  /**
    * 音動機処理設定を取得
    */
   getWeaponProcessingConfig(): WeaponProcessingConfig {
@@ -568,6 +672,9 @@ export class ConfigManager {
       console.log(`出力ファイル: ${this.config.outputFilePath}`);
       console.log(
         `ボンプアイコン出力: ${this.config.bompIconDownload.outputDirectory}`
+      );
+      console.log(
+        `武器アイコン出力: ${this.config.weaponIconDownload.outputDirectory}`
       );
       console.log(
         `音動機リスト: ${this.config.weaponProcessing.weaponListPath}`
@@ -689,6 +796,33 @@ export class ConfigManager {
     ).join(", ")}\n`;
     report += `- 厳格セキュリティ: ${
       this.config.bompIconDownload.strictSecurity !== false ? "有効" : "無効"
+    }\n\n`;
+
+    report += `## 武器アイコンダウンロード設定\n`;
+    report += `- 出力ディレクトリ: ${this.config.weaponIconDownload.outputDirectory}\n`;
+    report += `- 最大並行数: ${this.config.weaponIconDownload.maxConcurrency}\n`;
+    report += `- リトライ回数: ${this.config.weaponIconDownload.retryAttempts}\n`;
+    report += `- リトライ遅延: ${this.config.weaponIconDownload.retryDelayMs}ms\n`;
+    report += `- リクエスト遅延: ${this.config.weaponIconDownload.requestDelayMs}ms\n`;
+    report += `- 既存ファイルスキップ: ${
+      this.config.weaponIconDownload.skipExisting ? "有効" : "無効"
+    }\n`;
+    report += `- ダウンロード検証: ${
+      this.config.weaponIconDownload.validateDownloads ? "有効" : "無効"
+    }\n`;
+    report += `- 最大ファイルサイズ: ${
+      this.config.weaponIconDownload.maxFileSizeMB || 10
+    }MB\n`;
+    report += `- 許可拡張子: ${(
+      this.config.weaponIconDownload.allowedExtensions || [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+      ]
+    ).join(", ")}\n`;
+    report += `- 厳格セキュリティ: ${
+      this.config.weaponIconDownload.strictSecurity !== false ? "有効" : "無効"
     }\n\n`;
 
     report += `## 音動機処理設定\n`;
