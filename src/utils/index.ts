@@ -5,9 +5,11 @@ export { GracefulDegradation } from "./GracefulDegradation";
 export { SecurityValidator } from "./SecurityValidator";
 export { PartialDataHandler } from "./PartialDataHandler";
 export { ErrorRecoveryHandler } from "./ErrorRecoveryHandler";
+export { AttributePatterns } from "./AttributePatterns";
 export {
   mapStatsToArray,
   mapStatsArrayToArray,
   mapStatsUsingConstant,
   STATS_ARRAY_MAPPING,
 } from "./StatsArrayMapper";
+export { WeaponDataUpdater } from "./WeaponDataUpdater";

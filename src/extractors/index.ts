@@ -1,0 +1,1 @@
+export { WeaponAttributeExtractor } from "./WeaponAttributeExtractor";

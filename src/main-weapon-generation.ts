@@ -10,7 +10,12 @@ import { WeaponDataMapper } from "./mappers/WeaponDataMapper";
 import { EnhancedProgressTracker } from "./utils/EnhancedProgressTracker";
 import { logger } from "./utils/Logger";
 import { ConfigManager } from "./config/ProcessingConfig";
-import { WeaponEntry, ProcessedWeaponData, Weapon } from "./types";
+import {
+  WeaponEntry,
+  ProcessedWeaponData,
+  Weapon,
+  EnhancedWeapon,
+} from "./types";
 import { WeaponProcessingConfig } from "./types/processing";
 import { ParsingError, ValidationError } from "./errors";
 
@@ -467,13 +472,17 @@ class WeaponDataPipeline {
   }
 
   /**
-   * Weaponオブジェクトを生成
-   * 要件: 3.1
+   * Weaponオブジェクトを生成（属性抽出統合版）
+   * 要件: 3.1, 3.2
    */
   private async generateWeapons(
     processedWeapons: ProcessedWeaponData[]
   ): Promise<Weapon[]> {
     const weapons: Weapon[] = [];
+
+    logger.info("Weaponオブジェクト生成を開始（属性抽出統合版）", {
+      processedWeapons: processedWeapons.length,
+    });
 
     for (const processedData of processedWeapons) {
       try {
@@ -499,6 +508,8 @@ class WeaponDataPipeline {
         logger.debug("Weaponオブジェクト生成成功", {
           weaponId: weapon.id,
           weaponName: weapon.name.ja,
+          stats: weapon.stats,
+          hasSkillDesc: weapon.equipmentSkillDesc.ja.length > 0,
         });
       } catch (error) {
         logger.error("Weaponオブジェクト生成に失敗", {
@@ -508,7 +519,7 @@ class WeaponDataPipeline {
       }
     }
 
-    logger.info("Weaponオブジェクト生成完了", {
+    logger.info("Weaponオブジェクト生成完了（属性抽出統合版）", {
       processedWeapons: processedWeapons.length,
       generatedWeapons: weapons.length,
       successRate: `${Math.round(
@@ -517,6 +528,67 @@ class WeaponDataPipeline {
     });
 
     return weapons;
+  }
+
+  /**
+   * 拡張Weaponオブジェクトを生成（属性抽出統合版）
+   * 要件: 2.1, 2.2
+   */
+  private async generateEnhancedWeapons(
+    processedWeapons: ProcessedWeaponData[]
+  ): Promise<EnhancedWeapon[]> {
+    const enhancedWeapons: EnhancedWeapon[] = [];
+
+    logger.info("拡張Weaponオブジェクト生成を開始", {
+      processedWeapons: processedWeapons.length,
+    });
+
+    for (const processedData of processedWeapons) {
+      try {
+        // 日本語データのみを使用（英語データは現在未実装）
+        const enhancedWeapon = this.weaponGenerator.generateEnhancedWeapon(
+          processedData,
+          null, // 英語データは未実装
+          processedData.basicInfo.id
+        );
+
+        // 生成された拡張Weaponオブジェクトを検証
+        const validationResult =
+          this.weaponGenerator.validateEnhancedWeapon(enhancedWeapon);
+        if (!validationResult.isValid) {
+          logger.warn("拡張Weaponオブジェクト検証に失敗", {
+            weaponId: enhancedWeapon.id,
+            errors: validationResult.errors,
+          });
+          continue; // 無効な拡張Weaponはスキップ
+        }
+
+        enhancedWeapons.push(enhancedWeapon);
+
+        logger.debug("拡張Weaponオブジェクト生成成功", {
+          weaponId: enhancedWeapon.id,
+          weaponName: enhancedWeapon.name.ja,
+          stats: enhancedWeapon.stats,
+          extractedAttributes: enhancedWeapon.extractedAttributes,
+          hasSkillDesc: enhancedWeapon.equipmentSkillDesc.ja.length > 0,
+        });
+      } catch (error) {
+        logger.error("拡張Weaponオブジェクト生成に失敗", {
+          weaponId: processedData.basicInfo.id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    logger.info("拡張Weaponオブジェクト生成完了", {
+      processedWeapons: processedWeapons.length,
+      generatedEnhancedWeapons: enhancedWeapons.length,
+      successRate: `${Math.round(
+        (enhancedWeapons.length / processedWeapons.length) * 100
+      )}%`,
+    });
+
+    return enhancedWeapons;
   }
 
   /**

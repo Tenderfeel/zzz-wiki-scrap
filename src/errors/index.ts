@@ -193,3 +193,54 @@ export class WeaponIconBatchError extends Error {
     this.name = "WeaponIconBatchError";
   }
 }
+
+// 武器属性抽出専用エラークラス
+export class AttributeExtractionError extends Error {
+  constructor(
+    public type: "EXTRACTION" | "MAPPING" | "VALIDATION" | "DATA" | "PATTERN",
+    public weaponId: number,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(`${type} (武器ID: ${weaponId}): ${details}`);
+    this.name = "AttributeExtractionError";
+  }
+}
+
+export class AttributeExtractionPatternError extends AttributeExtractionError {
+  constructor(weaponId: number, details: string, originalError?: Error) {
+    super("PATTERN", weaponId, details, originalError);
+  }
+}
+
+export class AttributeExtractionMappingError extends AttributeExtractionError {
+  constructor(weaponId: number, details: string, originalError?: Error) {
+    super("MAPPING", weaponId, details, originalError);
+  }
+}
+
+export class AttributeExtractionValidationError extends AttributeExtractionError {
+  constructor(weaponId: number, details: string, originalError?: Error) {
+    super("VALIDATION", weaponId, details, originalError);
+  }
+}
+
+export class AttributeExtractionDataError extends AttributeExtractionError {
+  constructor(weaponId: number, details: string, originalError?: Error) {
+    super("DATA", weaponId, details, originalError);
+  }
+}
+
+export class AttributeExtractionBatchError extends Error {
+  constructor(
+    public failedWeapons: number[],
+    public totalWeapons: number,
+    public details: string,
+    public originalError?: Error
+  ) {
+    super(
+      `武器属性抽出バッチ処理エラー: ${failedWeapons.length}/${totalWeapons} 個が失敗 - ${details}`
+    );
+    this.name = "AttributeExtractionBatchError";
+  }
+}

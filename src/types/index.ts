@@ -346,3 +346,60 @@ export interface ProcessedWeaponData {
 
 // 音動機処理設定（processing.tsから再エクスポート）
 export type { WeaponProcessingConfig } from "./processing";
+
+// 属性抽出関連の型定義
+
+/**
+ * マッチしたパターンの詳細情報
+ */
+export interface MatchedPattern {
+  attribute: Stats; // 英語属性名
+  pattern: string; // マッチしたパターン文字列
+  matchCount: number; // マッチした回数
+  positions: number[]; // マッチした位置の配列
+}
+
+/**
+ * 属性抽出結果の詳細情報
+ */
+export interface AttributeExtractionResult {
+  attributes: Stats[]; // 抽出された属性のリスト
+  confidence: number; // 抽出の信頼度 (0-1)
+  matchedPatterns: MatchedPattern[]; // マッチしたパターンの詳細
+  warnings: string[]; // 警告メッセージ
+}
+
+/**
+ * 拡張された武器データ（属性抽出結果を含む）
+ */
+export interface EnhancedWeapon extends Weapon {
+  extractedAttributes: Stats[]; // 抽出された属性のリスト
+}
+
+/**
+ * 処理に失敗した武器の情報
+ */
+export interface FailedProcessing {
+  weaponId: number; // 武器ID
+  error: string; // エラーメッセージ
+  partialData?: Partial<EnhancedWeapon>; // 部分的に処理できたデータ
+}
+
+/**
+ * 属性抽出処理の結果
+ */
+export interface AttributeProcessingResult<T> {
+  successful: T[]; // 成功した処理結果
+  failed: FailedProcessing[]; // 失敗した処理の詳細
+  statistics: ProcessingStatistics; // 処理統計
+}
+
+/**
+ * バリデーション結果
+ */
+export interface ValidationResult {
+  isValid: boolean; // バリデーション結果
+  errors: string[]; // エラーメッセージ
+  warnings: string[]; // 警告メッセージ
+  suggestions: string[]; // 改善提案
+}
