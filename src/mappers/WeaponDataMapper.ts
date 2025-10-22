@@ -512,7 +512,9 @@ export class WeaponDataMapper extends DataMapper {
       エネルギー自動回復: "energy",
     };
 
-    return mapping[statName] || null;
+    // HTMLタグを除去してからマッピング
+    const cleanedStatName = this.cleanHtmlText(statName);
+    return mapping[cleanedStatName] || null;
   }
 
   /**

@@ -23,7 +23,7 @@ export default [
     stats: ["fire"],
     agentId: "manato",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "hp",
   },
   {
     id: 935,
@@ -47,7 +47,7 @@ export default [
     stats: [],
     agentId: "lucia",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "hp",
   },
   {
     id: 929,
@@ -71,7 +71,7 @@ export default [
     stats: ["fire"],
     agentId: "orphie",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 910,
@@ -119,7 +119,7 @@ export default [
     stats: ["physical"],
     agentId: "alice",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 877,
@@ -143,7 +143,7 @@ export default [
     stats: ["physical"],
     agentId: "yuzuha",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "critDmg",
   },
   {
     id: 851,
@@ -191,7 +191,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 785,
@@ -215,7 +215,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 784,
@@ -239,7 +239,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 783,
@@ -263,7 +263,7 @@ export default [
     stats: [],
     agentId: "pan",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 782,
@@ -287,7 +287,7 @@ export default [
     stats: ["ether"],
     agentId: "yixuan",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "hp",
   },
   {
     id: 706,
@@ -335,7 +335,7 @@ export default [
     stats: ["ether"],
     agentId: "vivian",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "anomalyMastery",
   },
   {
     id: 701,
@@ -383,7 +383,7 @@ export default [
     stats: ["physical"],
     agentId: "pulchra",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 621,
@@ -407,7 +407,7 @@ export default [
     stats: ["electric"],
     agentId: "soldier0anby",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "critDmg",
   },
   {
     id: 591,
@@ -431,7 +431,7 @@ export default [
     stats: ["fire"],
     agentId: "evelyn",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 590,
@@ -455,7 +455,7 @@ export default [
     stats: [],
     agentId: "astra",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 541,
@@ -479,7 +479,7 @@ export default [
     stats: ["electric"],
     agentId: "harumasa",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "critDmg",
   },
   {
     id: 540,
@@ -551,7 +551,7 @@ export default [
     stats: ["fire", "ice"],
     agentId: "lighter",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 531,
@@ -575,7 +575,7 @@ export default [
     stats: ["electric"],
     agentId: "yanagi",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 525,
@@ -599,7 +599,7 @@ export default [
     stats: [],
     agentId: "burnice",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 389,
@@ -623,7 +623,7 @@ export default [
     stats: [],
     agentId: "caesar",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 378,
@@ -647,7 +647,7 @@ export default [
     stats: [],
     agentId: "seth",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 377,
@@ -671,7 +671,7 @@ export default [
     stats: ["physical"],
     agentId: "jane",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "anomalyMastery",
   },
   {
     id: 355,
@@ -695,7 +695,7 @@ export default [
     stats: [],
     agentId: "qingyi",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 354,
@@ -719,7 +719,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 274,
@@ -743,7 +743,7 @@ export default [
     stats: [],
     agentId: "piper",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 273,
@@ -767,7 +767,7 @@ export default [
     stats: [],
     agentId: "lucy",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 87,
@@ -815,7 +815,7 @@ export default [
     stats: [],
     agentId: "rina",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "penRatio",
   },
   {
     id: 85,
@@ -863,7 +863,7 @@ export default [
     stats: [],
     agentId: "grace",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "penRatio",
   },
   {
     id: 83,
@@ -887,7 +887,7 @@ export default [
     stats: [],
     agentId: "lycaon",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 82,
@@ -911,7 +911,7 @@ export default [
     stats: [],
     agentId: "koleda",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 81,
@@ -935,7 +935,7 @@ export default [
     stats: [],
     agentId: "soldier11",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 80,
@@ -983,7 +983,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 78,
@@ -1055,7 +1055,7 @@ export default [
     stats: ["ice"],
     agentId: "soukaku",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 75,
@@ -1079,7 +1079,7 @@ export default [
     stats: [],
     agentId: "ben",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "def",
   },
   {
     id: 74,
@@ -1103,7 +1103,7 @@ export default [
     stats: ["electric"],
     agentId: "anton",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 73,
@@ -1127,7 +1127,7 @@ export default [
     stats: ["physical"],
     agentId: "billy",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 72,
@@ -1151,7 +1151,7 @@ export default [
     stats: ["physical"],
     agentId: "corin",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 71,
@@ -1175,7 +1175,7 @@ export default [
     stats: ["ether"],
     agentId: "nicole",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 69,
@@ -1199,7 +1199,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 68,
@@ -1223,7 +1223,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "def",
   },
   {
     id: 67,
@@ -1247,7 +1247,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "anomalyMastery",
   },
   {
     id: 66,
@@ -1271,7 +1271,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "atk",
   },
   {
     id: 65,
@@ -1295,7 +1295,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "hp",
   },
   {
     id: 64,
@@ -1319,7 +1319,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "impact",
   },
   {
     id: 63,
@@ -1343,7 +1343,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "energy",
   },
   {
     id: 62,
@@ -1391,7 +1391,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "anomalyMastery",
   },
   {
     id: 60,
@@ -1415,7 +1415,7 @@ export default [
     stats: [],
     agentId: "",
     baseAttr: "atk",
-    advancedAttr: "critRate",
+    advancedAttr: "penRatio",
   },
   {
     id: 59,
