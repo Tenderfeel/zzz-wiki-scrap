@@ -52,10 +52,10 @@ describe("WeaponGenerator", () => {
     impact: [10, 11, 12, 13, 14, 15, 16],
     critRate: [5, 5.5, 6, 6.5, 7, 7.5, 8],
     critDmg: [20, 22, 24, 26, 28, 30, 32],
-    anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-    anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-    penRatio: [0, 0, 0, 0, 0, 0, 0],
-    energy: [0, 0, 0, 0, 0, 0, 0],
+    anomalyMastery: [],
+    anomalyProficiency: [],
+    penRatio: [],
+    energy: [],
   };
 
   const mockWeaponAgentInfo: WeaponAgentInfo = {
@@ -100,13 +100,13 @@ describe("WeaponGenerator", () => {
       impact: [10, 11, 12, 13, 14, 15, 16],
       critRate: [5, 5.5, 6, 6.5, 7, 7.5, 8],
       critDmg: [20, 22, 24, 26, 28, 30, 32],
-      anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-      anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-      penRatio: [0, 0, 0, 0, 0, 0, 0],
-      energy: [0, 0, 0, 0, 0, 0, 0],
+      anomalyMastery: [],
+      anomalyProficiency: [],
+      penRatio: [],
+      energy: [],
     },
     specialty: "attack",
-    stats: ["physical"],
+    stats: [],
     agentId: "lycaon",
     baseAttr: "atk",
     advancedAttr: "critRate",
@@ -540,23 +540,7 @@ describe("WeaponGenerator", () => {
       const result = generator.validateWeapon(invalidWeapon);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "stats は空でない配列である必要があります"
-      );
-    });
-
-    it("statsが空配列の場合は検証に失敗する", () => {
-      const invalidWeapon = {
-        ...expectedWeapon,
-        stats: [],
-      };
-
-      const result = generator.validateWeapon(invalidWeapon);
-
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "stats は空でない配列である必要があります"
-      );
+      expect(result.errors).toContain("stats は配列である必要があります");
     });
 
     it("statsに無効な値が含まれる場合は検証に失敗する", () => {
@@ -643,7 +627,7 @@ describe("WeaponGenerator", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "attr.hp 配列は正確に7つの値を含む必要があります（現在: 3）"
+        "attr.hp 配列は0個または7個の値を含む必要があります（現在: 3）"
       );
     });
 
@@ -896,7 +880,7 @@ describe("WeaponGenerator", () => {
         );
         expect(result).toContain('rarity: "S"');
         expect(result).toContain('specialty: "attack"');
-        expect(result).toContain('stats: ["physical"]');
+        expect(result).toContain("stats: []");
         expect(result).toContain('agentId: "lycaon"');
         expect(result).toContain('baseAttr: "atk"');
         expect(result).toContain('advancedAttr: "critRate"');

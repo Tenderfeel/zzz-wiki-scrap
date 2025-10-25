@@ -698,9 +698,9 @@ export class BompDataProcessor extends DataProcessor {
         ascensionData: JSON.stringify({
           list: [],
           combatList: {
-            hp: { values: [0, 0, 0, 0, 0, 0, 0] },
-            atk: { values: [0, 0, 0, 0, 0, 0, 0] },
-            def: { values: [0, 0, 0, 0, 0, 0, 0] },
+            hp: { values: [] },
+            atk: { values: [] },
+            def: { values: [] },
           },
         }),
       };

@@ -481,16 +481,16 @@ export class WeaponDataMapper extends DataMapper {
    */
   private createEmptyWeaponAttributes(): WeaponAttributesInfo {
     return {
-      hp: new Array(7).fill(0),
-      atk: new Array(7).fill(0),
-      def: new Array(7).fill(0),
-      impact: new Array(7).fill(0),
-      critRate: new Array(7).fill(0),
-      critDmg: new Array(7).fill(0),
-      anomalyMastery: new Array(7).fill(0),
-      anomalyProficiency: new Array(7).fill(0),
-      penRatio: new Array(7).fill(0),
-      energy: new Array(7).fill(0),
+      hp: [],
+      atk: [],
+      def: [],
+      impact: [],
+      critRate: [],
+      critDmg: [],
+      anomalyMastery: [],
+      anomalyProficiency: [],
+      penRatio: [],
+      energy: [],
     };
   }
 

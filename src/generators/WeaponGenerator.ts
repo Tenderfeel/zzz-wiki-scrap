@@ -458,7 +458,7 @@ export class WeaponGenerator {
         }
       }
 
-      // 音動機属性配列の長さ検証（全て7要素）
+      // 音動機属性配列の長さ検証（7要素または空配列）
       if (weapon.attr) {
         const attributeKeys = [
           "hp",
@@ -477,12 +477,12 @@ export class WeaponGenerator {
           const value = (weapon.attr as any)[key];
           if (!Array.isArray(value)) {
             errors.push(`attr.${key} は配列である必要があります`);
-          } else if (value.length !== 7) {
+          } else if (value.length !== 0 && value.length !== 7) {
             errors.push(
-              `attr.${key} 配列は正確に7つの値を含む必要があります（現在: ${value.length}）`
+              `attr.${key} 配列は0個または7個の値を含む必要があります（現在: ${value.length}）`
             );
-          } else {
-            // 数値の検証
+          } else if (value.length > 0) {
+            // 数値の検証（空配列でない場合のみ）
             for (let i = 0; i < value.length; i++) {
               if (typeof value[i] !== "number" || isNaN(value[i])) {
                 errors.push(
@@ -524,8 +524,8 @@ export class WeaponGenerator {
         "auricInk",
       ];
       if (weapon.stats) {
-        if (!Array.isArray(weapon.stats) || weapon.stats.length === 0) {
-          errors.push("stats は空でない配列である必要があります");
+        if (!Array.isArray(weapon.stats)) {
+          errors.push("stats は配列である必要があります");
         } else {
           for (const stat of weapon.stats) {
             if (!validStats.includes(stat)) {

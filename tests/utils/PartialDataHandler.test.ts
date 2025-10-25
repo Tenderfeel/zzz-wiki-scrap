@@ -59,7 +59,7 @@ describe("PartialDataHandler", () => {
       expect(emptyValues.stats).toEqual([]);
       expect(emptyValues.faction).toBe(0);
       expect(emptyValues.releaseVersion).toBe(2.4);
-      expect(emptyValues.attr?.hp).toEqual([0, 0, 0, 0, 0, 0, 0]);
+      expect(emptyValues.attr?.hp).toEqual([]);
     });
   });
 

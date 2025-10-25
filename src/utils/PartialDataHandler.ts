@@ -439,9 +439,9 @@ export class PartialDataHandler {
    */
   getEmptyValues(characterId: string): Partial<Character> {
     const emptyAttributes: Attributes = {
-      hp: [0, 0, 0, 0, 0, 0, 0],
-      atk: [0, 0, 0, 0, 0, 0, 0],
-      def: [0, 0, 0, 0, 0, 0, 0],
+      hp: [],
+      atk: [],
+      def: [],
       impact: 0,
       critRate: 0,
       critDmg: 0,
@@ -840,9 +840,9 @@ export class PartialDataHandler {
       // 簡単な実装：実際の属性解析は既存のロジックを使用
       // ここでは空の属性を返す
       return {
-        hp: [0, 0, 0, 0, 0, 0, 0],
-        atk: [0, 0, 0, 0, 0, 0, 0],
-        def: [0, 0, 0, 0, 0, 0, 0],
+        hp: [],
+        atk: [],
+        def: [],
         impact: 0,
         critRate: 0,
         critDmg: 0,

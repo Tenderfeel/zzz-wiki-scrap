@@ -121,9 +121,9 @@ const MINIMAL_REQUIRED_VALUES = {
   name: { ja: "", en: "" }, // 実際の名前で上書き
   fullName: { ja: "", en: "" }, // 実際のフルネームで上書き
   attr: {
-    hp: [0, 0, 0, 0, 0, 0, 0],
-    atk: [0, 0, 0, 0, 0, 0, 0],
-    def: [0, 0, 0, 0, 0, 0, 0],
+    hp: [],
+    atk: [],
+    def: [],
     impact: 0,
     critRate: 0,
     critDmg: 0,

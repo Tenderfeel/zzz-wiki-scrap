@@ -58,10 +58,10 @@ describe("WeaponDataProcessor", () => {
     impact: [10, 11, 12, 13, 14, 15, 16],
     critRate: [5, 5.5, 6, 6.5, 7, 7.5, 8],
     critDmg: [20, 22, 24, 26, 28, 30, 32],
-    anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-    anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-    penRatio: [0, 0, 0, 0, 0, 0, 0],
-    energy: [0, 0, 0, 0, 0, 0, 0],
+    anomalyMastery: [],
+    anomalyProficiency: [],
+    penRatio: [],
+    energy: [],
   };
 
   const mockWeaponAgentInfo: WeaponAgentInfo = {
@@ -468,10 +468,10 @@ describe("WeaponDataProcessor", () => {
           impact: [10, 11, 12, 13, 14, 15, 16],
           critRate: [5, 5.5, 6, 6.5, 7, 7.5, 8],
           critDmg: [20, 22, 24, 26, 28, 30, 32],
-          anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-          anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-          penRatio: [0, 0, 0, 0, 0, 0, 0],
-          energy: [0, 0, 0, 0, 0, 0, 0],
+          anomalyMastery: [],
+          anomalyProficiency: [],
+          penRatio: [],
+          energy: [],
         },
         agentInfo: mockWeaponAgentInfo,
       } as any;

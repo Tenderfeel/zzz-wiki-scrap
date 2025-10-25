@@ -268,9 +268,9 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
         // 空の値が適用されている場合の検証
         if (yidhari.attr.hp.every((v) => v === 0)) {
-          expect(yidhari.attr.hp).toEqual([0, 0, 0, 0, 0, 0, 0]);
-          expect(yidhari.attr.atk).toEqual([0, 0, 0, 0, 0, 0, 0]);
-          expect(yidhari.attr.def).toEqual([0, 0, 0, 0, 0, 0, 0]);
+          expect(yidhari.attr.hp).toEqual([]);
+          expect(yidhari.attr.atk).toEqual([]);
+          expect(yidhari.attr.def).toEqual([]);
         }
       }
     });

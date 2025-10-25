@@ -187,10 +187,10 @@ const weapons: Weapon[] = [
       impact: [10, 12, 14, 16, 18, 20, 22],
       critRate: [5, 6, 7, 8, 9, 10, 11],
       critDmg: [50, 60, 70, 80, 90, 100, 110],
-      anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-      anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-      penRatio: [0, 0, 0, 0, 0, 0, 0],
-      energy: [0, 0, 0, 0, 0, 0, 0],
+      anomalyMastery: [],
+      anomalyProficiency: [],
+      penRatio: [],
+      energy: [],
     },
     specialty: "attack", // 特性
     stats: ["physical"], // 属性

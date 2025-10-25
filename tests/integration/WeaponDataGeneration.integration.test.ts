@@ -934,9 +934,9 @@ describe("Weapon Data Generation Integration", () => {
           impact: [0, 10, 10, 10, 10, 10, 10],
           critRate: [0, 5, 5, 5, 5, 5, 5],
           critDmg: [0, 50, 50, 50, 50, 50, 50],
-          anomalyMastery: [0, 0, 0, 0, 0, 0, 0],
-          anomalyProficiency: [0, 0, 0, 0, 0, 0, 0],
-          penRatio: [0, 0, 0, 0, 0, 0, 0],
+          anomalyMastery: [],
+          anomalyProficiency: [],
+          penRatio: [],
           energy: [0, 100, 100, 100, 100, 100, 100],
         },
         agentInfo: {

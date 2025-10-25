@@ -430,7 +430,7 @@ describe("Version 2.3 Character Integration Tests", () => {
       expect(completeCharacter).toBeDefined();
       expect(completeCharacter.id).toBe("909");
       expect(completeCharacter.stats).toEqual(["ether"]);
-      expect(completeCharacter.attr.hp).toEqual([0, 0, 0, 0, 0, 0, 0]); // 部分データから生成された空の値
+      expect(completeCharacter.attr.hp).toEqual([]); // 部分データから生成された空の値
 
       console.log("yidhari処理結果（部分データ）:", {
         id: completeCharacter.id,

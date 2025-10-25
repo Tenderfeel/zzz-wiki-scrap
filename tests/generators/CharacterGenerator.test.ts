@@ -651,9 +651,9 @@ describe("CharacterGenerator", () => {
           faction: 0,
           rarity: undefined,
           attr: {
-            hp: [0, 0, 0, 0, 0, 0, 0],
-            atk: [0, 0, 0, 0, 0, 0, 0],
-            def: [0, 0, 0, 0, 0, 0, 0],
+            hp: [],
+            atk: [],
+            def: [],
             impact: 0,
             critRate: 0,
             critDmg: 0,
@@ -766,9 +766,9 @@ describe("CharacterGenerator", () => {
       expect(result).not.toBeNull();
       // エラー時は空の属性値が使用される
       expect(result?.attr).toEqual({
-        hp: [0, 0, 0, 0, 0, 0, 0],
-        atk: [0, 0, 0, 0, 0, 0, 0],
-        def: [0, 0, 0, 0, 0, 0, 0],
+        hp: [],
+        atk: [],
+        def: [],
         impact: 0,
         critRate: 0,
         critDmg: 0,
