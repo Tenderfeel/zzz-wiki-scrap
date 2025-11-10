@@ -1,0 +1,809 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "list": [
+      {
+        "entry_page_id": "790",
+        "name": "大山を統べる者",
+        "icon_url": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/06/04/a59227933f7bd9f36125bb5c4804d842_7976286618293268170.png",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e装備者が[撃破]メンバーの場合、『強化特殊スキル』または『連携スキル』発動時、メンバー全員の会心ダメージ+15%。装備者の会心率が50%以上の場合、会心ダメージがさらに+15%、継続時間15秒、重複して発動すると継続時間が更新される。同じパッシブ効果は重ね掛け不可。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e攻撃の与えるブレイク値+6%\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "789",
+        "name": "雲嶽は我に似たり",
+        "icon_url": "https://act-webstatic.hoyoverse.com/event-static-hoyowiki-admin/2025/06/04/dc24240add8596ecaf2ee95599a5aa06_4591047455261139320.png",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e『強化特殊スキル』、『連携スキル』、『終結スキル』を発動時、会心率+4%。この効果は最大3重まで重ね掛け可能、継続時間15秒。重複して発動すると継続時間が更新される。重数が3重に達している場合、与える透徹ダメージ+10%。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003eHP+10%\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "625",
+        "name": "シャドウハーモニー",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/06/06/59155606/42ba283c9d841a1e3446ca049ff4c17c_8663566002076880007.png",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e『追加攻撃』または『ダッシュ攻撃』が敵に命中した時、与えたダメージが装備者の属性と一致している場合、バフ効果を1重獲得する、1回のスキルにおいて1回のみ発動可能。バフ効果1重につき、装備者の攻撃力+4%、会心率+4%。最大3重まで重ね掛け可能、継続時間15秒、重複して発動すると継続時間が更新される。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e『追加攻撃』と『ダッシュ攻撃』の与ダメージ+15%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "624",
+        "name": "「パエトーン」の歌",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/06/06/59155606/41a57875d8baec89c88aff8f45c17b06_7697082971310851987.png",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e任意のメンバーが『強化特殊スキル』を発動した時、装備者の異常マスタリー+45Pt、継続時間8秒。『強化特殊スキル』を発動したエージェントが装備者本人でない場合、装備者による\u003c/span\u003e\u003cspan style=\"color: rgb(254, 67, 126)\"\u003eエーテル属性ダメージ\u003c/span\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e+25%。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e異常掌握+8%\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "547",
+        "name": "折枝の刀歌",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/06/06/59155606/2ef493e0fe25c73faf761cb991d9920f_5297728795235827687.png",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e異常掌握が115Pt以上の時、装備者の会心ダメージ+30%。任意のメンバーが敵に\u003c/span\u003e\u003cspan style=\"color: #98eff0\"\u003e[凍結]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果を付与した時、または\u003c/span\u003e\u003cspan style=\"color: #98eff0\"\u003e[砕氷]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果を発動した時、装備者の会心率+12%、継続時間15秒。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e会心ダメージ+16%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "546",
+        "name": "静寂のアストラ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2025/06/06/59155606/094475f6f4754f4175941caf8a570f95_5677297070967892478.png",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e任意のメンバーが『クイック支援』で出場した時、メンバー全員が「天籟」を1重獲得する。最大3重まで重ね掛け可能、継続時間15秒、重複して発動すると継続時間が更新される。「天籟」1重につき、『クイック支援』で出場したメンバーの与ダメージ+8%、該当効果はチーム内でひとつしか有効にならない。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e攻撃力+10%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "392",
+        "name": "ケイオス・ジャズ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/c4db29107f72bcd072951ab70046624d_2350548922266155357.gif",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 85, 33)\"\u003e炎属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003eおよび\u003c/span\u003e\u003cspan style=\"color: rgb(46, 182, 255)\"\u003e電気属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+15%。控えにいる時、『強化特殊スキル』と『支援攻撃』の与ダメージ+20%。出場した後も効果は5秒継続する。この効果継続は7.5秒に1回のみ発動可能。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e異常マスタリー+30Pt。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "391",
+        "name": "プロト・パンク",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/cb7a2f89ad9f169a582ed22857253bb7_1294044774397001331.gif",
+        "display_field": {
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003eシールド生成量+15%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e任意のメンバーが『パリィ支援』または『回避支援』を発動した時、メンバー全員のダメージ+15%、継続時間10秒。同じパッシブ効果は重ね掛け不可。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "137",
+        "name": "獣牙のヘヴィメタル",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/ef67c0f5bab288b25087667915e33978_3333130034470395756.gif",
+        "display_field": {
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(240, 209, 43)\"\u003e物理属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+10%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e任意のメンバーが敵に\u003c/span\u003e\u003cspan style=\"color: #f0d12b\"\u003e[強撃]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果を付与した時、装備者がターゲットに与えるダメージ+35%、継続時間12秒。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "136",
+        "name": "極地のヘヴィメタル",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/a98bb716877a4d2ae51e5b43e2c33935_1777856708825060402.gif",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e『通常攻撃』と『ダッシュ攻撃』の与ダメージ+20%。任意のメンバーが敵に\u003c/span\u003e\u003cspan style=\"color: #98eff0\"\u003e[凍結]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果を付与した時、または\u003c/span\u003e\u003cspan style=\"color: #98eff0\"\u003e[砕氷]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果を発動した時、追加で上記バフ効果+20%、継続時間12秒。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(152, 239, 240)\"\u003e氷属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+10%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "135",
+        "name": "霹靂のヘヴィメタル",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/d205ff13ed4efdaefd255e0d35ce84c8_3518274504144053181.gif",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003eフィールド上に\u003c/span\u003e\u003cspan style=\"color: #2eb6ff\"\u003e[感電]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e状態の敵がいる時、装備者の攻撃力+28%。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(46, 182, 255)\"\u003e電気属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+10%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "134",
+        "name": "混沌のヘヴィメタル",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/6acf6b038355e69e936c6f4e55fc4c4d_3402395985866378508.gif",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e装備者の会心ダメージ+20%。任意のメンバーによって\u003c/span\u003e\u003cspan style=\"color: #fe437e\"\u003e[侵蝕]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e効果の追加ダメージが発生した時、追加で上記バフ効果+5.5%、最大6重まで重ね掛け可能、継続時間8秒。重複して発動すると継続時間が更新される。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(254, 67, 126)\"\u003eエーテル属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+10%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "133",
+        "name": "炎獄のヘヴィメタル",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/d2ce9e1ff315ded58ab16ed2cfa84f2a_8573971673298069700.gif",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #ff5521\"\u003e[熱傷]\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e状態の敵に攻撃が命中した時、装備者の会心率+28%、継続時間8秒。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 85, 33)\"\u003e炎属性ダメージ\u003c/span\u003e\u003cspan style=\"color: #FFFFFF\"\u003e+10%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "132",
+        "name": "ソウル・ロック",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/ce2b97e1827de13b48d335bb66d31e29_394505560242471969.gif",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e敵の攻撃を受け、かつHPが減少した時、装備者の被ダメージ-40%、継続時間2.5秒。15秒に1回のみ発動可能。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e防御力+16%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "131",
+        "name": "ホルモン・パンク",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/b4626613b20d36ff9ffe65066c33c750_4436013788237289941.gif",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e接敵状態かつ操作中のメンバーになった時、装備者の攻撃力+25%、継続時間10秒。20秒に1回のみ発動可能。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e攻撃力+10%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "130",
+        "name": "フリーダム・ブルース",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/dacff1d572ed106da8d660a3e8b28093_5878030130660332806.gif",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e『強化特殊スキル』が敵に命中すると、装備者の属性に応じて、ターゲットの対応する状態異常蓄積耐性-20%、継続時間8秒。同属性での重ね掛けは不可。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e異常マスタリー+30Pt。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "129",
+        "name": "ショックスター・ディスコ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/807be6a6c4e9394f860951b623bf853c_8362798648906431625.gif",
+        "display_field": {
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e衝撃力+6%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e『通常攻撃』、『ダッシュ攻撃』、『回避反撃』がメインターゲットに与えるブレイク値+20%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "128",
+        "name": "パファー・エレクトロ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/2da2727debb92eea9e6698cc5662605d_1501075286018956359.gif",
+        "display_field": {
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e『終結スキル』の与ダメージ+20%。『終結スキル』発動時、装備者の攻撃力+15%、継続時間12秒。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e貫通率+8%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": ""
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "127",
+        "name": "ウッドペッカー・エレクトロ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/d488aa12dd51bfbdb36c35f9b9bb1bd5_2239492303507640510.gif",
+        "display_field": {
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e会心率+8%。\u003c/span\u003e\u003c/p\u003e",
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003e『通常攻撃』、『回避反撃』または『強化特殊スキル』が敵に命中し、なおかつ会心が出た時、それぞれ装備者にバフ効果を1重与える。バフ効果1重につき、装備者の攻撃力+9%、継続時間6秒。バフ効果の継続時間はスキルごとに計算される。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      },
+      {
+        "entry_page_id": "5",
+        "name": "スイング・ジャズ",
+        "icon_url": "https://act-upload.hoyoverse.com/event-ugc-hoyowiki/2024/10/11/59155606/a3fe70baab62afe89fc2e658e8a93c44_8061068782771806914.gif",
+        "display_field": {
+          "single_set_effect": "",
+          "four_set_effect": "\u003cp\u003e\u003cspan style=\"color: rgb(255, 255, 255)\"\u003e『連携スキル』または『終結スキル』発動時、メンバー全員の与ダメージ+15%、継続時間12秒。同じパッシブ効果は重ね掛け不可。\u003c/span\u003e\u003c/p\u003e",
+          "two_set_effect": "\u003cp\u003e\u003cspan style=\"color: #FFFFFF\"\u003eエネルギー自動回復+20%。\u003c/span\u003e\u003c/p\u003e"
+        },
+        "filter_values": {
+          "drivedisc_rarity": {
+            "values": ["S", "A", "B"],
+            "value_types": [
+              {
+                "id": "35",
+                "value": "S",
+                "mi18n_key": "filter_custom_62",
+                "icon": "",
+                "enum_string": "s"
+              },
+              {
+                "id": "36",
+                "value": "A",
+                "mi18n_key": "filter_custom_61",
+                "icon": "",
+                "enum_string": "a"
+              },
+              {
+                "id": "37",
+                "value": "B",
+                "mi18n_key": "filter_custom_60",
+                "icon": "",
+                "enum_string": "b"
+              }
+            ],
+            "key": null
+          }
+        },
+        "desc": ""
+      }
+    ],
+    "total": "20"
+  }
+}

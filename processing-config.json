@@ -44,5 +44,26 @@
     "maxFileSizeMB": 10,
     "allowedExtensions": [".png", ".jpg", ".jpeg", ".webp"],
     "strictSecurity": true
+  },
+  "weaponProcessing": {
+    "weaponListPath": "json/data/weapon-list.json",
+    "outputPath": "data/weapons.ts",
+    "includeRarities": ["A", "S"],
+    "batchSize": 10,
+    "delayMs": 1000,
+    "maxRetries": 3,
+    "skipAgentValidation": false,
+    "enableSkillExtraction": true,
+    "enableValidation": true,
+    "logLevel": "info"
+  },
+  "driverDiscProcessing": {
+    "discListPath": "json/data/disc-list.json",
+    "outputPath": "data/driverDiscs.ts",
+    "batchSize": 5,
+    "delayMs": 1000,
+    "maxRetries": 3,
+    "enableValidation": true,
+    "logLevel": "info"
   }
 }

@@ -403,3 +403,62 @@ export interface ValidationResult {
   warnings: string[]; // 警告メッセージ
   suggestions: string[]; // 改善提案
 }
+
+// ドライバーディスク関連の型定義
+
+// ドライバーディスク
+export type DriverDisc = {
+  id: number;
+  name: { [key in Lang]: string };
+  fourSetEffect: { [key in Lang]: string }; // 4セット効果
+  twoSetEffect: { [key in Lang]: string }; // 2セット効果
+  releaseVersion: number;
+  specialty: Specialty; // 特性（4セット効果に含まれている特性を設定）
+};
+
+// ドライバーディスクエントリー（disc-list.jsonから抽出される情報）
+export type DriverDiscEntry = {
+  id: string; // entry_page_id
+  name: string; // 日本語名
+  iconUrl: string; // アイコンURL
+};
+
+// ドライバーディスク処理用の中間データ型
+export interface BasicDriverDiscInfo {
+  id: number;
+  name: string;
+  releaseVersion?: number;
+}
+
+export interface SetEffectInfo {
+  fourSetEffect: string;
+  twoSetEffect: string;
+}
+
+export interface ProcessedDriverDiscData {
+  basicInfo: BasicDriverDiscInfo;
+  setEffectInfo: SetEffectInfo;
+  specialty: Specialty;
+}
+
+// ドライバーディスク処理設定
+export interface DriverDiscProcessingConfig {
+  discListPath: string; // disc-list.jsonのパス
+  outputPath: string; // 出力ファイルパス
+  batchSize: number; // バッチサイズ
+  delayMs: number; // 遅延時間
+  maxRetries: number; // 最大リトライ回数
+  enableValidation: boolean; // データ検証の有効化
+  logLevel: "error" | "warn" | "info" | "debug"; // ログレベル
+}
+
+// ドライバーディスク処理結果
+export interface DriverDiscProcessingResult {
+  successful: DriverDisc[];
+  failed: {
+    discId: string;
+    error: string;
+    partialData?: Partial<DriverDisc>;
+  }[];
+  statistics: ProcessingStatistics;
+}

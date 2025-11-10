@@ -238,3 +238,93 @@ export interface WeaponEntry {
   };
   desc?: string;
 }
+
+// ドライバーディスク処理用の型定義
+export interface DriverDiscListItem {
+  entry_page_id: string;
+  name: string;
+  icon_url: string;
+  display_field: {
+    four_set_effect: string;
+    two_set_effect: string;
+    single_set_effect?: string;
+  };
+  filter_values?: any;
+  desc?: string;
+}
+
+export interface DriverDiscListJsonData {
+  retcode: number;
+  message: string;
+  data: {
+    list: DriverDiscListItem[];
+    total: string;
+  };
+}
+
+// ドライバーディスク処理用の型定義
+export interface DriverDiscEntry {
+  id: string; // entry_page_id
+  name: string; // 日本語名
+  iconUrl: string; // アイコンURL
+}
+
+export interface BasicDriverDiscInfo {
+  id: number;
+  name: string;
+  releaseVersion?: number;
+}
+
+export interface SetEffectInfo {
+  fourSetEffect: string;
+  twoSetEffect: string;
+}
+
+export interface ProcessedDriverDiscData {
+  basicInfo: BasicDriverDiscInfo;
+  setEffectInfo: SetEffectInfo;
+  specialty: import("./index").Specialty;
+}
+
+export interface DriverDiscProcessingConfig {
+  discListPath: string; // disc-list.jsonのパス
+  outputPath: string; // 出力ファイルパス
+  batchSize: number; // バッチサイズ
+  delayMs: number; // 遅延時間
+  maxRetries: number; // 最大リトライ回数
+  enableValidation: boolean; // データ検証の有効化
+  logLevel: "error" | "warn" | "info" | "debug"; // ログレベル
+}
+
+export interface DriverDiscProcessingResult {
+  successful: import("./index").DriverDisc[];
+  failed: {
+    discId: string;
+    error: string;
+    partialData?: Partial<import("./index").DriverDisc>;
+  }[];
+  statistics: ProcessingStatistics;
+}
+
+export interface DriverDiscErrorContext {
+  discId: string;
+  discName?: string;
+  operation: string;
+  attempt?: number;
+  maxAttempts?: number;
+  processingPhase: "parsing" | "api_fetch" | "mapping" | "generation";
+  errorType:
+    | "network"
+    | "api"
+    | "data_structure"
+    | "validation"
+    | "system"
+    | "unknown";
+  severity: "low" | "moderate" | "high" | "critical";
+  recoveryStrategy:
+    | "retry"
+    | "skip"
+    | "partial_data"
+    | "graceful_degradation"
+    | "abort";
+}

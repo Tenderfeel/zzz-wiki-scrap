@@ -7,3 +7,4 @@ export { BompIconProcessor } from "./BompIconProcessor";
 export { WeaponDataProcessor } from "./WeaponDataProcessor";
 export { WeaponIconProcessor } from "./WeaponIconProcessor";
 export { WeaponAttributeProcessor } from "./WeaponAttributeProcessor";
+export { DriverDiscDataProcessor } from "./DriverDiscDataProcessor";

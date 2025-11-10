@@ -177,6 +177,49 @@ export const LogMessages = {
   WEAPON_ICON_ERROR_RECOVERY_START: "武器アイコンエラー回復処理開始",
   WEAPON_ICON_ERROR_RECOVERY_SUCCESS: "武器アイコンエラー回復処理成功",
   WEAPON_ICON_ERROR_RECOVERY_FAILURE: "武器アイコンエラー回復処理失敗",
+
+  // DriverDisc処理関連
+  DRIVER_DISC_PROCESSING_START: "ドライバーディスク処理開始",
+  DRIVER_DISC_PROCESSING_SUCCESS: "ドライバーディスク処理完了",
+  DRIVER_DISC_PROCESSING_ERROR: "ドライバーディスク処理エラー",
+  DRIVER_DISC_PROCESSING_RETRY: "ドライバーディスク処理リトライ",
+  DRIVER_DISC_PROCESSING_FINAL_FAILURE: "ドライバーディスク処理最終失敗",
+  DRIVER_DISC_PARSING_START: "ドライバーディスクリスト解析開始",
+  DRIVER_DISC_PARSING_SUCCESS: "ドライバーディスクリスト解析成功",
+  DRIVER_DISC_PARSING_ERROR: "ドライバーディスクリスト解析エラー",
+  DRIVER_DISC_API_FETCH_START: "ドライバーディスクAPI取得開始",
+  DRIVER_DISC_API_FETCH_SUCCESS: "ドライバーディスクAPI取得成功",
+  DRIVER_DISC_API_FETCH_ERROR: "ドライバーディスクAPI取得エラー",
+  DRIVER_DISC_MAPPING_START: "ドライバーディスクデータマッピング開始",
+  DRIVER_DISC_MAPPING_SUCCESS: "ドライバーディスクデータマッピング成功",
+  DRIVER_DISC_MAPPING_ERROR: "ドライバーディスクデータマッピングエラー",
+  DRIVER_DISC_GENERATION_START: "ドライバーディスクファイル生成開始",
+  DRIVER_DISC_GENERATION_SUCCESS: "ドライバーディスクファイル生成完了",
+  DRIVER_DISC_GENERATION_ERROR: "ドライバーディスクファイル生成エラー",
+  DRIVER_DISC_VALIDATION_START: "ドライバーディスクデータ検証開始",
+  DRIVER_DISC_VALIDATION_SUCCESS: "ドライバーディスクデータ検証成功",
+  DRIVER_DISC_VALIDATION_ERROR: "ドライバーディスクデータ検証エラー",
+  DRIVER_DISC_BATCH_START: "ドライバーディスクバッチ処理開始",
+  DRIVER_DISC_BATCH_PROGRESS: "ドライバーディスクバッチ処理進捗",
+  DRIVER_DISC_BATCH_ERROR: "ドライバーディスクバッチ処理エラー",
+  DRIVER_DISC_BATCH_INDIVIDUAL_FALLBACK:
+    "ドライバーディスク個別処理にフォールバック",
+  DRIVER_DISC_STATISTICS_SUMMARY: "ドライバーディスク処理統計",
+  DRIVER_DISC_PERFORMANCE_METRICS: "ドライバーディスクパフォーマンス統計",
+  DRIVER_DISC_ERROR_RECOVERY_START: "ドライバーディスクエラー回復処理開始",
+  DRIVER_DISC_ERROR_RECOVERY_SUCCESS: "ドライバーディスクエラー回復処理成功",
+  DRIVER_DISC_ERROR_RECOVERY_FAILURE: "ドライバーディスクエラー回復処理失敗",
+  DRIVER_DISC_GRACEFUL_DEGRADATION: "ドライバーディスクグレースフル劣化実行",
+  DRIVER_DISC_PARTIAL_DATA_PROCESSING: "ドライバーディスク部分データ処理",
+  DRIVER_DISC_SPECIALTY_EXTRACTION_START: "ドライバーディスク特性抽出開始",
+  DRIVER_DISC_SPECIALTY_EXTRACTION_SUCCESS: "ドライバーディスク特性抽出成功",
+  DRIVER_DISC_SPECIALTY_EXTRACTION_ERROR: "ドライバーディスク特性抽出エラー",
+  DRIVER_DISC_SET_EFFECT_EXTRACTION_START:
+    "ドライバーディスクセット効果抽出開始",
+  DRIVER_DISC_SET_EFFECT_EXTRACTION_SUCCESS:
+    "ドライバーディスクセット効果抽出成功",
+  DRIVER_DISC_SET_EFFECT_EXTRACTION_ERROR:
+    "ドライバーディスクセット効果抽出エラー",
 } as const;
 
 /**

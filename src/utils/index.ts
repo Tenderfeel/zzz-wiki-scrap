@@ -13,3 +13,6 @@ export {
   STATS_ARRAY_MAPPING,
 } from "./StatsArrayMapper";
 export { WeaponDataUpdater } from "./WeaponDataUpdater";
+export { DriverDiscErrorHandler } from "./DriverDiscErrorHandler";
+export { DriverDiscStatistics } from "./DriverDiscStatistics";
+export { DriverDiscGracefulDegradation } from "./DriverDiscGracefulDegradation";

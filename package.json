@@ -24,6 +24,11 @@
       "import": "./data/bomps.ts",
       "require": "./data/bomps.ts",
       "types": "./data/bomps.ts"
+    },
+    "./driverDiscs": {
+      "import": "./data/driverDiscs.ts",
+      "require": "./data/driverDiscs.ts",
+      "types": "./data/driverDiscs.ts"
     }
   },
   "files": [
@@ -36,6 +41,7 @@
     "generate:bomps": "tsx src/main-bomp-generation.ts",
     "generate:bomp-icons": "tsx src/main-bomp-icon-download.ts",
     "generate:weapon-icons": "tsx src/main-weapon-icon-download.ts",
+    "generate:discs": "tsx src/main-driver-disc-generation.ts",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

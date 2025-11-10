@@ -495,4 +495,14 @@ type WeaponAttributes = {
   // エネルギー自動回復
   energy: number[];
 }
+
+
+type DriverDisc = {
+  id: number,
+  name:{ [key in Lang]: string };
+  fourSetEffect: { [key in Lang]: string };　// 4セット効果
+  twoSetEffect: { [key in Lang]: string }; // 2セット効果
+  releaseVersion: number;
+  specialty: Specialty; // 特性（4セット効果に含まれている特性を設定）
+}
 ```

@@ -57,6 +57,9 @@ export interface ProcessingConfig {
 
   // 音動機処理設定
   weaponProcessing: WeaponProcessingConfig;
+
+  // ドライバーディスク処理設定
+  driverDiscProcessing: import("../types/index").DriverDiscProcessingConfig;
 }
 
 /**
@@ -171,6 +174,17 @@ export const DEFAULT_CONFIG: ProcessingConfig = {
     maxRetries: 3,
     skipAgentValidation: false,
     enableSkillExtraction: true,
+    enableValidation: true,
+    logLevel: "info",
+  },
+
+  // ドライバーディスク処理設定
+  driverDiscProcessing: {
+    discListPath: "json/data/disc-list.json",
+    outputPath: "data/driverDiscs.ts",
+    batchSize: 5,
+    delayMs: 1000,
+    maxRetries: 3,
     enableValidation: true,
     logLevel: "info",
   },
@@ -315,6 +329,12 @@ export class ConfigManager {
 
     // 音動機処理設定の検証
     this.validateWeaponProcessingConfig(config.weaponProcessing, errors);
+
+    // ドライバーディスク処理設定の検証
+    this.validateDriverDiscProcessingConfig(
+      config.driverDiscProcessing,
+      errors
+    );
 
     if (errors.length > 0) {
       console.warn(`⚠️  設定に問題があります:`);
@@ -601,6 +621,62 @@ export class ConfigManager {
   }
 
   /**
+   * ドライバーディスク処理設定を取得
+   */
+  getDriverDiscProcessingConfig(): import("../types/index").DriverDiscProcessingConfig {
+    return { ...this.config.driverDiscProcessing };
+  }
+
+  /**
+   * ドライバーディスク処理設定を検証
+   */
+  private validateDriverDiscProcessingConfig(
+    config: import("../types/index").DriverDiscProcessingConfig,
+    errors: string[]
+  ): void {
+    // discListPath の検証
+    if (!config.discListPath || config.discListPath.trim() === "") {
+      errors.push("driverDiscProcessing.discListPath は空にできません");
+    }
+
+    // outputPath の検証
+    if (!config.outputPath || config.outputPath.trim() === "") {
+      errors.push("driverDiscProcessing.outputPath は空にできません");
+    }
+
+    // batchSize の検証
+    if (config.batchSize < 1 || config.batchSize > 20) {
+      errors.push(
+        "driverDiscProcessing.batchSize は 1-20 の範囲内である必要があります"
+      );
+    }
+
+    // delayMs の検証
+    if (config.delayMs < 0 || config.delayMs > 30000) {
+      errors.push(
+        "driverDiscProcessing.delayMs は 0-30000 の範囲内である必要があります"
+      );
+    }
+
+    // maxRetries の検証
+    if (config.maxRetries < 0 || config.maxRetries > 10) {
+      errors.push(
+        "driverDiscProcessing.maxRetries は 0-10 の範囲内である必要があります"
+      );
+    }
+
+    // logLevel の検証
+    const validLogLevels = ["error", "warn", "info", "debug"];
+    if (!validLogLevels.includes(config.logLevel)) {
+      errors.push(
+        `driverDiscProcessing.logLevel は次のいずれかである必要があります: ${validLogLevels.join(
+          ", "
+        )}`
+      );
+    }
+  }
+
+  /**
    * 設定を更新
    */
   updateConfig(updates: Partial<ProcessingConfig>): void {
@@ -680,6 +756,12 @@ export class ConfigManager {
         `音動機リスト: ${this.config.weaponProcessing.weaponListPath}`
       );
       console.log(`音動機出力: ${this.config.weaponProcessing.outputPath}`);
+      console.log(
+        `ドライバーディスクリスト: ${this.config.driverDiscProcessing.discListPath}`
+      );
+      console.log(
+        `ドライバーディスク出力: ${this.config.driverDiscProcessing.outputPath}`
+      );
       console.log(`=======================\n`);
     }
   }
@@ -843,7 +925,18 @@ export class ConfigManager {
     report += `- データ検証: ${
       this.config.weaponProcessing.enableValidation ? "有効" : "無効"
     }\n`;
-    report += `- ログレベル: ${this.config.weaponProcessing.logLevel}\n`;
+    report += `- ログレベル: ${this.config.weaponProcessing.logLevel}\n\n`;
+
+    report += `## ドライバーディスク処理設定\n`;
+    report += `- ディスクリストパス: ${this.config.driverDiscProcessing.discListPath}\n`;
+    report += `- 出力パス: ${this.config.driverDiscProcessing.outputPath}\n`;
+    report += `- バッチサイズ: ${this.config.driverDiscProcessing.batchSize}\n`;
+    report += `- 遅延時間: ${this.config.driverDiscProcessing.delayMs}ms\n`;
+    report += `- 最大リトライ回数: ${this.config.driverDiscProcessing.maxRetries}\n`;
+    report += `- データ検証: ${
+      this.config.driverDiscProcessing.enableValidation ? "有効" : "無効"
+    }\n`;
+    report += `- ログレベル: ${this.config.driverDiscProcessing.logLevel}\n`;
 
     return report;
   }

@@ -382,4 +382,160 @@ describe("ProcessingConfig", () => {
       }).not.toThrow();
     });
   });
+
+  describe("WeaponProcessing Configuration", () => {
+    it("should have valid weaponProcessing defaults", () => {
+      expect(DEFAULT_CONFIG.weaponProcessing).toBeDefined();
+      expect(DEFAULT_CONFIG.weaponProcessing.weaponListPath).toBe(
+        "json/data/weapon-list.json"
+      );
+      expect(DEFAULT_CONFIG.weaponProcessing.outputPath).toBe(
+        "data/weapons.ts"
+      );
+      expect(DEFAULT_CONFIG.weaponProcessing.includeRarities).toEqual([
+        "A",
+        "S",
+      ]);
+      expect(DEFAULT_CONFIG.weaponProcessing.batchSize).toBe(10);
+      expect(DEFAULT_CONFIG.weaponProcessing.delayMs).toBe(1000);
+      expect(DEFAULT_CONFIG.weaponProcessing.maxRetries).toBe(3);
+      expect(DEFAULT_CONFIG.weaponProcessing.skipAgentValidation).toBe(false);
+      expect(DEFAULT_CONFIG.weaponProcessing.enableSkillExtraction).toBe(true);
+      expect(DEFAULT_CONFIG.weaponProcessing.enableValidation).toBe(true);
+      expect(DEFAULT_CONFIG.weaponProcessing.logLevel).toBe("info");
+    });
+
+    it("should provide getWeaponProcessingConfig method", () => {
+      const configManager = ConfigManager.getInstance();
+      const weaponProcessingConfig = configManager.getWeaponProcessingConfig();
+
+      expect(weaponProcessingConfig).toBeDefined();
+      expect(weaponProcessingConfig.weaponListPath).toBeDefined();
+      expect(weaponProcessingConfig.outputPath).toBeDefined();
+      expect(weaponProcessingConfig.includeRarities).toBeDefined();
+      expect(weaponProcessingConfig.batchSize).toBeGreaterThan(0);
+      expect(weaponProcessingConfig.delayMs).toBeGreaterThanOrEqual(0);
+      expect(weaponProcessingConfig.maxRetries).toBeGreaterThanOrEqual(0);
+    });
+
+    it("should include weaponProcessing in config report", () => {
+      const configManager = ConfigManager.getInstance();
+      const report = configManager.generateConfigReport();
+
+      expect(report).toContain("音動機処理設定");
+      expect(report).toContain("音動機リストパス:");
+      expect(report).toContain("出力パス:");
+      expect(report).toContain("処理対象レア度:");
+      expect(report).toContain("バッチサイズ:");
+      expect(report).toContain("遅延時間:");
+      expect(report).toContain("最大リトライ回数:");
+      expect(report).toContain("エージェント検証スキップ:");
+      expect(report).toContain("スキル情報抽出:");
+      expect(report).toContain("データ検証:");
+      expect(report).toContain("ログレベル:");
+    });
+  });
+
+  describe("DriverDiscProcessing Configuration", () => {
+    it("should have valid driverDiscProcessing defaults", () => {
+      expect(DEFAULT_CONFIG.driverDiscProcessing).toBeDefined();
+      expect(DEFAULT_CONFIG.driverDiscProcessing.discListPath).toBe(
+        "json/data/disc-list.json"
+      );
+      expect(DEFAULT_CONFIG.driverDiscProcessing.outputPath).toBe(
+        "data/driverDiscs.ts"
+      );
+      expect(DEFAULT_CONFIG.driverDiscProcessing.batchSize).toBe(5);
+      expect(DEFAULT_CONFIG.driverDiscProcessing.delayMs).toBe(1000);
+      expect(DEFAULT_CONFIG.driverDiscProcessing.maxRetries).toBe(3);
+      expect(DEFAULT_CONFIG.driverDiscProcessing.enableValidation).toBe(true);
+      expect(DEFAULT_CONFIG.driverDiscProcessing.logLevel).toBe("info");
+    });
+
+    it("should provide getDriverDiscProcessingConfig method", () => {
+      const configManager = ConfigManager.getInstance();
+      const driverDiscProcessingConfig =
+        configManager.getDriverDiscProcessingConfig();
+
+      expect(driverDiscProcessingConfig).toBeDefined();
+      expect(driverDiscProcessingConfig.discListPath).toBeDefined();
+      expect(driverDiscProcessingConfig.outputPath).toBeDefined();
+      expect(driverDiscProcessingConfig.batchSize).toBeGreaterThan(0);
+      expect(driverDiscProcessingConfig.delayMs).toBeGreaterThanOrEqual(0);
+      expect(driverDiscProcessingConfig.maxRetries).toBeGreaterThanOrEqual(0);
+      expect(driverDiscProcessingConfig.enableValidation).toBeDefined();
+      expect(driverDiscProcessingConfig.logLevel).toBeDefined();
+    });
+
+    it("should validate driverDiscProcessing configuration", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test valid configuration
+      expect(() => {
+        configManager.updateConfig({
+          driverDiscProcessing: {
+            discListPath: "json/data/disc-list.json",
+            outputPath: "data/driverDiscs.ts",
+            batchSize: 8,
+            delayMs: 1500,
+            maxRetries: 5,
+            enableValidation: false,
+            logLevel: "debug",
+          },
+        });
+      }).not.toThrow();
+    });
+
+    it("should include driverDiscProcessing in config report", () => {
+      const configManager = ConfigManager.getInstance();
+      const report = configManager.generateConfigReport();
+
+      expect(report).toContain("ドライバーディスク処理設定");
+      expect(report).toContain("ディスクリストパス:");
+      expect(report).toContain("出力パス:");
+      expect(report).toContain("バッチサイズ:");
+      expect(report).toContain("遅延時間:");
+      expect(report).toContain("最大リトライ回数:");
+      expect(report).toContain("データ検証:");
+      expect(report).toContain("ログレベル:");
+    });
+
+    it("should validate driverDiscProcessing range values", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test invalid ranges - should not throw but will log warnings
+      expect(() => {
+        configManager.updateConfig({
+          driverDiscProcessing: {
+            discListPath: "", // Empty path
+            outputPath: "", // Empty path
+            batchSize: 25, // Out of range (1-20)
+            delayMs: 50000, // Out of range (0-30000)
+            maxRetries: 15, // Out of range (0-10)
+            enableValidation: true,
+            logLevel: "invalid" as any, // Invalid log level
+          },
+        });
+      }).not.toThrow();
+    });
+
+    it("should validate driverDiscProcessing required fields", () => {
+      const configManager = ConfigManager.getInstance();
+
+      // Test empty required fields - should not throw but will log warnings
+      expect(() => {
+        configManager.updateConfig({
+          driverDiscProcessing: {
+            discListPath: "   ", // Whitespace only
+            outputPath: "   ", // Whitespace only
+            batchSize: 5,
+            delayMs: 1000,
+            maxRetries: 3,
+            enableValidation: true,
+            logLevel: "info",
+          },
+        });
+      }).not.toThrow();
+    });
+  });
 });
