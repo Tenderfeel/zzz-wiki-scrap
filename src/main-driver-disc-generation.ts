@@ -838,9 +838,11 @@ class DriverDiscDataPipeline {
     if (driverDiscs.length > 0) {
       report += `## 成功したドライバーディスク分析\n`;
 
-      // 特性別統計
+      // 特性別統計（配列形式に対応）
       const specialtyStats = driverDiscs.reduce((acc, driverDisc) => {
-        acc[driverDisc.specialty] = (acc[driverDisc.specialty] || 0) + 1;
+        driverDisc.specialty.forEach((specialty) => {
+          acc[specialty] = (acc[specialty] || 0) + 1;
+        });
         return acc;
       }, {} as Record<string, number>);
 

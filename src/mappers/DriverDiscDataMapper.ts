@@ -24,6 +24,30 @@ export class DriverDiscDataMapper extends DataMapper {
     命破: "rupture",
   };
 
+  // 効果テキストから特性へのマッピング
+  private static readonly EFFECT_SPECIALTY_MAPPING: Record<
+    string,
+    Specialty[]
+  > = {
+    エネルギー自動回復: ["support"],
+    会心率: ["attack"],
+    貫通率: ["attack", "support", "anomaly"],
+    異常マスタリー: ["anomaly"],
+    攻撃力: ["attack", "support", "anomaly"],
+    防御力: ["defense"],
+    炎属性ダメージ: ["attack", "anomaly", "stun"],
+    エーテル属性ダメージ: ["attack", "anomaly", "stun"],
+    電気属性ダメージ: ["attack", "anomaly", "stun"],
+    氷属性ダメージ: ["attack", "anomaly", "stun"],
+    物理属性ダメージ: ["attack", "anomaly", "stun"],
+    シールド生成量: ["defense"],
+    会心ダメージ: ["attack", "anomaly"],
+    異常掌握: ["anomaly", "support"],
+    "『追加攻撃』と『ダッシュ攻撃』": ["attack", "stun"],
+    HP: ["rupture"],
+    攻撃の与えるブレイク値: ["stun", "support"],
+  };
+
   constructor() {
     super();
   }
@@ -147,40 +171,65 @@ export class DriverDiscDataMapper extends DataMapper {
   }
 
   /**
-   * 4セット効果テキストから特性を抽出
+   * 4セット効果と2セット効果テキストから特性配列を抽出
+   * @param fourSetEffect 4セット効果のテキスト
+   * @param twoSetEffect 2セット効果のテキスト
+   * @returns 抽出された特性の配列（重複なし、ソート済み）
+   */
+  public extractSpecialties(
+    fourSetEffect: string,
+    twoSetEffect: string
+  ): Specialty[] {
+    try {
+      const specialties = new Set<Specialty>();
+
+      // 4セット効果から特性を抽出
+      if (fourSetEffect && typeof fourSetEffect === "string") {
+        const cleanFourSetText = this.cleanHtmlText(fourSetEffect);
+        const fourSetSpecialties =
+          this.extractSpecialtiesFromText(cleanFourSetText);
+        fourSetSpecialties.forEach((s) => specialties.add(s));
+      }
+
+      // 2セット効果から特性を抽出
+      if (twoSetEffect && typeof twoSetEffect === "string") {
+        const cleanTwoSetText = this.cleanHtmlText(twoSetEffect);
+        const twoSetSpecialties =
+          this.extractSpecialtiesFromText(cleanTwoSetText);
+        twoSetSpecialties.forEach((s) => specialties.add(s));
+      }
+
+      // 特性が1つも検出されなかった場合は空配列を返す
+      const result = Array.from(specialties).sort();
+
+      logger.debug("特性抽出成功", {
+        fourSetEffectLength: fourSetEffect?.length || 0,
+        twoSetEffectLength: twoSetEffect?.length || 0,
+        extractedSpecialties: result,
+        count: result.length,
+      });
+
+      return result;
+    } catch (error) {
+      logger.error("特性の抽出に失敗しました", {
+        fourSetEffect: fourSetEffect?.substring(0, 100) + "...",
+        twoSetEffect: twoSetEffect?.substring(0, 100) + "...",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // エラー時は空配列を返す
+      return [];
+    }
+  }
+
+  /**
+   * 後方互換性のための旧メソッド（非推奨）
+   * @deprecated extractSpecialties を使用してください
    * @param fourSetEffect 4セット効果のテキスト
    * @returns 抽出された特性
    */
   public extractSpecialty(fourSetEffect: string): Specialty {
-    try {
-      if (!fourSetEffect || typeof fourSetEffect !== "string") {
-        logger.warn(
-          "4セット効果テキストが無効なため、デフォルト特性を使用します"
-        );
-        return "attack"; // デフォルト値
-      }
-
-      // HTMLタグを除去してクリーンなテキストを取得
-      const cleanText = this.cleanHtmlText(fourSetEffect);
-
-      // 特性パターンをマッチング
-      const specialty = this.mapSpecialtyFromText(cleanText);
-
-      logger.debug("特性抽出成功", {
-        fourSetEffectLength: fourSetEffect.length,
-        cleanTextLength: cleanText.length,
-        extractedSpecialty: specialty,
-      });
-
-      return specialty;
-    } catch (error) {
-      logger.error("特性の抽出に失敗しました", {
-        fourSetEffect: fourSetEffect?.substring(0, 100) + "...",
-        error: error instanceof Error ? error.message : String(error),
-      });
-      // エラー時はデフォルト値を返す
-      return "attack";
-    }
+    const specialties = this.extractSpecialties(fourSetEffect, "");
+    return specialties.length > 0 ? specialties[0] : "attack";
   }
 
   /**
@@ -495,7 +544,50 @@ export class DriverDiscDataMapper extends DataMapper {
   }
 
   /**
-   * 4セット効果テキストから特性をマッピング
+   * テキストから特性配列を抽出するプライベートメソッド
+   * 特性キーワードと効果テキストマッピングの両方を適用
+   * @param text クリーンなテキスト
+   * @returns 抽出された特性の配列
+   */
+  private extractSpecialtiesFromText(text: string): Specialty[] {
+    const specialties = new Set<Specialty>();
+
+    if (!text || text.trim() === "") {
+      return [];
+    }
+
+    // 1. 特性キーワードの検出（[撃破]などのパターン）
+    for (const [japaneseSpecialty, englishSpecialty] of Object.entries(
+      DriverDiscDataMapper.SPECIALTY_PATTERNS
+    )) {
+      // [撃破]のような形式でチェック
+      if (text.includes(`[${japaneseSpecialty}]`)) {
+        specialties.add(englishSpecialty);
+        logger.debug("特性キーワード検出", {
+          keyword: `[${japaneseSpecialty}]`,
+          specialty: englishSpecialty,
+        });
+      }
+    }
+
+    // 2. 効果テキストマッピングの適用
+    for (const [effectText, mappedSpecialties] of Object.entries(
+      DriverDiscDataMapper.EFFECT_SPECIALTY_MAPPING
+    )) {
+      if (text.includes(effectText)) {
+        mappedSpecialties.forEach((s) => specialties.add(s));
+        logger.debug("効果テキストマッチ", {
+          effectText,
+          mappedSpecialties,
+        });
+      }
+    }
+
+    return Array.from(specialties);
+  }
+
+  /**
+   * 4セット効果テキストから特性をマッピング（後方互換性のため保持）
    * @param text 4セット効果のクリーンなテキスト
    * @returns マッピングされた特性
    */

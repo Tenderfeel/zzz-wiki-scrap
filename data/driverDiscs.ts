@@ -13,7 +13,7 @@ export default [
       en: "攻撃の与えるブレイク値+6%",
     },
     releaseVersion: 2,
-    specialty: "stun",
+    specialty: ["stun"],
   },
   {
     id: 789,
@@ -24,7 +24,7 @@ export default [
     },
     twoSetEffect: { ja: "HP+10%", en: "HP+10%" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 625,
@@ -38,7 +38,7 @@ export default [
       en: "『追加攻撃』と『ダッシュ攻撃』の与ダメージ+15%。",
     },
     releaseVersion: 1.6,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 624,
@@ -49,7 +49,7 @@ export default [
     },
     twoSetEffect: { ja: "異常掌握+8%", en: "異常掌握+8%" },
     releaseVersion: 1.6,
-    specialty: "anomaly",
+    specialty: ["anomaly"],
   },
   {
     id: 547,
@@ -60,7 +60,7 @@ export default [
     },
     twoSetEffect: { ja: "会心ダメージ+16%。", en: "会心ダメージ+16%。" },
     releaseVersion: 1.4,
-    specialty: "anomaly",
+    specialty: ["anomaly"],
   },
   {
     id: 546,
@@ -71,7 +71,7 @@ export default [
     },
     twoSetEffect: { ja: "攻撃力+10%。", en: "攻撃力+10%。" },
     releaseVersion: 1.4,
-    specialty: "support",
+    specialty: ["support"],
   },
   {
     id: 392,
@@ -82,7 +82,7 @@ export default [
     },
     twoSetEffect: { ja: "異常マスタリー+30Pt。", en: "異常マスタリー+30Pt。" },
     releaseVersion: 1.2,
-    specialty: "support",
+    specialty: ["support"],
   },
   {
     id: 391,
@@ -93,7 +93,7 @@ export default [
     },
     twoSetEffect: { ja: "シールド生成量+15%。", en: "シールド生成量+15%。" },
     releaseVersion: 1.2,
-    specialty: "support",
+    specialty: ["support"],
   },
   {
     id: 137,
@@ -107,7 +107,7 @@ export default [
       en: "物理属性ダメージ+10%。",
     },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 136,
@@ -118,7 +118,7 @@ export default [
     },
     twoSetEffect: { ja: "氷属性ダメージ+10%。", en: "氷属性ダメージ+10%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 135,
@@ -132,7 +132,7 @@ export default [
       en: "電気属性ダメージ+10%。",
     },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 134,
@@ -146,7 +146,7 @@ export default [
       en: "エーテル属性ダメージ+10%。",
     },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 133,
@@ -157,7 +157,7 @@ export default [
     },
     twoSetEffect: { ja: "炎属性ダメージ+10%。", en: "炎属性ダメージ+10%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 132,
@@ -168,7 +168,7 @@ export default [
     },
     twoSetEffect: { ja: "防御力+16%。", en: "防御力+16%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 131,
@@ -179,7 +179,7 @@ export default [
     },
     twoSetEffect: { ja: "攻撃力+10%。", en: "攻撃力+10%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 130,
@@ -190,7 +190,7 @@ export default [
     },
     twoSetEffect: { ja: "異常マスタリー+30Pt。", en: "異常マスタリー+30Pt。" },
     releaseVersion: 1,
-    specialty: "anomaly",
+    specialty: ["anomaly"],
   },
   {
     id: 129,
@@ -201,7 +201,7 @@ export default [
     },
     twoSetEffect: { ja: "衝撃力+6%。", en: "衝撃力+6%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 128,
@@ -212,7 +212,7 @@ export default [
     },
     twoSetEffect: { ja: "貫通率+8%。", en: "貫通率+8%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 127,
@@ -226,7 +226,7 @@ export default [
     },
     twoSetEffect: { ja: "会心率+8%。", en: "会心率+8%。" },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
   {
     id: 5,
@@ -240,6 +240,6 @@ export default [
       en: "エネルギー自動回復+20%。",
     },
     releaseVersion: 1,
-    specialty: "attack",
+    specialty: ["attack"],
   },
 ] as DriverDisc[];

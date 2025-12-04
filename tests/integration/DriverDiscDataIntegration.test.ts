@@ -166,7 +166,9 @@ describe("DriverDisc Data Integration Tests", () => {
       expect(driverDisc1).toBeDefined();
       expect(driverDisc1!.name.ja).toBe("テストディスク1");
       expect(driverDisc1!.name.en).toBe("Test Disc 1");
-      expect(driverDisc1!.specialty).toBe("attack");
+      expect(driverDisc1!.specialty).toEqual(
+        expect.arrayContaining(["attack"])
+      );
 
       expect(driverDisc2).toBeDefined();
       expect(driverDisc2!.name.ja).toBe("テストディスク2");
@@ -291,7 +293,7 @@ describe("DriverDisc Data Integration Tests", () => {
       expect(driverDisc.name.ja).toBe("リアルAPIテストディスク");
       expect(driverDisc.fourSetEffect.ja).toBe("攻撃力が15%アップする。"); // HTMLタグが除去されている
       expect(driverDisc.twoSetEffect.ja).toBe("攻撃力が10%アップする。");
-      expect(driverDisc.specialty).toBe("attack"); // 4セット効果から推定
+      expect(driverDisc.specialty).toEqual(expect.arrayContaining(["attack"])); // 4セット効果から推定
     }, 30000);
   });
 

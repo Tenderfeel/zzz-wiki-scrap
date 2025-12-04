@@ -203,6 +203,32 @@ ${driverDiscArrayCode}
         errors.push("specialty フィールドが存在しません");
       }
 
+      // specialty配列の検証
+      if (driverDisc.specialty) {
+        if (!Array.isArray(driverDisc.specialty)) {
+          errors.push("specialty フィールドが配列ではありません");
+        } else {
+          if (driverDisc.specialty.length === 0) {
+            errors.push("specialty 配列が空です");
+          }
+
+          // 各要素が有効な特性であることを確認
+          const validSpecialties = [
+            "attack",
+            "stun",
+            "anomaly",
+            "support",
+            "defense",
+            "rupture",
+          ];
+          for (const specialty of driverDisc.specialty) {
+            if (!validSpecialties.includes(specialty)) {
+              errors.push(`specialty "${specialty}" は有効な値ではありません`);
+            }
+          }
+        }
+      }
+
       // 多言語オブジェクトの完全性確認
       if (driverDisc.name) {
         if (!driverDisc.name.ja || driverDisc.name.ja.trim() === "") {
@@ -241,24 +267,6 @@ ${driverDiscArrayCode}
         ) {
           errors.push("twoSetEffect.en が空または存在しません");
         }
-      }
-
-      // 列挙値の妥当性確認
-      const validSpecialties = [
-        "attack",
-        "stun",
-        "anomaly",
-        "support",
-        "defense",
-        "rupture",
-      ];
-      if (
-        driverDisc.specialty &&
-        !validSpecialties.includes(driverDisc.specialty)
-      ) {
-        errors.push(
-          `specialty "${driverDisc.specialty}" は有効な値ではありません`
-        );
       }
 
       const result = {
@@ -404,7 +412,7 @@ ${indent}  twoSetEffect: { ja: "${this.escapeString(
       driverDisc.twoSetEffect.ja
     )}", en: "${this.escapeString(driverDisc.twoSetEffect.en)}" },
 ${indent}  releaseVersion: ${driverDisc.releaseVersion},
-${indent}  specialty: "${driverDisc.specialty}",
+${indent}  specialty: [${driverDisc.specialty.map((s) => `"${s}"`).join(", ")}],
 ${indent}}`;
   }
 

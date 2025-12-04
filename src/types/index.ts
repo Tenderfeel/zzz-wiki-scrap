@@ -413,7 +413,7 @@ export type DriverDisc = {
   fourSetEffect: { [key in Lang]: string }; // 4セット効果
   twoSetEffect: { [key in Lang]: string }; // 2セット効果
   releaseVersion: number;
-  specialty: Specialty; // 特性（4セット効果に含まれている特性を設定）
+  specialty: Specialty[]; // 特性配列（4セット効果と2セット効果から抽出された特性）
 };
 
 // ドライバーディスクエントリー（disc-list.jsonから抽出される情報）
@@ -438,7 +438,7 @@ export interface SetEffectInfo {
 export interface ProcessedDriverDiscData {
   basicInfo: BasicDriverDiscInfo;
   setEffectInfo: SetEffectInfo;
-  specialty: Specialty;
+  specialty: Specialty[];
 }
 
 // ドライバーディスク処理設定

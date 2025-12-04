@@ -23,7 +23,7 @@ describe("DriverDiscGeneratorクラス", () => {
           fourSetEffect: "4セット効果のテスト",
           twoSetEffect: "2セット効果のテスト",
         },
-        specialty: "attack",
+        specialty: ["attack"],
       };
 
       // Act
@@ -45,7 +45,7 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "2セット効果のテスト", // フォールバック
         },
         releaseVersion: 1.0,
-        specialty: "attack",
+        specialty: ["attack"],
       });
     });
 
@@ -61,7 +61,7 @@ describe("DriverDiscGeneratorクラス", () => {
           fourSetEffect: "4セット効果のテスト",
           twoSetEffect: "2セット効果のテスト",
         },
-        specialty: "stun",
+        specialty: ["stun"],
       };
 
       const enData: ProcessedDriverDiscData = {
@@ -74,7 +74,7 @@ describe("DriverDiscGeneratorクラス", () => {
           fourSetEffect: "Test 4-set effect",
           twoSetEffect: "Test 2-set effect",
         },
-        specialty: "stun",
+        specialty: ["stun"],
       };
 
       // Act
@@ -96,7 +96,7 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "Test 2-set effect",
         },
         releaseVersion: 1.1,
-        specialty: "stun",
+        specialty: ["stun"],
       });
     });
 
@@ -112,7 +112,7 @@ describe("DriverDiscGeneratorクラス", () => {
           fourSetEffect: "4セット効果のテスト",
           twoSetEffect: "2セット効果のテスト",
         },
-        specialty: "anomaly",
+        specialty: ["anomaly"],
       };
 
       // Act
@@ -140,7 +140,7 @@ describe("DriverDiscGeneratorクラス", () => {
           fourSetEffect: "4セット効果のテスト",
           twoSetEffect: "2セット効果のテスト",
         },
-        specialty: "attack",
+        specialty: ["attack"],
       };
 
       // Act & Assert
@@ -168,7 +168,7 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "Test 2-set effect",
         },
         releaseVersion: 1.0,
-        specialty: "attack",
+        specialty: ["attack"],
       };
 
       // Act
@@ -196,7 +196,7 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "Test 2-set effect",
         },
         releaseVersion: 1.0,
-        specialty: "attack",
+        specialty: ["attack"],
       };
 
       // Act
@@ -226,7 +226,7 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "Test 2-set effect",
         },
         releaseVersion: 1.0,
-        specialty: "attack",
+        specialty: ["attack"],
       };
 
       // Act
@@ -237,7 +237,7 @@ describe("DriverDiscGeneratorクラス", () => {
       expect(result.errors).toContain("name.ja が空または存在しません");
     });
 
-    test("無効な特性の場合検証が失敗すること", () => {
+    test("specialtyが配列でない場合検証が失敗すること", () => {
       // Arrange
       const invalidDriverDisc: DriverDisc = {
         id: 123,
@@ -254,7 +254,65 @@ describe("DriverDiscGeneratorクラス", () => {
           en: "Test 2-set effect",
         },
         releaseVersion: 1.0,
-        specialty: "invalid" as any,
+        specialty: "attack" as any,
+      };
+
+      // Act
+      const result = generator.validateDriverDisc(invalidDriverDisc);
+
+      // Assert
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "specialty フィールドが配列ではありません"
+      );
+    });
+
+    test("specialty配列が空の場合検証が失敗すること", () => {
+      // Arrange
+      const invalidDriverDisc: DriverDisc = {
+        id: 123,
+        name: {
+          ja: "テストドライバーディスク",
+          en: "Test Driver Disc",
+        },
+        fourSetEffect: {
+          ja: "4セット効果のテスト",
+          en: "Test 4-set effect",
+        },
+        twoSetEffect: {
+          ja: "2セット効果のテスト",
+          en: "Test 2-set effect",
+        },
+        releaseVersion: 1.0,
+        specialty: [],
+      };
+
+      // Act
+      const result = generator.validateDriverDisc(invalidDriverDisc);
+
+      // Assert
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("specialty 配列が空です");
+    });
+
+    test("無効な特性値が含まれる場合検証が失敗すること", () => {
+      // Arrange
+      const invalidDriverDisc: DriverDisc = {
+        id: 123,
+        name: {
+          ja: "テストドライバーディスク",
+          en: "Test Driver Disc",
+        },
+        fourSetEffect: {
+          ja: "4セット効果のテスト",
+          en: "Test 4-set effect",
+        },
+        twoSetEffect: {
+          ja: "2セット効果のテスト",
+          en: "Test 2-set effect",
+        },
+        releaseVersion: 1.0,
+        specialty: ["attack", "invalid" as any],
       };
 
       // Act
@@ -265,6 +323,34 @@ describe("DriverDiscGeneratorクラス", () => {
       expect(result.errors).toContain(
         'specialty "invalid" は有効な値ではありません'
       );
+    });
+
+    test("複数の有効な特性を持つ場合検証が成功すること", () => {
+      // Arrange
+      const validDriverDisc: DriverDisc = {
+        id: 123,
+        name: {
+          ja: "テストドライバーディスク",
+          en: "Test Driver Disc",
+        },
+        fourSetEffect: {
+          ja: "4セット効果のテスト",
+          en: "Test 4-set effect",
+        },
+        twoSetEffect: {
+          ja: "2セット効果のテスト",
+          en: "Test 2-set effect",
+        },
+        releaseVersion: 1.0,
+        specialty: ["attack", "stun", "anomaly"],
+      };
+
+      // Act
+      const result = generator.validateDriverDisc(validDriverDisc);
+
+      // Assert
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
   });
 
@@ -303,7 +389,7 @@ describe("DriverDiscGeneratorクラス", () => {
             en: "Test 2-set effect 1",
           },
           releaseVersion: 1.0,
-          specialty: "attack",
+          specialty: ["attack"],
         },
         {
           id: 456,
@@ -320,7 +406,7 @@ describe("DriverDiscGeneratorクラス", () => {
             en: "Test 2-set effect 2",
           },
           releaseVersion: 1.1,
-          specialty: "stun",
+          specialty: ["stun"],
         },
       ];
 
@@ -339,8 +425,8 @@ describe("DriverDiscGeneratorクラス", () => {
         expect(fileContent).toContain("] as DriverDisc[];");
         expect(fileContent).toContain("テストドライバーディスク1");
         expect(fileContent).toContain("Test Driver Disc 1");
-        expect(fileContent).toContain('specialty: "attack"');
-        expect(fileContent).toContain('specialty: "stun"');
+        expect(fileContent).toContain('specialty: ["attack"]');
+        expect(fileContent).toContain('specialty: ["stun"]');
       } finally {
         cleanup();
       }
@@ -385,7 +471,7 @@ describe("DriverDiscGeneratorクラス", () => {
             en: "Test 2-set effect",
           },
           releaseVersion: 1.0,
-          specialty: "attack",
+          specialty: ["attack"],
         },
       ];
 

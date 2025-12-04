@@ -152,6 +152,34 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - yidhari:{ja:"イドリー", en: "Yidhari" }
 ```
 
+## ディスク用マッピング
+
+### specialty の判定
+
+- fourSetEffect に specialty テキストが含まれている
+- fourSetEffect か twoSetEffect に 効果に対応する specialty テキストが含まれている
+
+#### 効果に対応する specialty
+
+- エネルギー自動回復: support
+- 会心率: attack
+- 貫通率: attack, support, anomaly
+- 異常マスタリー: anomaly
+- 攻撃力: attack, support, anomaly
+- 防御力: defense
+- 炎属性ダメージ: attack, anomaly, stun
+- エーテル属性ダメージ: attack, anomaly, stun
+- 電気属性ダメージ: attack, anomaly, stun
+- 氷属性ダメージ: attack, anomaly, stun
+- 物理属性ダメージ: attack, anomaly, stun
+- シールド生成量: defense
+- 異常マスタリー: anomaly, support
+- 会心ダメージ: attack, anomaly
+- 異常掌握: anomaly, support
+- 『追加攻撃』と『ダッシュ攻撃』: attack, stun
+- HP: rupture
+- 攻撃の与えるブレイク値: stun, support
+
 ## 作成するデータ
 
 ### 1.characters.ts

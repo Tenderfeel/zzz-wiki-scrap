@@ -7,7 +7,9 @@ import {
   Rarity,
   Attributes,
   Lang,
+  DriverDisc,
 } from "../../src/types";
+import driverDiscs from "../../data/driverDiscs";
 
 describe("型定義の互換性テスト", () => {
   describe("Character型の互換性", () => {
@@ -443,5 +445,185 @@ describe("型定義の互換性テスト", () => {
       expect(parsedCharacter.assistType).toBeUndefined();
       expect(parsedCharacter.id).toBe("json-test-no-assist");
     });
+  });
+});
+
+describe("DriverDisc specialty配列形式の互換性", () => {
+  it("DriverDisc型のspecialtyフィールドが配列型であることを確認", () => {
+    const driverDisc: DriverDisc = {
+      id: 1,
+      name: { ja: "テストディスク", en: "Test Disc" },
+      fourSetEffect: { ja: "4セット効果", en: "4-set effect" },
+      twoSetEffect: { ja: "2セット効果", en: "2-set effect" },
+      releaseVersion: 1.0,
+      specialty: ["attack", "stun"],
+    };
+
+    expect(Array.isArray(driverDisc.specialty)).toBe(true);
+    expect(driverDisc.specialty).toHaveLength(2);
+    expect(driverDisc.specialty).toContain("attack");
+    expect(driverDisc.specialty).toContain("stun");
+  });
+
+  it("単一の特性を持つドライバディスクが正常に動作することを確認", () => {
+    const singleSpecialtyDisc: DriverDisc = {
+      id: 2,
+      name: { ja: "単一特性ディスク", en: "Single Specialty Disc" },
+      fourSetEffect: { ja: "効果", en: "Effect" },
+      twoSetEffect: { ja: "効果", en: "Effect" },
+      releaseVersion: 1.0,
+      specialty: ["support"],
+    };
+
+    expect(Array.isArray(singleSpecialtyDisc.specialty)).toBe(true);
+    expect(singleSpecialtyDisc.specialty).toHaveLength(1);
+    expect(singleSpecialtyDisc.specialty[0]).toBe("support");
+  });
+
+  it("複数の特性を持つドライバディスクが正常に動作することを確認", () => {
+    const multiSpecialtyDisc: DriverDisc = {
+      id: 3,
+      name: { ja: "複数特性ディスク", en: "Multi Specialty Disc" },
+      fourSetEffect: { ja: "効果", en: "Effect" },
+      twoSetEffect: { ja: "効果", en: "Effect" },
+      releaseVersion: 1.0,
+      specialty: ["attack", "anomaly", "stun"],
+    };
+
+    expect(Array.isArray(multiSpecialtyDisc.specialty)).toBe(true);
+    expect(multiSpecialtyDisc.specialty).toHaveLength(3);
+    expect(multiSpecialtyDisc.specialty).toContain("attack");
+    expect(multiSpecialtyDisc.specialty).toContain("anomaly");
+    expect(multiSpecialtyDisc.specialty).toContain("stun");
+  });
+
+  it("全ての有効なSpecialty値が配列に含まれることを確認", () => {
+    const allSpecialtiesDisc: DriverDisc = {
+      id: 4,
+      name: { ja: "全特性ディスク", en: "All Specialties Disc" },
+      fourSetEffect: { ja: "効果", en: "Effect" },
+      twoSetEffect: { ja: "効果", en: "Effect" },
+      releaseVersion: 1.0,
+      specialty: ["attack", "stun", "anomaly", "support", "defense", "rupture"],
+    };
+
+    const validSpecialties: Specialty[] = [
+      "attack",
+      "stun",
+      "anomaly",
+      "support",
+      "defense",
+      "rupture",
+    ];
+
+    expect(Array.isArray(allSpecialtiesDisc.specialty)).toBe(true);
+    expect(allSpecialtiesDisc.specialty).toHaveLength(6);
+
+    for (const specialty of validSpecialties) {
+      expect(allSpecialtiesDisc.specialty).toContain(specialty);
+    }
+  });
+
+  it("実際のドライバディスクデータが全て配列形式のspecialtyを持つことを確認", () => {
+    expect(driverDiscs).toBeDefined();
+    expect(Array.isArray(driverDiscs)).toBe(true);
+    expect(driverDiscs.length).toBeGreaterThan(0);
+
+    for (const disc of driverDiscs) {
+      // specialtyフィールドが配列であることを確認
+      expect(Array.isArray(disc.specialty)).toBe(true);
+
+      // 配列が空でないことを確認
+      expect(disc.specialty.length).toBeGreaterThan(0);
+
+      // 各要素が有効なSpecialty値であることを確認
+      const validSpecialties: Specialty[] = [
+        "attack",
+        "stun",
+        "anomaly",
+        "support",
+        "defense",
+        "rupture",
+      ];
+
+      for (const specialty of disc.specialty) {
+        expect(validSpecialties).toContain(specialty);
+      }
+    }
+  });
+
+  it("ドライバディスクデータのTypeScriptコンパイル互換性を確認", () => {
+    // TypeScriptコンパイラがエラーを報告しないことを確認
+    const discs: DriverDisc[] = driverDiscs;
+
+    expect(discs).toBeDefined();
+    expect(discs.length).toBe(driverDiscs.length);
+
+    // 各ドライバディスクがDriverDisc型に準拠していることを確認
+    for (const disc of discs) {
+      expect(disc).toHaveProperty("id");
+      expect(disc).toHaveProperty("name");
+      expect(disc).toHaveProperty("fourSetEffect");
+      expect(disc).toHaveProperty("twoSetEffect");
+      expect(disc).toHaveProperty("releaseVersion");
+      expect(disc).toHaveProperty("specialty");
+
+      expect(typeof disc.id).toBe("number");
+      expect(typeof disc.name).toBe("object");
+      expect(typeof disc.fourSetEffect).toBe("object");
+      expect(typeof disc.twoSetEffect).toBe("object");
+      expect(typeof disc.releaseVersion).toBe("number");
+      expect(Array.isArray(disc.specialty)).toBe(true);
+    }
+  });
+
+  it("specialty配列の操作が正常に動作することを確認", () => {
+    const disc: DriverDisc = {
+      id: 5,
+      name: { ja: "操作テストディスク", en: "Operation Test Disc" },
+      fourSetEffect: { ja: "効果", en: "Effect" },
+      twoSetEffect: { ja: "効果", en: "Effect" },
+      releaseVersion: 1.0,
+      specialty: ["attack", "support", "anomaly"],
+    };
+
+    // filter操作
+    const attackSpecialties = disc.specialty.filter((s) => s === "attack");
+    expect(attackSpecialties).toHaveLength(1);
+    expect(attackSpecialties[0]).toBe("attack");
+
+    // map操作
+    const specialtyNames = disc.specialty.map((s) => s.toUpperCase());
+    expect(specialtyNames).toContain("ATTACK");
+    expect(specialtyNames).toContain("SUPPORT");
+    expect(specialtyNames).toContain("ANOMALY");
+
+    // includes操作
+    expect(disc.specialty.includes("attack")).toBe(true);
+    expect(disc.specialty.includes("defense")).toBe(false);
+
+    // forEach操作
+    let count = 0;
+    disc.specialty.forEach(() => count++);
+    expect(count).toBe(3);
+  });
+
+  it("JSONシリアライゼーションでspecialty配列が正常に処理されることを確認", () => {
+    const disc: DriverDisc = {
+      id: 6,
+      name: { ja: "JSONテストディスク", en: "JSON Test Disc" },
+      fourSetEffect: { ja: "効果", en: "Effect" },
+      twoSetEffect: { ja: "効果", en: "Effect" },
+      releaseVersion: 1.0,
+      specialty: ["stun", "support"],
+    };
+
+    const jsonString = JSON.stringify(disc);
+    const parsedDisc = JSON.parse(jsonString) as DriverDisc;
+
+    expect(Array.isArray(parsedDisc.specialty)).toBe(true);
+    expect(parsedDisc.specialty).toHaveLength(2);
+    expect(parsedDisc.specialty).toContain("stun");
+    expect(parsedDisc.specialty).toContain("support");
   });
 });

@@ -75,12 +75,16 @@ export class DriverDiscDataProcessor extends DataProcessor {
         twoSetEffectLength: setEffectInfo.twoSetEffect.length,
       });
 
-      // 4セット効果から特性を判定
-      const specialty = this.determineSpecialty(setEffectInfo.fourSetEffect);
+      // 4セット効果と2セット効果から特性配列を判定
+      const specialty = this.determineSpecialties(
+        setEffectInfo.fourSetEffect,
+        setEffectInfo.twoSetEffect
+      );
 
       logger.debug("特性判定完了", {
         discId,
         specialty,
+        specialtyCount: specialty.length,
         fourSetEffectPreview: setEffectInfo.fourSetEffect.substring(0, 100),
       });
 
@@ -290,37 +294,47 @@ export class DriverDiscDataProcessor extends DataProcessor {
   }
 
   /**
-   * 4セット効果テキストから特性を判定
+   * 4セット効果と2セット効果テキストから特性配列を判定
    * @param fourSetEffect 4セット効果テキスト
-   * @returns 判定された特性
+   * @param twoSetEffect 2セット効果テキスト
+   * @returns 判定された特性配列
    */
-  private determineSpecialty(fourSetEffect: string): Specialty {
+  private determineSpecialties(
+    fourSetEffect: string,
+    twoSetEffect: string
+  ): Specialty[] {
     try {
       logger.debug("特性判定開始", {
         fourSetEffectLength: fourSetEffect.length,
+        twoSetEffectLength: twoSetEffect.length,
         fourSetEffectPreview: fourSetEffect.substring(0, 100),
+        twoSetEffectPreview: twoSetEffect.substring(0, 100),
       });
 
-      const specialty = this.dataMapper.extractSpecialty(fourSetEffect);
+      const specialties = this.dataMapper.extractSpecialties(
+        fourSetEffect,
+        twoSetEffect
+      );
 
       logger.debug("特性判定成功", {
-        specialty,
+        specialties,
+        specialtyCount: specialties.length,
         fourSetEffectPreview: fourSetEffect.substring(0, 100),
       });
 
-      return specialty;
+      return specialties;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
       logger.warn("特性判定中にエラーが発生、デフォルト特性を使用", {
         error: errorMessage,
-        defaultSpecialty: "attack",
+        defaultSpecialties: ["attack"],
         fourSetEffectPreview: fourSetEffect?.substring(0, 100),
       });
 
       // 特性判定の失敗は致命的ではないため、デフォルト値を返す
-      return "attack";
+      return ["attack"];
     }
   }
 
