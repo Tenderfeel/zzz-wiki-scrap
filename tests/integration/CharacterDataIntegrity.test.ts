@@ -154,6 +154,7 @@ describe("キャラクターデータの整合性テスト", () => {
         "support",
         "defense",
         "rupture",
+        "armorer",
       ];
 
       const invalidSpecialties = characters.filter(

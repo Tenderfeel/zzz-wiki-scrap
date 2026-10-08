@@ -295,6 +295,7 @@ export class AllCharactersGenerator {
       "support",
       "defense",
       "rupture",
+      "armorer",
     ];
     if (
       character.specialty &&

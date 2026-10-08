@@ -516,6 +516,7 @@ describe("DriverDisc specialty配列形式の互換性", () => {
       "support",
       "defense",
       "rupture",
+      "armorer",
     ];
 
     expect(Array.isArray(allSpecialtiesDisc.specialty)).toBe(true);
@@ -546,6 +547,7 @@ describe("DriverDisc specialty配列形式の互換性", () => {
         "support",
         "defense",
         "rupture",
+        "armorer",
       ];
 
       for (const specialty of disc.specialty) {

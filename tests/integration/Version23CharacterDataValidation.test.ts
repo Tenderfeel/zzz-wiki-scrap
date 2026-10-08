@@ -94,6 +94,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
             "support",
             "defense",
             "rupture",
+            "armorer",
           ];
           expect(validSpecialties).toContain(character.specialty);
         }

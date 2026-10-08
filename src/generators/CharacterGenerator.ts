@@ -470,6 +470,7 @@ export class CharacterGenerator {
       "support",
       "defense",
       "rupture",
+      "armorer",
     ];
     if (
       character.specialty &&
@@ -611,6 +612,7 @@ export class CharacterGenerator {
                 "support",
                 "defense",
                 "rupture",
+                "armorer",
               ];
               if (!validSpecialties.includes(character.specialty)) {
                 warnings.push(

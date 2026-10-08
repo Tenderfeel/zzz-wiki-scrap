@@ -24,7 +24,7 @@ export class DriverDiscGenerator {
   generateDriverDisc(
     jaData: ProcessedDriverDiscData,
     enData: ProcessedDriverDiscData | null,
-    discId: string
+    discId: string,
   ): DriverDisc {
     try {
       logger.debug("ドライバーディスクオブジェクト生成を開始", { discId });
@@ -76,7 +76,7 @@ export class DriverDiscGenerator {
       }
       throw new ValidationError(
         "DriverDiscオブジェクトの生成に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -88,13 +88,13 @@ export class DriverDiscGenerator {
    */
   generateDriverDiscsFile(
     driverDiscs: DriverDisc[],
-    outputPath: string = "data/driverDiscs.ts"
+    outputPath: string = "data/driverDiscs.ts",
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         if (!driverDiscs || !Array.isArray(driverDiscs)) {
           throw new ValidationError(
-            "出力するDriverDiscオブジェクト配列が存在しません"
+            "出力するDriverDiscオブジェクト配列が存在しません",
           );
         }
 
@@ -109,7 +109,7 @@ export class DriverDiscGenerator {
             throw new ValidationError(
               `DriverDiscオブジェクトの検証に失敗しました (ID: ${
                 driverDisc.id
-              }): ${validationResult.errors.join(", ")}`
+              }): ${validationResult.errors.join(", ")}`,
             );
           }
         }
@@ -146,7 +146,7 @@ ${driverDiscArrayCode}
         } catch (error) {
           throw new ParsingError(
             `ファイル "${outputPath}" の書き込みに失敗しました`,
-            error as Error
+            error as Error,
           );
         }
       } catch (error) {
@@ -160,7 +160,7 @@ ${driverDiscArrayCode}
           reject(error);
         } else {
           reject(
-            new ParsingError("ファイル出力に失敗しました", error as Error)
+            new ParsingError("ファイル出力に失敗しました", error as Error),
           );
         }
       }
@@ -220,6 +220,7 @@ ${driverDiscArrayCode}
             "support",
             "defense",
             "rupture",
+            "armorer",
           ];
           for (const specialty of driverDisc.specialty) {
             if (!validSpecialties.includes(specialty)) {
@@ -322,7 +323,7 @@ ${driverDiscArrayCode}
    */
   private createMultiLanguageName(
     jaData: ProcessedDriverDiscData,
-    enData: ProcessedDriverDiscData | null
+    enData: ProcessedDriverDiscData | null,
   ): { [key in Lang]: string } {
     try {
       const jaName = jaData.basicInfo.name;
@@ -345,7 +346,7 @@ ${driverDiscArrayCode}
    */
   private createMultiLanguageSetEffect(
     jaData: ProcessedDriverDiscData,
-    enData: ProcessedDriverDiscData | null
+    enData: ProcessedDriverDiscData | null,
   ): {
     fourSetEffect: { [key in Lang]: string };
     twoSetEffect: { [key in Lang]: string };
@@ -403,13 +404,13 @@ ${driverDiscArrayCode}
     return `${indent}{
 ${indent}  id: ${driverDisc.id},
 ${indent}  name: { ja: "${this.escapeString(
-      driverDisc.name.ja
+      driverDisc.name.ja,
     )}", en: "${this.escapeString(driverDisc.name.en)}" },
 ${indent}  fourSetEffect: { ja: "${this.escapeString(
-      driverDisc.fourSetEffect.ja
+      driverDisc.fourSetEffect.ja,
     )}", en: "${this.escapeString(driverDisc.fourSetEffect.en)}" },
 ${indent}  twoSetEffect: { ja: "${this.escapeString(
-      driverDisc.twoSetEffect.ja
+      driverDisc.twoSetEffect.ja,
     )}", en: "${this.escapeString(driverDisc.twoSetEffect.en)}" },
 ${indent}  releaseVersion: ${driverDisc.releaseVersion},
 ${indent}  specialty: [${driverDisc.specialty.map((s) => `"${s}"`).join(", ")}],

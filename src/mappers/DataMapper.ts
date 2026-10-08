@@ -36,6 +36,8 @@ export class DataMapper {
     防護: "defense",
     命破: "rupture",
     鋭御: "armorer",
+    // 英語特性名（APIから直接返される場合）
+    Armorer: "armorer",
   };
 
   // 属性マッピング

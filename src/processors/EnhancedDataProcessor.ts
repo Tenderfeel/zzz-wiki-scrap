@@ -467,6 +467,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       "support",
       "defense",
       "rupture",
+      "armorer",
     ];
     if (!validSpecialties.includes(character.specialty)) {
       errors.push(`無効な特性: ${character.specialty}`);

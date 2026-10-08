@@ -509,6 +509,7 @@ export class WeaponGenerator {
         "support",
         "defense",
         "rupture",
+        "armorer",
       ];
       if (weapon.specialty && !validSpecialties.includes(weapon.specialty)) {
         errors.push(`specialty "${weapon.specialty}" は有効な値ではありません`);
