@@ -35,6 +35,7 @@ export class DataMapper {
     支援: "support",
     防護: "defense",
     命破: "rupture",
+    鋭御: "armorer",
   };
 
   // 属性マッピング
@@ -47,6 +48,9 @@ export class DataMapper {
     エーテル属性: "ether",
     霜烈属性: "frost",
     玄墨属性: "auricInk",
+    凛刃属性: "honedEdge",
+    流明属性: "lumiflux",
+    風属性: "wind",
     // 英語属性名（APIから直接返される場合）
     ice: "ice",
     fire: "fire",
@@ -55,6 +59,9 @@ export class DataMapper {
     ether: "ether",
     frost: "frost",
     auricInk: "auricInk",
+    honedEdge: "honedEdge",
+    lumiflux: "lumiflux",
+    wind: "wind",
     // 英語属性名（大文字）
     Ice: "ice",
     Fire: "fire",
@@ -64,6 +71,9 @@ export class DataMapper {
     Frost: "frost",
     "Auric Ink": "auricInk",
     "Frost Attribute": "frost",
+    "Honed Edge": "honedEdge",
+    Lumiflux: "lumiflux",
+    Wind: "wind",
   };
 
   // レア度マッピング
@@ -91,8 +101,8 @@ export class DataMapper {
     if (!mapped) {
       throw new MappingError(
         `未知の特性値です: "${rawSpecialty}". 有効な値: ${Object.keys(
-          DataMapper.SPECIALTY_MAPPING
-        ).join(", ")}`
+          DataMapper.SPECIALTY_MAPPING,
+        ).join(", ")}`,
       );
     }
     return mapped;
@@ -109,8 +119,8 @@ export class DataMapper {
     if (!mapped) {
       throw new MappingError(
         `未知の属性値です: "${rawStats}". 有効な値: ${Object.keys(
-          DataMapper.STATS_MAPPING
-        ).join(", ")}`
+          DataMapper.STATS_MAPPING,
+        ).join(", ")}`,
       );
     }
     return mapStatsToArray(mapped);
@@ -127,8 +137,8 @@ export class DataMapper {
     if (!mapped) {
       throw new MappingError(
         `未知のレア度値です: "${rawRarity}". 有効な値: ${Object.keys(
-          DataMapper.RARITY_MAPPING
-        ).join(", ")}`
+          DataMapper.RARITY_MAPPING,
+        ).join(", ")}`,
       );
     }
     return mapped;
@@ -184,7 +194,7 @@ export class DataMapper {
    */
   public createMultiLangName(
     jaName: string,
-    enName: string
+    enName: string,
   ): { [key in Lang]: string } {
     if (!jaName || jaName.trim() === "") {
       throw new MappingError("日本語名が空または無効です");
@@ -205,7 +215,7 @@ export class DataMapper {
    * @returns 多言語名オブジェクト、マッピングが見つからない場合はnull
    */
   public createNamesFromMapping(
-    characterId: string
+    characterId: string,
   ): { [key in Lang]: string } | null {
     if (!characterId || characterId.trim() === "") {
       logger.warn("キャラクターIDが空または無効です", {
@@ -230,7 +240,7 @@ export class DataMapper {
           {
             characterId: normalizedId,
             mappingStats: this.nameResolver.getMappingStats(),
-          }
+          },
         );
         return null;
       }
@@ -252,7 +262,7 @@ export class DataMapper {
           characterId: normalizedId,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
-        }
+        },
       );
       return null;
     }
@@ -269,7 +279,7 @@ export class DataMapper {
   public createNamesWithFallback(
     characterId: string,
     fallbackJaName: string,
-    fallbackEnName: string
+    fallbackEnName: string,
   ): { [key in Lang]: string } {
     logger.debug(LogMessages.NAME_FALLBACK_START, {
       characterId,
@@ -334,7 +344,7 @@ export class DataMapper {
 
       if (validationErrors.length > 0) {
         const errorMessage = `フォールバック名の検証に失敗しました (キャラクターID: ${characterId}): ${validationErrors.join(
-          ", "
+          ", ",
         )}`;
         logger.error(LogMessages.NAME_FALLBACK_ERROR, {
           characterId,
@@ -397,7 +407,7 @@ export class DataMapper {
 
       throw new MappingError(
         `フォールバック処理中に予期しないエラーが発生しました (キャラクターID: ${characterId})`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -414,7 +424,7 @@ export class DataMapper {
     characterId: string,
     fallbackJaName: string,
     fallbackEnName: string,
-    retryCount: number = 1
+    retryCount: number = 1,
   ): { [key in Lang]: string } {
     logger.debug("拡張フォールバック処理を開始", {
       characterId,
@@ -427,7 +437,7 @@ export class DataMapper {
       return this.createNamesWithFallback(
         characterId,
         fallbackJaName,
-        fallbackEnName
+        fallbackEnName,
       );
     } catch (error) {
       if (retryCount > 0 && error instanceof MappingError) {
@@ -440,7 +450,7 @@ export class DataMapper {
         // NameResolverでエラー回復を試行
         const recoveredMapping = this.nameResolver.attemptErrorRecovery(
           error,
-          characterId
+          characterId,
         );
 
         if (recoveredMapping) {
@@ -465,7 +475,7 @@ export class DataMapper {
           characterId,
           fallbackJaName,
           fallbackEnName,
-          retryCount - 1
+          retryCount - 1,
         );
       }
 

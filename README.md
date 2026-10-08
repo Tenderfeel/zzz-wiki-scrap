@@ -101,6 +101,9 @@ npm run generate
 # 全ボンプデータを生成
 npm run generate:bomps
 
+# 武器データを生成
+npm run generate:weapons
+
 # 全データを一括生成
 npm run generate:all
 ```
@@ -251,6 +254,60 @@ export default [
 - [API 仕様](./docs/API.md)
 - [使用方法とトラブルシューティング](./docs/USAGE_AND_TROUBLESHOOTING.md)
 - [設定ガイド](./CONFIGURATION.md)
+
+## 新キャラクター追加手順
+
+新しいキャラクターがゲームに実装された際は、以下の手順で追加します。
+
+### 1. 新しい陣営が増えた場合（任意）
+
+キャラクターが既存の陣営に属さない新陣営の場合、先に `data/factions.ts` に追記します。
+
+```typescript
+{
+  id: 21, // 連番で採番
+  name: {
+    ja: "陣営名（日本語）",
+    en: "Faction Name",
+  },
+},
+```
+
+> **注意**: `data/factions.ts` は自動生成されません。手動管理ファイルです。  
+> 陣営を追加しないままデータ生成を実行すると `"未知の陣営名"` エラーになります。
+
+### 2. Scraping.md にキャラクターを追記
+
+`Scraping.md` の「キャラクターページリスト」セクションに、HoyoLab Wiki のページ情報を追加します。
+
+```markdown
+- [characterId](https://wiki.hoyolab.com/pc/zzz/entry/{pageId}) - pageId: {pageId}
+```
+
+- `characterId`: 英字の識別子（例: `lycaon`）。`characters.ts` のキーになります
+- `pageId`: HoyoLab Wiki の URL に含まれる数値
+
+次に「短縮名リスト」セクションにも追記します。
+
+```
+- characterId: {ja: "日本語名", en: "English Name"}
+```
+
+### 3. データ生成を実行
+
+```bash
+npm run generate
+```
+
+`data/characters.ts` と `data/factions.ts` の内容が更新されます。
+
+### よくあるエラーと対処法
+
+| エラー                                              | 原因                                                             | 対処                                                       |
+| --------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- |
+| `faction ID "X" は1-20の範囲内である必要があります` | `data/factions.ts` に新陣営が未追加                              | `data/factions.ts` に陣営を追記する                        |
+| `未知の陣営名: "XXX"`                               | APIから返った陣営名が `data/factions.ts` に存在しない            | 日本語名が一致するよう `data/factions.ts` を確認・修正する |
+| キャラクターが抽出されない                          | `Scraping.md` の書式が `- [id](url) - pageId: 数値` と一致しない | スペースや `: ` の前後を確認する                           |
 
 ## ライセンス
 

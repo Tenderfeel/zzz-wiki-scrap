@@ -65,7 +65,33 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - [manato](https://wiki.hoyolab.com/pc/zzz/entry/908) - pageId: 908
 - [yidhari](https://wiki.hoyolab.com/pc/zzz/entry/909) - pageId: 909
 
+- [dialyn](https://wiki.hoyolab.com/pc/zzz/entry/932) - pageId: 932
+- [banyue](https://wiki.hoyolab.com/pc/zzz/entry/934) - pageId: 934
+- [zhao](https://wiki.hoyolab.com/pc/zzz/entry/960) - pageId: 960
+- [shunguang](https://wiki.hoyolab.com/pc/zzz/entry/961) - pageId: 961
+- [sunna](https://wiki.hoyolab.com/pc/zzz/entry/995) - pageId:995
+- [aria](https://wiki.hoyolab.com/pc/zzz/entry/998) - pageId:998
+- [nangong](https://wiki.hoyolab.com/pc/zzz/entry/1038) - pageId:1038
+- [cissia](https://wiki.hoyolab.com/pc/zzz/entry/1039) - pageId:1039
+- [promeia](https://wiki.hoyolab.com/pc/zzz/entry/1072) - pageId:1072
+- [sBilly](https://wiki.hoyolab.com/pc/zzz/entry/1073) - pageId: 1073
+- [pyrois](https://wiki.hoyolab.com/pc/zzz/entry/1082) - pageId: 1082
+- [velina](https://wiki.hoyolab.com/pc/zzz/entry/1084) - pageId: 1084
+- [norma](https://wiki.hoyolab.com/pc/zzz/entry/1085) - pageId: 1085
+- [remielle](https://wiki.hoyolab.com/pc/zzz/entry/1112) - pageId: 1112
+- [sigrid](https://wiki.hoyolab.com/pc/zzz/entry/1113) - pageId: 1113
+- [claret](https://wiki.hoyolab.com/pc/zzz/entry/1185) - pageId: 1185
+- [roxy](https://wiki.hoyolab.com/pc/zzz/entry/1186) - pageId: 1186
+
 ## ボンプページリスト
+
+- [ariel](https://wiki.hoyolab.com/pc/zzz/entry/1175) - アリエル
+- [ultraJake](https://wiki.hoyolab.com/pc/zzz/entry/1107) - ウルトラネイヴ
+- [booltergeist](https://wiki.hoyolab.com/pc/zzz/entry/1092) - ユウレイボンプ
+- [biggestFan](https://wiki.hoyolab.com/pc/zzz/entry/1016) - コサン
+- [sprout](https://wiki.hoyolab.com/pc/zzz/entry/985) - メメ
+- [boolok](https://wiki.hoyolab.com/pc/zzz/entry/967) - ブロックボンプ
+- [birkblick](https://wiki.hoyolab.com/pc/zzz/entry/966) - ビャークブリック
 
 - [excaliboo](https://wiki.hoyolab.com/pc/zzz/entry/912) - セイケンボンプ
 - [mercury](https://wiki.hoyolab.com/pc/zzz/entry/911) - 「マーキュリー」
@@ -150,6 +176,23 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - lucia: {ja: "リュシア", en: "Lucia"}
 - manato: {ja: "狛野真斗", en: "Komano Manato"}
 - yidhari:{ja:"イドリー", en: "Yidhari" }
+- dialyn: {ja: "ダイアリン", en: Dialyn}
+- banyue: {ja: "盤岳", en: Banyue}
+- zhao: {ja: "照", en: Zhao}
+- shunguang: {ja: "瞬光", en: Shunguang}
+- sunna: {ja: "千夏", en: Sunna}
+- aria: {ja: "アリア", en: Aria}
+- nangong: {ja: "南宮羽", en: Nangong }
+- cissia: {ja: "シーシィア", en: Cissia}
+- promeia: {ja: "プロメイア", en: Promeia}
+- sBilly: {ja: "S級ビリー, en: "S - Billy"}
+- pyrois: {ja: "ピュロイス", en: Pyrois}
+- velina: {ja: "ヴェリナ", en: Velina}
+- norma: {ja: "ノルムー", en: Norma}
+- remielle: {ja:"レミエール", en: Remielle}
+- sigrid: {ja: "シグリッド", en: Sigrid}
+- claret: {ja: "クラレッタ", en: Claret}
+- roxy: {ja: "ロクシー", en: Roxy}
 ```
 
 ## ディスク用マッピング
@@ -169,9 +212,11 @@ https://sg-wiki-api-static.hoyolab.com/hoyowiki/zzz/wapi/entry_page?entry_page_i
 - 防御力: defense
 - 炎属性ダメージ: attack, anomaly, stun
 - エーテル属性ダメージ: attack, anomaly, stun
-- 電気属性ダメージ: attack, anomaly, stun
+- 電気属性ダメージ: attack, anomaly, stun, armorer
 - 氷属性ダメージ: attack, anomaly, stun
 - 物理属性ダメージ: attack, anomaly, stun
+- 風属性ダメージ: attack, anomaly, stun
+- 流明属性ダメージ: anomaly
 - シールド生成量: defense
 - 異常マスタリー: anomaly, support
 - 会心ダメージ: attack, anomaly
@@ -221,6 +266,7 @@ export default [
   - "支援" → `"support"`
   - "防護" → `"defense"`
   - "命破" → `"rupture"`
+  - "鋭御" → `"armorer"`
 
 #### 属性
 
@@ -230,6 +276,9 @@ export default [
   - "電気属性" → `"electric"`
   - "物理属性" → `"physical"`
   - "エーテル属性" → `"ether"`
+  - "風属性" → `"wind"`
+  - "流明属性" → `"lumiflux"`
+  - "凛刃属性" → `"honedEdge"`
 
 #### 攻撃タイプ
 
@@ -376,10 +425,10 @@ function extractAttributes(ascensionData) {
 
 // 使用例
 const ascensionComponent = modules.find((m) =>
-  m.components.some((c) => c.component_id === "ascension")
+  m.components.some((c) => c.component_id === "ascension"),
 );
 const ascensionData = ascensionComponent.components.find(
-  (c) => c.component_id === "ascension"
+  (c) => c.component_id === "ascension",
 ).data;
 
 const attributes = extractAttributes(ascensionData);

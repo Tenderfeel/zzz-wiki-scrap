@@ -43,4 +43,11 @@ export default [
       en: "Rupture",
     },
   },
+  {
+    id: "armorer",
+    label: {
+      ja: "鋭御",
+      en: "Armorer",
+    },
+  },
 ] as SpecialtyData[];

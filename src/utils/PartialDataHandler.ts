@@ -126,8 +126,8 @@ export class PartialDataHandler {
         // ascensionコンポーネントの存在確認
         const hasAscension = page.modules.some((module: any) =>
           module.components?.some(
-            (comp: any) => comp.component_id === "ascension"
-          )
+            (comp: any) => comp.component_id === "ascension",
+          ),
         );
 
         if (!hasAscension) {
@@ -141,18 +141,18 @@ export class PartialDataHandler {
               impact: "zero_attributes_applied",
               availableComponents: page.modules
                 .flatMap((m: any) =>
-                  m.components?.map((c: any) => c.component_id)
+                  m.components?.map((c: any) => c.component_id),
                 )
                 .filter(Boolean),
-            }
+            },
           );
         }
 
         // baseInfoコンポーネントの存在確認
         const hasBaseInfo = page.modules.some((module: any) =>
           module.components?.some(
-            (comp: any) => comp.component_id === "baseInfo"
-          )
+            (comp: any) => comp.component_id === "baseInfo",
+          ),
         );
 
         if (!hasBaseInfo) {
@@ -166,10 +166,10 @@ export class PartialDataHandler {
               impact: "release_version_unavailable",
               availableComponents: page.modules
                 .flatMap((m: any) =>
-                  m.components?.map((c: any) => c.component_id)
+                  m.components?.map((c: any) => c.component_id),
                 )
                 .filter(Boolean),
-            }
+            },
           );
         }
       }
@@ -229,7 +229,7 @@ export class PartialDataHandler {
    */
   handlePartialData(
     apiData: ApiResponse,
-    missingFields: string[]
+    missingFields: string[],
   ): ProcessedData | null {
     const characterId = apiData.data?.page?.id || "unknown";
     const processingStartTime = Date.now();
@@ -273,7 +273,7 @@ export class PartialDataHandler {
         characterId,
         processingStep: "basic_info_generation",
         missingBasicFields: missingFields.filter((f) =>
-          ["specialty", "stats", "rarity"].includes(f)
+          ["specialty", "stats", "rarity"].includes(f),
         ),
       });
 
@@ -324,7 +324,7 @@ export class PartialDataHandler {
 
       const attributesInfo = this.createPartialAttributesInfo(
         page,
-        missingFields
+        missingFields,
       );
 
       logger.info("属性情報生成完了", {
@@ -381,7 +381,7 @@ export class PartialDataHandler {
    * 要件: 6.1, 6.2, 6.3
    */
   createPartialCharacter(
-    partialData: Partial<ProcessedData>
+    partialData: Partial<ProcessedData>,
   ): Character | null {
     if (!partialData.basicInfo) {
       logger.warn("基本情報が不足しているためCharacter生成を中止");
@@ -468,7 +468,7 @@ export class PartialDataHandler {
    */
   validatePartialData(
     data: Partial<ProcessedData>,
-    characterId: string
+    characterId: string,
   ): boolean {
     try {
       // 最低限必要なフィールドの確認
@@ -578,7 +578,7 @@ export class PartialDataHandler {
   private assessProcessingViability(missingFields: string[]): string {
     const criticalFields = ["page", "filter_values"];
     const hasCriticalMissing = criticalFields.some((field) =>
-      missingFields.includes(field)
+      missingFields.includes(field),
     );
 
     if (hasCriticalMissing) {
@@ -587,7 +587,7 @@ export class PartialDataHandler {
 
     const basicFields = ["specialty", "stats", "rarity", "faction"];
     const missingBasicCount = basicFields.filter((field) =>
-      missingFields.includes(field)
+      missingFields.includes(field),
     ).length;
 
     if (missingBasicCount === 0) {
@@ -633,7 +633,7 @@ export class PartialDataHandler {
    */
   private getAppliedDefaults(
     processedData: ProcessedData,
-    missingFields: string[]
+    missingFields: string[],
   ): string[] {
     const appliedDefaults: string[] = [];
 
@@ -680,7 +680,7 @@ export class PartialDataHandler {
 
   private createPartialBasicInfo(
     page: any,
-    missingFields: string[]
+    missingFields: string[],
   ): BasicCharacterInfo | null {
     try {
       const filterValues = page.filter_values;
@@ -710,7 +710,7 @@ export class PartialDataHandler {
 
   private createPartialFactionInfo(
     page: any,
-    missingFields: string[]
+    missingFields: string[],
   ): FactionInfo {
     if (missingFields.includes("faction")) {
       return {
@@ -742,7 +742,7 @@ export class PartialDataHandler {
 
   private createPartialAttributesInfo(
     page: any,
-    missingFields: string[]
+    missingFields: string[],
   ): AttributesInfo {
     if (
       missingFields.includes("ascension") ||
@@ -758,8 +758,8 @@ export class PartialDataHandler {
       const ascensionComponent = page.modules
         ?.find((module: any) =>
           module.components?.find(
-            (comp: any) => comp.component_id === "ascension"
-          )
+            (comp: any) => comp.component_id === "ascension",
+          ),
         )
         ?.components?.find((comp: any) => comp.component_id === "ascension");
 
@@ -808,8 +808,16 @@ export class PartialDataHandler {
       電気属性: "electric",
       物理属性: "physical",
       エーテル属性: "ether",
+      霜烈属性: "frost",
       霜烈: "frost",
+      玄墨属性: "auricInk",
       玄墨: "auricInk",
+      凛刃属性: "honedEdge",
+      凛刃: "honedEdge",
+      流明属性: "lumiflux",
+      流明: "lumiflux",
+      風属性: "wind",
+      風: "wind",
     };
 
     const mappedStat = statsMap[stats];
@@ -824,7 +832,7 @@ export class PartialDataHandler {
   }
 
   private parseAttributes(
-    attributesInfo?: AttributesInfo
+    attributesInfo?: AttributesInfo,
   ): Attributes | undefined {
     if (!attributesInfo?.ascensionData) {
       return undefined;

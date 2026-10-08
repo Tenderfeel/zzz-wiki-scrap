@@ -8,7 +8,8 @@ export type Specialty =
   | "anomaly" // 異常
   | "support" // 支援
   | "defense" // 防護
-  | "rupture"; // 命破
+  | "rupture" // 命破
+  | "armorer"; // 鋭御
 
 export type SpecialtyData = {
   id: Specialty;
@@ -23,7 +24,10 @@ export type Stats =
   | "physical" // 物理
   | "electric" // 電気
   | "frost" // 霜烈
-  | "auricInk"; // 玄墨
+  | "auricInk" // 玄墨
+  | "lumiflux" // 流明
+  | "wind" // 風
+  | "honedEdge"; // 凛刃
 
 export type StatsData = {
   id: Stats;

@@ -34,22 +34,22 @@ describe("キャラクターデータの整合性テスト", () => {
 
     it("assistType が設定されているキャラクターの統計情報", () => {
       const withAssistType = characters.filter(
-        (char) => char.assistType !== undefined
+        (char) => char.assistType !== undefined,
       );
       const withoutAssistType = characters.filter(
-        (char) => char.assistType === undefined
+        (char) => char.assistType === undefined,
       );
 
       const evasiveCount = characters.filter(
-        (char) => char.assistType === "evasive"
+        (char) => char.assistType === "evasive",
       ).length;
       const defensiveCount = characters.filter(
-        (char) => char.assistType === "defensive"
+        (char) => char.assistType === "defensive",
       ).length;
 
       // 統計情報の妥当性チェック
       expect(withAssistType.length + withoutAssistType.length).toBe(
-        characters.length
+        characters.length,
       );
       expect(evasiveCount + defensiveCount).toBe(withAssistType.length);
     });
@@ -91,7 +91,7 @@ describe("キャラクターデータの整合性テスト", () => {
         const missingFields = requiredFields.filter(
           (field) =>
             !(field in character) ||
-            character[field as keyof Character] === undefined
+            character[field as keyof Character] === undefined,
         );
 
         if (missingFields.length > 0) {
@@ -157,7 +157,7 @@ describe("キャラクターデータの整合性テスト", () => {
       ];
 
       const invalidSpecialties = characters.filter(
-        (char) => !validSpecialties.includes(char.specialty)
+        (char) => !validSpecialties.includes(char.specialty),
       );
 
       expect(invalidSpecialties).toEqual([]);
@@ -172,6 +172,8 @@ describe("キャラクターデータの整合性テスト", () => {
         "electric",
         "frost",
         "auricInk",
+        "lumiflux",
+        "honedEdge",
       ];
 
       const invalidStats = characters.filter((char) => {
@@ -196,7 +198,7 @@ describe("キャラクターデータの整合性テスト", () => {
       const validRarities: Rarity[] = ["A", "S"];
 
       const invalidRarities = characters.filter(
-        (char) => !validRarities.includes(char.rarity)
+        (char) => !validRarities.includes(char.rarity),
       );
 
       expect(invalidRarities).toEqual([]);
@@ -273,7 +275,7 @@ describe("キャラクターデータの整合性テスト", () => {
       const uniqueJaNames = new Set(jaNames);
 
       const duplicates = jaNames.filter(
-        (name, index) => jaNames.indexOf(name) !== index
+        (name, index) => jaNames.indexOf(name) !== index,
       );
 
       expect(duplicates).toEqual([]);
@@ -285,7 +287,7 @@ describe("キャラクターデータの整合性テスト", () => {
       const uniqueEnNames = new Set(enNames);
 
       const duplicates = enNames.filter(
-        (name, index) => enNames.indexOf(name) !== index
+        (name, index) => enNames.indexOf(name) !== index,
       );
 
       expect(duplicates).toEqual([]);
@@ -294,7 +296,7 @@ describe("キャラクターデータの整合性テスト", () => {
 
     it("faction ID が有効な範囲内であること", () => {
       const invalidFactions = characters.filter(
-        (char) => typeof char.faction !== "number" || char.faction < 1
+        (char) => typeof char.faction !== "number" || char.faction < 1,
       );
 
       expect(invalidFactions).toEqual([]);
@@ -417,19 +419,19 @@ describe("キャラクターデータの整合性テスト", () => {
   describe("assistType と specialty の関連性テスト", () => {
     it("support specialty のキャラクターの assistType 分布", () => {
       const supportCharacters = characters.filter(
-        (char) => char.specialty === "support"
+        (char) => char.specialty === "support",
       );
 
       const supportWithAssistType = supportCharacters.filter(
-        (char) => char.assistType !== undefined
+        (char) => char.assistType !== undefined,
       );
 
       const supportEvasive = supportCharacters.filter(
-        (char) => char.assistType === "evasive"
+        (char) => char.assistType === "evasive",
       );
 
       const supportDefensive = supportCharacters.filter(
-        (char) => char.assistType === "defensive"
+        (char) => char.assistType === "defensive",
       );
 
       // support キャラクターは何らかの assistType を持つべき（要件に基づく）
@@ -438,10 +440,10 @@ describe("キャラクターデータの整合性テスト", () => {
       // 統計情報を検証
       expect(
         supportWithAssistType.length +
-          (supportCharacters.length - supportWithAssistType.length)
+          (supportCharacters.length - supportWithAssistType.length),
       ).toBe(supportCharacters.length);
       expect(supportEvasive.length + supportDefensive.length).toBe(
-        supportWithAssistType.length
+        supportWithAssistType.length,
       );
     });
 
@@ -521,10 +523,10 @@ describe("キャラクターデータの整合性テスト", () => {
 
     it("assistType 設定済みキャラクターの分布が妥当であること", () => {
       const evasiveChars = characters.filter(
-        (char) => char.assistType === "evasive"
+        (char) => char.assistType === "evasive",
       );
       const defensiveChars = characters.filter(
-        (char) => char.assistType === "defensive"
+        (char) => char.assistType === "defensive",
       );
 
       // 両方のタイプが存在することを確認（現在のデータに基づく）
@@ -533,10 +535,10 @@ describe("キャラクターデータの整合性テスト", () => {
 
       // evasive と defensive の合計が assistType 設定済みキャラクター数と一致
       const totalWithAssistType = characters.filter(
-        (char) => char.assistType !== undefined
+        (char) => char.assistType !== undefined,
       ).length;
       expect(evasiveChars.length + defensiveChars.length).toBe(
-        totalWithAssistType
+        totalWithAssistType,
       );
     });
 
@@ -550,11 +552,11 @@ describe("キャラクターデータの整合性テスト", () => {
         // インデックス情報をエラーメッセージに含める
         expect(
           char.id,
-          `Character at index ${index} should have valid id`
+          `Character at index ${index} should have valid id`,
         ).toBeDefined();
         expect(
           typeof char.id,
-          `Character at index ${index} id should be string`
+          `Character at index ${index} id should be string`,
         ).toBe("string");
       });
     });
@@ -583,10 +585,10 @@ describe("キャラクターデータの整合性テスト", () => {
 
       // 基本的な整合性チェック
       expect(
-        currentSnapshot.withAssistType + currentSnapshot.withoutAssistType
+        currentSnapshot.withAssistType + currentSnapshot.withoutAssistType,
       ).toBe(currentSnapshot.totalCharacters);
       expect(
-        currentSnapshot.evasiveCount + currentSnapshot.defensiveCount
+        currentSnapshot.evasiveCount + currentSnapshot.defensiveCount,
       ).toBe(currentSnapshot.withAssistType);
 
       // 現在のスナップショットが妥当であることを確認
@@ -594,8 +596,8 @@ describe("キャラクターデータの整合性テスト", () => {
       expect(
         Object.values(currentSnapshot.specialtyDistribution).reduce(
           (a, b) => a + b,
-          0
-        )
+          0,
+        ),
       ).toBe(currentSnapshot.totalCharacters);
     });
   });

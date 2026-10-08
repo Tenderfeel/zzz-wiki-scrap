@@ -36,7 +36,7 @@ export class BompDataMapper extends DataMapper {
    */
   public extractBasicBompInfo(
     apiResponse: ApiResponse,
-    bompId: string
+    bompId: string,
   ): {
     id: string;
     name: string;
@@ -188,7 +188,7 @@ export class BompDataMapper extends DataMapper {
    */
   public createBompMultiLangName(
     jaName: string,
-    enName?: string
+    enName?: string,
   ): { [key in Lang]: string } {
     try {
       if (!jaName || jaName.trim() === "") {
@@ -234,14 +234,14 @@ export class BompDataMapper extends DataMapper {
 
       // ascension コンポーネントを検索（日本語名「突破」または英語名「ascension」）
       const ascensionModule = modules.find(
-        (module) => module.name === "突破" || module.name === "ascension"
+        (module) => module.name === "突破" || module.name === "ascension",
       );
       if (!ascensionModule) {
         throw new MappingError("ascension モジュールが見つかりません");
       }
 
       const ascensionComponent = ascensionModule.components?.find(
-        (component) => component.component_id === "ascension"
+        (component) => component.component_id === "ascension",
       );
       if (!ascensionComponent) {
         throw new MappingError("ascension コンポーネントが見つかりません");
@@ -253,7 +253,7 @@ export class BompDataMapper extends DataMapper {
 
       // AttributesProcessor を使用してデータを処理
       const attributes = this.attributesProcessor.processAscensionData(
-        ascensionComponent.data
+        ascensionComponent.data,
       );
 
       logger.debug("ボンプ属性データ抽出成功", {
@@ -274,7 +274,7 @@ export class BompDataMapper extends DataMapper {
       });
       throw new MappingError(
         "ボンプ属性データの抽出に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -292,7 +292,7 @@ export class BompDataMapper extends DataMapper {
 
       // baseInfoモジュールを検索（日本語名「ステータス」または英語名「baseInfo」）
       const baseInfoModule = modules.find(
-        (module) => module.name === "ステータス" || module.name === "baseInfo"
+        (module) => module.name === "ステータス" || module.name === "baseInfo",
       );
 
       if (!baseInfoModule) {
@@ -300,7 +300,7 @@ export class BompDataMapper extends DataMapper {
       }
 
       const baseInfoComponent = baseInfoModule.components?.find(
-        (component) => component.component_id === "baseInfo"
+        (component) => component.component_id === "baseInfo",
       );
 
       if (!baseInfoComponent?.data) {
@@ -327,7 +327,7 @@ export class BompDataMapper extends DataMapper {
 
       // レア度キーを検索
       const rarityItem = baseInfoData.list.find(
-        (item: any) => item.key === "レア度" || item.key === "rarity"
+        (item: any) => item.key === "レア度" || item.key === "rarity",
       );
 
       if (
@@ -404,14 +404,14 @@ export class BompDataMapper extends DataMapper {
     try {
       if (!modules || !Array.isArray(modules)) {
         logger.warn(
-          "モジュールデータが無効なため、追加能力を空文字列で返します"
+          "モジュールデータが無効なため、追加能力を空文字列で返します",
         );
         return "";
       }
 
       // talent または skill コンポーネントを検索
       const talentModule = modules.find(
-        (module) => module.name === "talent" || module.name === "skill"
+        (module) => module.name === "talent" || module.name === "skill",
       );
 
       if (!talentModule) {
@@ -422,7 +422,7 @@ export class BompDataMapper extends DataMapper {
       const talentComponent = talentModule.components?.find(
         (component) =>
           component.component_id === "talent" ||
-          component.component_id === "skill"
+          component.component_id === "skill",
       );
 
       if (!talentComponent || !talentComponent.data) {
@@ -469,11 +469,11 @@ export class BompDataMapper extends DataMapper {
   private extractStatsStringFromModules(modules: Module[]): string {
     // ステータス モジュールから属性情報を探す（日本語名「ステータス」または英語名「baseInfo」）
     const baseInfoModule = modules?.find(
-      (module) => module.name === "ステータス" || module.name === "baseInfo"
+      (module) => module.name === "ステータス" || module.name === "baseInfo",
     );
     if (baseInfoModule) {
       const baseInfoComponent = baseInfoModule.components?.find(
-        (component) => component.component_id === "baseInfo"
+        (component) => component.component_id === "baseInfo",
       );
 
       if (baseInfoComponent?.data) {
@@ -506,6 +506,8 @@ export class BompDataMapper extends DataMapper {
                       "ether",
                       "frost",
                       "auricInk",
+                      "lumiflux",
+                      "honedEdge",
                     ].includes(cleanValue.toLowerCase())
                   ) {
                     attributeName = cleanValue;
@@ -536,7 +538,7 @@ export class BompDataMapper extends DataMapper {
 
     // デフォルト値として物理属性を返す
     logger.warn(
-      "属性情報が見つからないため、デフォルト値 '物理属性' を使用します"
+      "属性情報が見つからないため、デフォルト値 '物理属性' を使用します",
     );
     return "物理属性";
   }
@@ -549,11 +551,11 @@ export class BompDataMapper extends DataMapper {
   private extractReleaseVersion(modules: Module[]): number | undefined {
     // baseInfo モジュールからバージョン情報を探す（日本語名「ステータス」または英語名「baseInfo」）
     const baseInfoModule = modules?.find(
-      (module) => module.name === "ステータス" || module.name === "baseInfo"
+      (module) => module.name === "ステータス" || module.name === "baseInfo",
     );
     if (baseInfoModule) {
       const baseInfoComponent = baseInfoModule.components?.find(
-        (component) => component.component_id === "baseInfo"
+        (component) => component.component_id === "baseInfo",
       );
 
       if (baseInfoComponent?.data) {
@@ -642,7 +644,7 @@ export class BompDataMapper extends DataMapper {
       if (!faction) {
         const availableFactions = factions.map((f) => f.name.ja).join(", ");
         throw new MappingError(
-          `未知の陣営名: "${factionName}". 利用可能な陣営: ${availableFactions}`
+          `未知の陣営名: "${factionName}". 利用可能な陣営: ${availableFactions}`,
         );
       }
       return faction.id;

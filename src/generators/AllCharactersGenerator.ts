@@ -32,7 +32,7 @@ export class AllCharactersGenerator {
    * 要件: 5.1, 5.2, 5.3, 5.4
    */
   async generateAllCharacters(
-    results: CharacterResult[]
+    results: CharacterResult[],
   ): Promise<Character[]> {
     try {
       if (!results || results.length === 0) {
@@ -55,14 +55,14 @@ export class AllCharactersGenerator {
           // 基本的な検証
           if (!character) {
             throw new ValidationError(
-              `キャラクター "${result.entry.id}" のCharacterオブジェクトが存在しません`
+              `キャラクター "${result.entry.id}" のCharacterオブジェクトが存在しません`,
             );
           }
 
           // Character.idがScraping.mdのリンクテキストと一致することを確認
           if (character.id !== result.entry.id) {
             console.warn(
-              `⚠️  Character.id (${character.id}) がエントリーID (${result.entry.id}) と一致しません。エントリーIDを使用します。`
+              `⚠️  Character.id (${character.id}) がエントリーID (${result.entry.id}) と一致しません。エントリーIDを使用します。`,
             );
             character.id = result.entry.id;
           }
@@ -70,20 +70,20 @@ export class AllCharactersGenerator {
           // 多言語プロパティの確認
           if (!character.name?.ja || !character.name?.en) {
             throw new ValidationError(
-              `キャラクター "${character.id}" の多言語名が不完全です`
+              `キャラクター "${character.id}" の多言語名が不完全です`,
             );
           }
 
           if (!character.fullName?.ja || !character.fullName?.en) {
             throw new ValidationError(
-              `キャラクター "${character.id}" の多言語フルネームが不完全です`
+              `キャラクター "${character.id}" の多言語フルネームが不完全です`,
             );
           }
 
           // faction プロパティがID参照であることを確認
           if (typeof character.faction !== "number") {
             throw new ValidationError(
-              `キャラクター "${character.id}" のfactionプロパティが数値IDではありません: ${character.faction}`
+              `キャラクター "${character.id}" のfactionプロパティが数値IDではありません: ${character.faction}`,
             );
           }
 
@@ -93,7 +93,7 @@ export class AllCharactersGenerator {
           console.error(
             `  ✗ ${result.entry.id} の処理中にエラー: ${
               error instanceof Error ? error.message : String(error)
-            }`
+            }`,
           );
           throw error;
         }
@@ -107,7 +107,7 @@ export class AllCharactersGenerator {
       }
       throw new ValidationError(
         "Character配列の生成に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -172,7 +172,7 @@ export class AllCharactersGenerator {
       console.log(`✅ Character配列検証完了: 全て有効`);
     } else {
       console.error(
-        `❌ Character配列検証失敗: 重複ID ${duplicateIds.length}件, 無効キャラクター ${invalidCharacters.length}件`
+        `❌ Character配列検証失敗: 重複ID ${duplicateIds.length}件, 無効キャラクター ${invalidCharacters.length}件`,
       );
     }
 
@@ -245,7 +245,7 @@ export class AllCharactersGenerator {
         errors.push(
           `attr.hp 配列は正確に 7 つの値を含む必要があります (現在: ${
             character.attr.hp?.length || 0
-          })`
+          })`,
         );
       }
       if (
@@ -255,7 +255,7 @@ export class AllCharactersGenerator {
         errors.push(
           `attr.atk 配列は正確に 7 つの値を含む必要があります (現在: ${
             character.attr.atk?.length || 0
-          })`
+          })`,
         );
       }
       if (
@@ -265,7 +265,7 @@ export class AllCharactersGenerator {
         errors.push(
           `attr.def 配列は正確に 7 つの値を含む必要があります (現在: ${
             character.attr.def?.length || 0
-          })`
+          })`,
         );
       }
 
@@ -301,7 +301,7 @@ export class AllCharactersGenerator {
       !validSpecialties.includes(character.specialty)
     ) {
       errors.push(
-        `specialty "${character.specialty}" は有効な値ではありません`
+        `specialty "${character.specialty}" は有効な値ではありません`,
       );
     }
 
@@ -313,6 +313,9 @@ export class AllCharactersGenerator {
       "electric",
       "frost",
       "auricInk",
+      "lumiflux",
+      "honedEdge",
+      "wind",
     ];
     if (character.stats) {
       if (!Array.isArray(character.stats) || character.stats.length === 0) {
@@ -331,14 +334,14 @@ export class AllCharactersGenerator {
       errors.push(`rarity "${character.rarity}" は有効な値ではありません`);
     }
 
-    // faction IDの妥当性確認（1-12の範囲）
+    // faction IDの妥当性確認（1-20の範囲）
     if (
       typeof character.faction !== "number" ||
       character.faction < 1 ||
-      character.faction > 12
+      character.faction > 20
     ) {
       errors.push(
-        `faction ID "${character.faction}" は1-12の範囲内である必要があります`
+        `faction ID "${character.faction}" は1-20の範囲内である必要があります`,
       );
     }
 
@@ -354,7 +357,7 @@ export class AllCharactersGenerator {
    */
   outputCharactersFile(
     characters: Character[],
-    outputPath: string = "data/characters.ts"
+    outputPath: string = "data/characters.ts",
   ): void {
     try {
       console.log(`\n📝 characters.tsファイル出力開始`);
@@ -398,12 +401,12 @@ ${charactersCode}
         console.log(`📊 出力統計:`);
         console.log(`  - キャラクター数: ${characters.length}`);
         console.log(
-          `  - ファイルサイズ: ${this.formatFileSize(fileContent.length)}`
+          `  - ファイルサイズ: ${this.formatFileSize(fileContent.length)}`,
         );
       } catch (error) {
         throw new ParsingError(
           `ファイル "${outputPath}" の書き込みに失敗しました`,
-          error as Error
+          error as Error,
         );
       }
     } catch (error) {
@@ -436,7 +439,7 @@ ${charactersCode}
    */
   private formatSingleCharacter(
     character: Character,
-    isLast: boolean = false
+    isLast: boolean = false,
   ): string {
     const indent = "  ";
     const comma = isLast ? "" : ",";
@@ -454,10 +457,10 @@ ${charactersCode}
     return `${indent}{
 ${indent}  id: "${character.id}",
 ${indent}  name: { ja: "${this.escapeString(
-      character.name.ja
+      character.name.ja,
     )}", en: "${this.escapeString(character.name.en)}" },
 ${indent}  fullName: { ja: "${this.escapeString(
-      character.fullName.ja
+      character.fullName.ja,
     )}", en: "${this.escapeString(character.fullName.en)}" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: ${statsArray},
@@ -515,7 +518,7 @@ ${indent}}${comma}`;
     report += `- 処理開始時刻: ${statistics.startTime.toLocaleString()}\n`;
     report += `- 処理終了時刻: ${statistics.endTime?.toLocaleString()}\n`;
     report += `- 総処理時間: ${this.formatDuration(
-      statistics.processingTime
+      statistics.processingTime,
     )}\n`;
     report += `- 総キャラクター数: ${statistics.total}\n`;
     report += `- 成功: ${statistics.successful}\n`;
@@ -547,7 +550,7 @@ ${indent}}${comma}`;
    * @returns ソートされたCharacterResultの配列
    */
   private async sortByScrapingOrder(
-    results: CharacterResult[]
+    results: CharacterResult[],
   ): Promise<CharacterResult[]> {
     try {
       console.log(`📋 Scraping.mdから順序を動的に取得中...`);
@@ -556,7 +559,7 @@ ${indent}}${comma}`;
       const scrapingOrder = await this.getScrapingOrder();
 
       console.log(
-        `✅ Scraping.mdから${scrapingOrder.length}個のキャラクター順序を取得`
+        `✅ Scraping.mdから${scrapingOrder.length}個のキャラクター順序を取得`,
       );
 
       // 順序のインデックスマップを作成
@@ -577,7 +580,7 @@ ${indent}}${comma}`;
     } catch (error) {
       console.warn(
         `⚠️  Scraping.mdからの順序取得に失敗。元の順序を維持します:`,
-        error
+        error,
       );
       return results;
     }
@@ -621,14 +624,14 @@ ${indent}}${comma}`;
       console.log(
         `📋 抽出されたキャラクター順序: ${characterIds
           .slice(0, 5)
-          .join(", ")}... (${characterIds.length}個)`
+          .join(", ")}... (${characterIds.length}個)`,
       );
       return characterIds;
     } catch (error) {
       throw new Error(
         `Scraping.mdの解析に失敗しました: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }

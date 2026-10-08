@@ -23,7 +23,7 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
   const testOutputFile = path.join(testOutputDir, "test-characters.ts");
   const partialOutputFile = path.join(
     testOutputDir,
-    "test-characters-partial.ts"
+    "test-characters-partial.ts",
   );
 
   beforeEach(() => {
@@ -171,6 +171,8 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
             "electric",
             "frost",
             "auricInk",
+            "lumiflux",
+            "honedEdge",
           ]).toContain(stat);
         });
 
@@ -220,7 +222,7 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
 
       // バッチ処理統計の確認
       expect(result.processingResult.statistics.processingTime).toBeGreaterThan(
-        0
+        0,
       );
       expect(result.processingResult.statistics.startTime).toBeInstanceOf(Date);
       expect(result.processingResult.statistics.endTime).toBeInstanceOf(Date);
@@ -269,7 +271,7 @@ describe("AllCharactersDataGeneration Integration Tests", () => {
         pipeline.execute({
           scrapingFilePath: "non-existent-scraping.md",
           outputFilePath: testOutputFile,
-        })
+        }),
       ).rejects.toThrow();
     });
 
@@ -285,7 +287,7 @@ No character entries here.
         pipeline.execute({
           scrapingFilePath: testScrapingFile,
           outputFilePath: testOutputFile,
-        })
+        }),
       ).rejects.toThrow("キャラクター情報を抽出できませんでした");
     });
 
@@ -373,7 +375,7 @@ No character entries here.
         pipeline.execute({
           scrapingFilePath: testScrapingFile,
           outputFilePath: "", // 無効な出力パス
-        })
+        }),
       ).rejects.toThrow();
     });
 
@@ -431,7 +433,7 @@ No character entries here.
           delayMs: 50,
           maxRetries: 1,
           minSuccessRate: 0.8, // 80%成功率を要求（実際は33%なのでエラー）
-        })
+        }),
       ).rejects.toThrow();
     }, 30000);
   });
@@ -444,7 +446,7 @@ No character entries here.
       const characters = realPageIds
         .map(
           (pageId, i) =>
-            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`,
         )
         .join("\n");
 
@@ -495,7 +497,7 @@ ${characters}
       const characters = realPageIds
         .map(
           (pageId, i) =>
-            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`,
         )
         .join("\n");
 
@@ -529,13 +531,13 @@ ${characters}
 
       console.log(`メモリ使用量テスト結果:`);
       console.log(
-        `  初期メモリ: ${Math.round(initialMemory.heapUsed / 1024 / 1024)}MB`
+        `  初期メモリ: ${Math.round(initialMemory.heapUsed / 1024 / 1024)}MB`,
       );
       console.log(
-        `  最終メモリ: ${Math.round(finalMemory.heapUsed / 1024 / 1024)}MB`
+        `  最終メモリ: ${Math.round(finalMemory.heapUsed / 1024 / 1024)}MB`,
       );
       console.log(
-        `  メモリ増加: ${Math.round(memoryIncrease / 1024 / 1024)}MB`
+        `  メモリ増加: ${Math.round(memoryIncrease / 1024 / 1024)}MB`,
       );
     }, 60000);
 
@@ -546,7 +548,7 @@ ${characters}
       const characters = realPageIds
         .map(
           (pageId, i) =>
-            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`
+            `- [char${i}](https://wiki.hoyolab.com/pc/zzz/entry/${pageId}) - pageId: ${pageId}`,
         )
         .join("\n");
 
@@ -661,6 +663,8 @@ ${characters}
             "electric",
             "frost",
             "auricInk",
+            "lumiflux",
+            "honedEdge",
           ]).toContain(stat);
         });
 
@@ -830,7 +834,7 @@ ${characters}
 function createMockApiResponse(
   id: string,
   jaName: string,
-  enName: string
+  enName: string,
 ): any {
   return {
     data: {

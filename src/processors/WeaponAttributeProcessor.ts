@@ -48,14 +48,14 @@ export class WeaponAttributeProcessor {
       if (!weapon) {
         throw new AttributeExtractionDataError(
           0,
-          "武器データがnullまたはundefinedです"
+          "武器データがnullまたはundefinedです",
         );
       }
 
       if (!weapon.id || typeof weapon.id !== "number") {
         throw new AttributeExtractionDataError(
           weapon.id || 0,
-          "武器IDが無効です"
+          "武器IDが無効です",
         );
       }
 
@@ -89,7 +89,7 @@ export class WeaponAttributeProcessor {
       // スキル説明から属性を抽出
       const extractedAttributes = this.extractor.extractFromMultiLang(
         weapon.equipmentSkillDesc,
-        weapon.id
+        weapon.id,
       );
 
       logger.debug("属性抽出完了", {
@@ -107,7 +107,7 @@ export class WeaponAttributeProcessor {
       // バリデーションを実行
       const validationResult = this.validateExtraction(
         weapon,
-        extractedAttributes
+        extractedAttributes,
       );
 
       if (!validationResult.isValid) {
@@ -119,7 +119,7 @@ export class WeaponAttributeProcessor {
 
         // バリデーション失敗時でも、致命的でなければ抽出結果を保持
         const hasCriticalErrors = validationResult.errors.some(
-          (error) => error.includes("無効な属性") || error.includes("重複")
+          (error) => error.includes("無効な属性") || error.includes("重複"),
         );
 
         if (hasCriticalErrors) {
@@ -162,7 +162,7 @@ export class WeaponAttributeProcessor {
       throw new AttributeExtractionDataError(
         weapon?.id || 0,
         `武器属性処理中にエラーが発生: ${errorMessage}`,
-        error instanceof Error ? error : undefined
+        error instanceof Error ? error : undefined,
       );
     }
   }
@@ -175,7 +175,7 @@ export class WeaponAttributeProcessor {
    */
   processWeapons(
     weapons: Weapon[],
-    continueOnError: boolean = true
+    continueOnError: boolean = true,
   ): AttributeProcessingResult<EnhancedWeapon> {
     const processingStartTime = Date.now();
     const successful: EnhancedWeapon[] = [];
@@ -187,7 +187,7 @@ export class WeaponAttributeProcessor {
         throw new AttributeExtractionBatchError(
           [],
           0,
-          "武器データの配列が無効です"
+          "武器データの配列が無効です",
         );
       }
 
@@ -221,7 +221,7 @@ export class WeaponAttributeProcessor {
           if (!weapon) {
             throw new AttributeExtractionDataError(
               0,
-              `インデックス ${i} の武器データがnullです`
+              `インデックス ${i} の武器データがnullです`,
             );
           }
 
@@ -276,7 +276,7 @@ export class WeaponAttributeProcessor {
               failed.map((f) => f.weaponId),
               weapons.length,
               `武器ID ${weapon?.id} の処理でエラーが発生し、処理を中断: ${errorMessage}`,
-              error instanceof Error ? error : undefined
+              error instanceof Error ? error : undefined,
             );
           }
         }
@@ -335,7 +335,7 @@ export class WeaponAttributeProcessor {
         failed.map((f) => f.weaponId),
         weapons.length,
         `一括処理中に致命的エラーが発生: ${errorMessage}`,
-        error instanceof Error ? error : undefined
+        error instanceof Error ? error : undefined,
       );
     }
   }
@@ -348,7 +348,7 @@ export class WeaponAttributeProcessor {
    */
   validateExtraction(
     weapon: Weapon,
-    extractedAttributes: Stats[]
+    extractedAttributes: Stats[],
   ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -370,6 +370,9 @@ export class WeaponAttributeProcessor {
         "electric",
         "frost",
         "auricInk",
+        "lumiflux",
+        "honedEdge",
+        "wind",
       ];
 
       for (const attr of extractedAttributes) {
@@ -385,23 +388,23 @@ export class WeaponAttributeProcessor {
 
         // 既存の属性と抽出された属性の一致度をチェック
         const intersection = new Set(
-          [...existingStats].filter((x) => extractedStats.has(x))
+          [...existingStats].filter((x) => extractedStats.has(x)),
         );
 
         if (intersection.size === 0 && extractedAttributes.length > 0) {
           warnings.push(
             `抽出された属性が既存の属性と一致しません。既存: [${weapon.stats.join(
-              ", "
-            )}], 抽出: [${extractedAttributes.join(", ")}]`
+              ", ",
+            )}], 抽出: [${extractedAttributes.join(", ")}]`,
           );
           suggestions.push(
-            "スキル説明の内容と既存の属性データを確認してください"
+            "スキル説明の内容と既存の属性データを確認してください",
           );
         }
 
         if (extractedAttributes.length > existingStats.size) {
           warnings.push(
-            `抽出された属性数が既存の属性数より多いです。既存: ${existingStats.size}, 抽出: ${extractedAttributes.length}`
+            `抽出された属性数が既存の属性数より多いです。既存: ${existingStats.size}, 抽出: ${extractedAttributes.length}`,
           );
         }
       }
@@ -429,7 +432,7 @@ export class WeaponAttributeProcessor {
           weapon.equipmentSkillDesc.ja.length > 0
         ) {
           suggestions.push(
-            "スキル説明に属性情報が含まれていない可能性があります。パターンマッチングの改善を検討してください"
+            "スキル説明に属性情報が含まれていない可能性があります。パターンマッチングの改善を検討してください",
           );
         }
       }
@@ -476,7 +479,7 @@ export class WeaponAttributeProcessor {
    */
   validateExtractionWithDetails(
     weapon: Weapon,
-    extractionResult: AttributeExtractionResult
+    extractionResult: AttributeExtractionResult,
   ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -493,7 +496,7 @@ export class WeaponAttributeProcessor {
       // 基本バリデーションを実行
       const basicValidation = this.validateExtraction(
         weapon,
-        extractionResult.attributes
+        extractionResult.attributes,
       );
       errors.push(...basicValidation.errors);
       warnings.push(...basicValidation.warnings);
@@ -504,7 +507,7 @@ export class WeaponAttributeProcessor {
         warnings.push(
           `抽出の信頼度が低いです: ${(
             extractionResult.confidence * 100
-          ).toFixed(1)}%`
+          ).toFixed(1)}%`,
         );
         suggestions.push("パターンマッチングの精度向上を検討してください");
       }
@@ -513,13 +516,13 @@ export class WeaponAttributeProcessor {
       for (const pattern of extractionResult.matchedPatterns) {
         if (pattern.matchCount === 0) {
           warnings.push(
-            `属性 '${pattern.attribute}' のパターン '${pattern.pattern}' がマッチしませんでした`
+            `属性 '${pattern.attribute}' のパターン '${pattern.pattern}' がマッチしませんでした`,
           );
         }
 
         if (pattern.matchCount > 5) {
           warnings.push(
-            `属性 '${pattern.attribute}' が異常に多くマッチしました (${pattern.matchCount}回)`
+            `属性 '${pattern.attribute}' が異常に多くマッチしました (${pattern.matchCount}回)`,
           );
           suggestions.push("スキル説明に重複した表現がないか確認してください");
         }
@@ -534,17 +537,17 @@ export class WeaponAttributeProcessor {
       const expectedPatterns = this.getExpectedPatterns(weapon);
       if (expectedPatterns.length > 0) {
         const foundPatterns = extractionResult.matchedPatterns.map(
-          (p) => p.pattern
+          (p) => p.pattern,
         );
         const missingPatterns = expectedPatterns.filter(
-          (pattern) => !foundPatterns.includes(pattern)
+          (pattern) => !foundPatterns.includes(pattern),
         );
 
         if (missingPatterns.length > 0) {
           warnings.push(
             `期待されるパターンが見つかりませんでした: [${missingPatterns.join(
-              ", "
-            )}]`
+              ", ",
+            )}]`,
           );
           suggestions.push("パターン定義の見直しを検討してください");
         }
@@ -605,11 +608,11 @@ export class WeaponAttributeProcessor {
     for (const weapon of weapons) {
       try {
         const extractedAttributes = this.extractor.extractFromMultiLang(
-          weapon.equipmentSkillDesc
+          weapon.equipmentSkillDesc,
         );
         const extractionDetails = this.extractor.extractWithDetails(
           weapon.equipmentSkillDesc.ja,
-          "ja"
+          "ja",
         );
 
         totalProcessed++;
@@ -631,23 +634,23 @@ export class WeaponAttributeProcessor {
         report.push(`  既存属性: [${existingStats.join(", ")}]`);
         report.push(`  抽出属性: [${extractedAttributes.join(", ")}]`);
         report.push(
-          `  信頼度: ${(extractionDetails.confidence * 100).toFixed(1)}%`
+          `  信頼度: ${(extractionDetails.confidence * 100).toFixed(1)}%`,
         );
         report.push(
           `  マッチ状況: ${
             hasMatch
               ? "一致"
               : extractedAttributes.length === 0
-              ? "抽出なし"
-              : "不一致"
-          }`
+                ? "抽出なし"
+                : "不一致"
+          }`,
         );
 
         if (extractionDetails.matchedPatterns.length > 0) {
           report.push("  マッチパターン:");
           for (const pattern of extractionDetails.matchedPatterns) {
             report.push(
-              `    - ${pattern.attribute}: "${pattern.pattern}" (${pattern.matchCount}回)`
+              `    - ${pattern.attribute}: "${pattern.pattern}" (${pattern.matchCount}回)`,
             );
           }
         }
@@ -673,19 +676,19 @@ export class WeaponAttributeProcessor {
     report.push(`処理済み武器数: ${totalProcessed}`);
     report.push(
       `一致: ${totalMatched} (${((totalMatched / totalProcessed) * 100).toFixed(
-        1
-      )}%)`
+        1,
+      )}%)`,
     );
     report.push(
       `不一致: ${totalMismatched} (${(
         (totalMismatched / totalProcessed) *
         100
-      ).toFixed(1)}%)`
+      ).toFixed(1)}%)`,
     );
     report.push(
       `抽出なし: ${totalEmpty} (${((totalEmpty / totalProcessed) * 100).toFixed(
-        1
-      )}%)`
+        1,
+      )}%)`,
     );
 
     return report.join("\n");

@@ -37,7 +37,7 @@ export class EnhancedDataProcessor extends DataProcessor {
   async processEnhancedCharacterData(
     jaData: ApiResponse,
     enData: ApiResponse,
-    entry: CharacterEntry
+    entry: CharacterEntry,
   ): Promise<Character> {
     try {
       // 基本情報を日本語データから抽出
@@ -52,7 +52,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       // 属性データを抽出
       const attributesInfo = this.extractAttributes(jaData);
       const processedAttributes = this.processAttributesData(
-        attributesInfo.ascensionData
+        attributesInfo.ascensionData,
       );
 
       // 支援タイプを抽出（統計情報も記録される）
@@ -64,7 +64,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       // fullName: Wikiから取得した生のAPI名を使用
       const fullName = this.dataMapper.createMultiLangName(
         basicInfo.name,
-        enName
+        enName,
       );
 
       // nameがnullの場合（マッピングが見つからない場合）はfullNameと同じ値を使用
@@ -92,14 +92,14 @@ export class EnhancedDataProcessor extends DataProcessor {
           ProcessingStage.DATA_PROCESSING,
           entry.id,
           `データ処理エラー: ${error.message}`,
-          error
+          error,
         );
       }
       throw new AllCharactersError(
         ProcessingStage.DATA_PROCESSING,
         entry.id,
         `キャラクター "${entry.id}" のデータ処理に失敗しました`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -146,8 +146,8 @@ export class EnhancedDataProcessor extends DataProcessor {
     if (!mapped) {
       throw new MappingError(
         `未知の特性: "${specialty}". 利用可能な特性: ${Object.keys(
-          specialtyMap
-        ).join(", ")}`
+          specialtyMap,
+        ).join(", ")}`,
       );
     }
     return mapped;
@@ -167,6 +167,9 @@ export class EnhancedDataProcessor extends DataProcessor {
       エーテル属性: "ether",
       霜烈属性: "frost",
       玄墨属性: "auricInk",
+      凛刃属性: "honedEdge",
+      流明属性: "lumiflux",
+      風属性: "wind",
       // 「属性」なしバージョン
       氷: "ice",
       炎: "fire",
@@ -175,14 +178,17 @@ export class EnhancedDataProcessor extends DataProcessor {
       エーテル: "ether",
       霜烈: "frost",
       玄墨: "auricInk",
+      凛刃: "honedEdge",
+      流明: "lumiflux",
+      風: "wind",
     };
 
     const mapped = statsMap[stats];
     if (!mapped) {
       throw new MappingError(
         `未知の属性: "${stats}". 利用可能な属性: ${Object.keys(statsMap).join(
-          ", "
-        )}`
+          ", ",
+        )}`,
       );
     }
     return mapStatsToArray(mapped);
@@ -298,17 +304,17 @@ export class EnhancedDataProcessor extends DataProcessor {
       // 配列の長さを検証（HP、ATK、DEFは7要素である必要がある）
       if (attributes.hp.length !== 7) {
         throw new ParsingError(
-          `HP配列の長さが不正です。期待値: 7, 実際: ${attributes.hp.length}`
+          `HP配列の長さが不正です。期待値: 7, 実際: ${attributes.hp.length}`,
         );
       }
       if (attributes.atk.length !== 7) {
         throw new ParsingError(
-          `ATK配列の長さが不正です。期待値: 7, 実際: ${attributes.atk.length}`
+          `ATK配列の長さが不正です。期待値: 7, 実際: ${attributes.atk.length}`,
         );
       }
       if (attributes.def.length !== 7) {
         throw new ParsingError(
-          `DEF配列の長さが不正です。期待値: 7, 実際: ${attributes.def.length}`
+          `DEF配列の長さが不正です。期待値: 7, 実際: ${attributes.def.length}`,
         );
       }
 
@@ -409,7 +415,7 @@ export class EnhancedDataProcessor extends DataProcessor {
    */
   private resolveFactionByName(
     factionName: string,
-    language: Lang = "ja"
+    language: Lang = "ja",
   ): number {
     const factionMap = this.createFactionNameToIdMap();
 
@@ -417,7 +423,7 @@ export class EnhancedDataProcessor extends DataProcessor {
     if (factionId === undefined) {
       const availableFactions = Object.keys(factionMap).join(", ");
       throw new MappingError(
-        `未知の陣営名: "${factionName}" (言語: ${language}). 利用可能な陣営: ${availableFactions}`
+        `未知の陣営名: "${factionName}" (言語: ${language}). 利用可能な陣営: ${availableFactions}`,
       );
     }
 
@@ -474,6 +480,9 @@ export class EnhancedDataProcessor extends DataProcessor {
       "electric",
       "frost",
       "auricInk",
+      "lumiflux",
+      "honedEdge",
+      "wind",
     ];
 
     // Stats[] 配列の検証
@@ -488,8 +497,8 @@ export class EnhancedDataProcessor extends DataProcessor {
         if (!validStats.includes(stat)) {
           errors.push(
             `無効な stats[${i}] 値: "${stat}". 有効な値: ${validStats.join(
-              ", "
-            )}`
+              ", ",
+            )}`,
           );
         }
       }
@@ -498,7 +507,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       const uniqueStats = new Set(character.stats);
       if (uniqueStats.size !== character.stats.length) {
         warnings.push(
-          `stats 配列に重複した値があります: [${character.stats.join(", ")}]`
+          `stats 配列に重複した値があります: [${character.stats.join(", ")}]`,
         );
       }
     }
@@ -523,7 +532,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       errors.push(
         `ATK配列の長さが不正です。期待値: 7, 実際: ${
           character.attr.atk?.length || 0
-        }`
+        }`,
       );
     }
 
@@ -531,7 +540,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       errors.push(
         `DEF配列の長さが不正です。期待値: 7, 実際: ${
           character.attr.def?.length || 0
-        }`
+        }`,
       );
     }
 

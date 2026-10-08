@@ -171,9 +171,11 @@ describe("型定義の互換性テスト", () => {
         "electric",
         "frost",
         "auricInk",
+        "lumiflux",
+        "honedEdge",
       ];
 
-      expect(stats).toHaveLength(7);
+      expect(stats).toHaveLength(9);
     });
 
     it("Character.stats配列型が正常に動作することを確認", () => {
@@ -308,10 +310,10 @@ describe("型定義の互換性テスト", () => {
       };
 
       expect(processCharacter(characterWithoutAssist)).toBe(
-        "テスト1 (支援タイプなし)"
+        "テスト1 (支援タイプなし)",
       );
       expect(processCharacter(characterWithAssist)).toBe(
-        "テスト2 (支援タイプ: evasive)"
+        "テスト2 (支援タイプ: evasive)",
       );
     });
 
@@ -364,14 +366,14 @@ describe("型定義の互換性テスト", () => {
 
       // 支援タイプを持つキャラクターのフィルタリング
       const charactersWithAssist = characters.filter(
-        (char) => char.assistType !== undefined
+        (char) => char.assistType !== undefined,
       );
       expect(charactersWithAssist).toHaveLength(1);
       expect(charactersWithAssist[0].assistType).toBe("evasive");
 
       // 支援タイプを持たないキャラクターのフィルタリング
       const charactersWithoutAssist = characters.filter(
-        (char) => char.assistType === undefined
+        (char) => char.assistType === undefined,
       );
       expect(charactersWithoutAssist).toHaveLength(1);
       expect(charactersWithoutAssist[0].id).toBe("char2");

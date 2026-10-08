@@ -37,6 +37,13 @@ export default [
     },
   },
   {
+    id: "wind",
+    label: {
+      ja: "風",
+      en: "Wind",
+    },
+  },
+  {
     id: "frost",
     label: {
       ja: "霜烈",
@@ -48,6 +55,27 @@ export default [
     label: {
       ja: "玄墨",
       en: "Auric Ink",
+    },
+  },
+  {
+    id: "lumiflux",
+    label: {
+      ja: "流明",
+      en: "Lumiflux",
+    },
+  },
+  {
+    id: "honedEdge",
+    label: {
+      ja: "凛刃",
+      en: "Honed Edge",
+    },
+  },
+  {
+    id: "wind",
+    label: {
+      ja: "風",
+      en: "Wind",
     },
   },
 ] as StatsData[];

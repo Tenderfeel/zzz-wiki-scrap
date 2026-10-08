@@ -31,7 +31,7 @@ export class CharacterGenerator {
   generateCharacter(
     jaData: ProcessedData,
     enData: ProcessedData,
-    characterId: string
+    characterId: string,
   ): Character {
     try {
       logger.debug(LogMessages.CHARACTER_GENERATION_START, { characterId });
@@ -61,7 +61,7 @@ export class CharacterGenerator {
 
       // 基本情報のマッピング
       const specialty = this.dataMapper.mapSpecialty(
-        jaData.basicInfo.specialty
+        jaData.basicInfo.specialty,
       );
       const stats = this.dataMapper.mapStats(jaData.basicInfo.stats);
       const rarity = this.dataMapper.mapRarity(jaData.basicInfo.rarity);
@@ -69,19 +69,19 @@ export class CharacterGenerator {
       // fullName: Wikiから取得した生のAPI名を常に使用
       const fullName = this.dataMapper.createMultiLangName(
         jaData.basicInfo.name,
-        enData.basicInfo.name
+        enData.basicInfo.name,
       );
 
       // name: Scraping.mdの値（名前マッピング）を優先使用、フォールバックでAPI名
       const name = this.dataMapper.createNamesWithFallback(
         characterId,
         jaData.basicInfo.name,
-        enData.basicInfo.name
+        enData.basicInfo.name,
       );
 
       // 属性データの処理
       const attributes = this.attributesProcessor.processAscensionData(
-        jaData.attributesInfo.ascensionData
+        jaData.attributesInfo.ascensionData,
       );
 
       // Character オブジェクトを構築
@@ -111,7 +111,7 @@ export class CharacterGenerator {
       }
       throw new ValidationError(
         "Characterオブジェクトの生成に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -124,7 +124,7 @@ export class CharacterGenerator {
   generateCharacterFromPartialData(
     partialData: Partial<ProcessedData>,
     characterId: string,
-    missingFields: string[] = []
+    missingFields: string[] = [],
   ): Character | null {
     try {
       logger.info("部分データからのCharacter生成を開始", {
@@ -155,7 +155,7 @@ export class CharacterGenerator {
       // 基本情報の処理（フォールバック付き）
       const name = this.processPartialName(
         partialData.basicInfo.name,
-        characterId
+        characterId,
       );
       const fullName = name; // 部分データではnameと同じ
 
@@ -166,7 +166,7 @@ export class CharacterGenerator {
         !missingFields.includes("specialty")
       ) {
         specialty = this.dataMapper.mapSpecialty(
-          partialData.basicInfo.specialty
+          partialData.basicInfo.specialty,
         );
       }
       if (!specialty) {
@@ -233,7 +233,7 @@ export class CharacterGenerator {
       if (partialData.attributesInfo && !missingFields.includes("ascension")) {
         try {
           attributes = this.attributesProcessor.processAscensionData(
-            partialData.attributesInfo.ascensionData
+            partialData.attributesInfo.ascensionData,
           );
         } catch (error) {
           logger.warn("属性データの処理に失敗、空の値を適用", {
@@ -288,14 +288,14 @@ export class CharacterGenerator {
    */
   private processPartialName(
     apiName: string,
-    characterId: string
+    characterId: string,
   ): { ja: string; en: string } {
     try {
       // 名前マッピングを優先使用
       const mappedName = this.dataMapper.createNamesWithFallback(
         characterId,
         apiName,
-        apiName // 部分データでは英語名も同じ
+        apiName, // 部分データでは英語名も同じ
       );
       return mappedName;
     } catch (error) {
@@ -323,7 +323,7 @@ export class CharacterGenerator {
    */
   validateCharacter(
     character: Character,
-    allowPartialData: boolean = false
+    allowPartialData: boolean = false,
   ): ValidationResult {
     const errors: string[] = [];
 
@@ -360,7 +360,7 @@ export class CharacterGenerator {
           "stats フィールドが存在しないか空です（部分データモード）",
           {
             characterId: character.id,
-          }
+          },
         );
       } else {
         errors.push("stats フィールドが存在しません");
@@ -476,7 +476,7 @@ export class CharacterGenerator {
       !validSpecialties.includes(character.specialty)
     ) {
       errors.push(
-        `specialty "${character.specialty}" は有効な値ではありません`
+        `specialty "${character.specialty}" は有効な値ではありません`,
       );
     }
 
@@ -488,6 +488,9 @@ export class CharacterGenerator {
       "electric",
       "frost",
       "auricInk",
+      "lumiflux",
+      "honedEdge",
+      "wind",
     ];
     if (character.stats) {
       if (!Array.isArray(character.stats) || character.stats.length === 0) {
@@ -526,7 +529,7 @@ export class CharacterGenerator {
   validatePartialCharacter(
     character: Character,
     requiredFields: string[] = ["id", "name", "attr"],
-    optionalFields: string[] = ["specialty", "stats", "faction", "rarity"]
+    optionalFields: string[] = ["specialty", "stats", "faction", "rarity"],
   ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -568,7 +571,7 @@ export class CharacterGenerator {
                 character.attr.hp.length !== 7
               ) {
                 errors.push(
-                  "attr.hp 配列は正確に 7 つの値を含む必要があります"
+                  "attr.hp 配列は正確に 7 つの値を含む必要があります",
                 );
               }
               if (
@@ -576,7 +579,7 @@ export class CharacterGenerator {
                 character.attr.atk.length !== 7
               ) {
                 errors.push(
-                  "attr.atk 配列は正確に 7 つの値を含む必要があります"
+                  "attr.atk 配列は正確に 7 つの値を含む必要があります",
                 );
               }
               if (
@@ -584,7 +587,7 @@ export class CharacterGenerator {
                 character.attr.def.length !== 7
               ) {
                 errors.push(
-                  "attr.def 配列は正確に 7 つの値を含む必要があります"
+                  "attr.def 配列は正確に 7 つの値を含む必要があります",
                 );
               }
             }
@@ -598,7 +601,7 @@ export class CharacterGenerator {
           case "specialty":
             if (!character.specialty) {
               warnings.push(
-                "specialty フィールドが存在しません（オプショナル）"
+                "specialty フィールドが存在しません（オプショナル）",
               );
             } else {
               const validSpecialties = [
@@ -611,7 +614,7 @@ export class CharacterGenerator {
               ];
               if (!validSpecialties.includes(character.specialty)) {
                 warnings.push(
-                  `specialty "${character.specialty}" は有効な値ではありません`
+                  `specialty "${character.specialty}" は有効な値ではありません`,
                 );
               }
             }
@@ -622,7 +625,7 @@ export class CharacterGenerator {
               (Array.isArray(character.stats) && character.stats.length === 0)
             ) {
               warnings.push(
-                "stats フィールドが存在しないか空です（オプショナル）"
+                "stats フィールドが存在しないか空です（オプショナル）",
               );
             } else {
               const validStats = [
@@ -633,6 +636,9 @@ export class CharacterGenerator {
                 "electric",
                 "frost",
                 "auricInk",
+                "lumiflux",
+                "honedEdge",
+                "wind",
               ];
               for (const stat of character.stats) {
                 if (!validStats.includes(stat)) {
@@ -653,7 +659,7 @@ export class CharacterGenerator {
               const validRarities = ["A", "S"];
               if (!validRarities.includes(character.rarity)) {
                 warnings.push(
-                  `rarity "${character.rarity}" は有効な値ではありません`
+                  `rarity "${character.rarity}" は有効な値ではありません`,
                 );
               }
             }
@@ -697,7 +703,7 @@ export class CharacterGenerator {
    */
   generateMissingDataErrorMessage(
     characterId: string,
-    missingFields: string[]
+    missingFields: string[],
   ): string {
     if (missingFields.length === 0) {
       return "データは完全です";
@@ -708,13 +714,13 @@ export class CharacterGenerator {
     const attributeFields = ["ascension", "modules"];
 
     const criticalMissing = missingFields.filter((field) =>
-      criticalFields.includes(field)
+      criticalFields.includes(field),
     );
     const basicMissing = missingFields.filter((field) =>
-      basicFields.includes(field)
+      basicFields.includes(field),
     );
     const attributeMissing = missingFields.filter((field) =>
-      attributeFields.includes(field)
+      attributeFields.includes(field),
     );
 
     let message = `キャラクター "${characterId}" のデータ処理で以下の問題が発生しました:\n`;
@@ -745,12 +751,12 @@ export class CharacterGenerator {
    */
   outputCharacterFile(
     character: Character,
-    outputPath: string = "data/characters.ts"
+    outputPath: string = "data/characters.ts",
   ): void {
     try {
       if (!character) {
         throw new ValidationError(
-          "出力するCharacterオブジェクトが存在しません"
+          "出力するCharacterオブジェクトが存在しません",
         );
       }
 
@@ -785,7 +791,7 @@ ${characterCode}
       } catch (error) {
         throw new ParsingError(
           `ファイル "${outputPath}" の書き込みに失敗しました`,
-          error as Error
+          error as Error,
         );
       }
     } catch (error) {
@@ -810,10 +816,10 @@ ${characterCode}
     return `${indent}{
 ${indent}  id: "${character.id}",
 ${indent}  name: { ja: "${this.escapeString(
-      character.name.ja
+      character.name.ja,
     )}", en: "${this.escapeString(character.name.en)}" },
 ${indent}  fullName: { ja: "${this.escapeString(
-      character.fullName.ja
+      character.fullName.ja,
     )}", en: "${this.escapeString(character.fullName.en)}" },
 ${indent}  specialty: "${character.specialty}",
 ${indent}  stats: ${statsArray},

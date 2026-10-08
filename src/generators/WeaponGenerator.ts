@@ -39,7 +39,7 @@ export class WeaponGenerator {
   generateWeapon(
     jaData: ProcessedWeaponData,
     enData: ProcessedWeaponData | null,
-    weaponId: string
+    weaponId: string,
   ): Weapon {
     try {
       logger.debug("音動機オブジェクト生成を開始", { weaponId });
@@ -73,7 +73,7 @@ export class WeaponGenerator {
         enData?.skillInfo?.equipmentSkillName || skillInfo.equipmentSkillName;
       const equipmentSkillName = this.dataMapper.createMultiLangName(
         skillInfo.equipmentSkillName,
-        enSkillName
+        enSkillName,
       );
 
       // 多言語スキル説明の作成
@@ -81,7 +81,7 @@ export class WeaponGenerator {
         enData?.skillInfo?.equipmentSkillDesc || skillInfo.equipmentSkillDesc;
       const equipmentSkillDesc = this.dataMapper.createMultiLangName(
         skillInfo.equipmentSkillDesc,
-        enSkillDesc
+        enSkillDesc,
       );
 
       // レア度マッピング
@@ -204,7 +204,7 @@ export class WeaponGenerator {
       }
       throw new ValidationError(
         "Weaponオブジェクトの生成に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -300,7 +300,7 @@ export class WeaponGenerator {
   generateEnhancedWeapon(
     jaData: ProcessedWeaponData,
     enData: ProcessedWeaponData | null,
-    weaponId: string
+    weaponId: string,
   ): EnhancedWeapon {
     try {
       logger.debug("拡張武器オブジェクト生成を開始", { weaponId });
@@ -343,7 +343,7 @@ export class WeaponGenerator {
       jaData: ProcessedWeaponData;
       enData: ProcessedWeaponData | null;
       weaponId: string;
-    }>
+    }>,
   ): EnhancedWeapon[] {
     const enhancedWeapons: EnhancedWeapon[] = [];
 
@@ -356,7 +356,7 @@ export class WeaponGenerator {
         const enhancedWeapon = this.generateEnhancedWeapon(
           jaData,
           enData,
-          weaponId
+          weaponId,
         );
         enhancedWeapons.push(enhancedWeapon);
       } catch (error) {
@@ -479,14 +479,14 @@ export class WeaponGenerator {
             errors.push(`attr.${key} は配列である必要があります`);
           } else if (value.length !== 0 && value.length !== 7) {
             errors.push(
-              `attr.${key} 配列は0個または7個の値を含む必要があります（現在: ${value.length}）`
+              `attr.${key} 配列は0個または7個の値を含む必要があります（現在: ${value.length}）`,
             );
           } else if (value.length > 0) {
             // 数値の検証（空配列でない場合のみ）
             for (let i = 0; i < value.length; i++) {
               if (typeof value[i] !== "number" || isNaN(value[i])) {
                 errors.push(
-                  `attr.${key}[${i}] は有効な数値である必要があります: ${value[i]}`
+                  `attr.${key}[${i}] は有効な数値である必要があります: ${value[i]}`,
                 );
               }
             }
@@ -498,7 +498,7 @@ export class WeaponGenerator {
       const validRarities: Rarity[] = ["A", "S"];
       if (weapon.rarity && !validRarities.includes(weapon.rarity)) {
         errors.push(
-          `rarity "${weapon.rarity}" は有効な値ではありません（"A"または"S"である必要があります）`
+          `rarity "${weapon.rarity}" は有効な値ではありません（"A"または"S"である必要があります）`,
         );
       }
 
@@ -522,6 +522,9 @@ export class WeaponGenerator {
         "electric",
         "frost",
         "auricInk",
+        "lumiflux",
+        "honedEdge",
+        "wind",
       ];
       if (weapon.stats) {
         if (!Array.isArray(weapon.stats)) {
@@ -556,7 +559,7 @@ export class WeaponGenerator {
         !validAttributes.includes(weapon.advancedAttr)
       ) {
         errors.push(
-          `advancedAttr "${weapon.advancedAttr}" は有効な値ではありません`
+          `advancedAttr "${weapon.advancedAttr}" は有効な値ではありません`,
         );
       }
 
@@ -626,12 +629,15 @@ export class WeaponGenerator {
           "electric",
           "frost",
           "auricInk",
+          "lumiflux",
+          "honedEdge",
+          "wind",
         ];
 
         for (const attr of enhancedWeapon.extractedAttributes) {
           if (!validStats.includes(attr)) {
             errors.push(
-              `extractedAttributes に無効な属性が含まれています: "${attr}"`
+              `extractedAttributes に無効な属性が含まれています: "${attr}"`,
             );
           }
         }
@@ -695,12 +701,12 @@ export class WeaponGenerator {
    */
   outputWeaponFile(
     weapons: Weapon[],
-    outputPath: string = "data/weapons.ts"
+    outputPath: string = "data/weapons.ts",
   ): void {
     try {
       if (!weapons || !Array.isArray(weapons)) {
         throw new ValidationError(
-          "出力するWeaponオブジェクト配列が存在しません"
+          "出力するWeaponオブジェクト配列が存在しません",
         );
       }
 
@@ -739,7 +745,7 @@ ${weaponArrayCode}
       } catch (error) {
         throw new ParsingError(
           `ファイル "${outputPath}" の書き込みに失敗しました`,
-          error as Error
+          error as Error,
         );
       }
     } catch (error) {
@@ -764,12 +770,12 @@ ${weaponArrayCode}
    */
   outputEnhancedWeaponFile(
     enhancedWeapons: EnhancedWeapon[],
-    outputPath: string = "data/enhanced-weapons.ts"
+    outputPath: string = "data/enhanced-weapons.ts",
   ): void {
     try {
       if (!enhancedWeapons || !Array.isArray(enhancedWeapons)) {
         throw new ValidationError(
-          "出力するEnhancedWeaponオブジェクト配列が存在しません"
+          "出力するEnhancedWeaponオブジェクト配列が存在しません",
         );
       }
 
@@ -809,7 +815,7 @@ ${enhancedWeaponArrayCode}
       } catch (error) {
         throw new ParsingError(
           `ファイル "${outputPath}" の書き込みに失敗しました`,
-          error as Error
+          error as Error,
         );
       }
     } catch (error) {
@@ -824,7 +830,7 @@ ${enhancedWeaponArrayCode}
       }
       throw new ParsingError(
         "拡張武器ファイル出力に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -867,13 +873,13 @@ ${enhancedWeaponArrayCode}
     return `${indent}{
 ${indent}  id: ${weapon.id},
 ${indent}  name: { ja: "${this.escapeString(
-      weapon.name.ja
+      weapon.name.ja,
     )}", en: "${this.escapeString(weapon.name.en)}" },
 ${indent}  equipmentSkillName: { ja: "${this.escapeString(
-      weapon.equipmentSkillName.ja
+      weapon.equipmentSkillName.ja,
     )}", en: "${this.escapeString(weapon.equipmentSkillName.en)}" },
 ${indent}  equipmentSkillDesc: { ja: "${this.escapeString(
-      weapon.equipmentSkillDesc.ja
+      weapon.equipmentSkillDesc.ja,
     )}", en: "${this.escapeString(weapon.equipmentSkillDesc.en)}" },
 ${indent}  rarity: "${weapon.rarity}",
 ${indent}  attr: {
@@ -909,7 +915,7 @@ ${indent}}`;
 
     // extractedAttributes配列をフォーマット
     const extractedAttributesArray = Array.isArray(
-      enhancedWeapon.extractedAttributes
+      enhancedWeapon.extractedAttributes,
     )
       ? `[${enhancedWeapon.extractedAttributes
           .map((attr) => `"${attr}"`)
@@ -919,13 +925,13 @@ ${indent}}`;
     return `${indent}{
 ${indent}  id: ${enhancedWeapon.id},
 ${indent}  name: { ja: "${this.escapeString(
-      enhancedWeapon.name.ja
+      enhancedWeapon.name.ja,
     )}", en: "${this.escapeString(enhancedWeapon.name.en)}" },
 ${indent}  equipmentSkillName: { ja: "${this.escapeString(
-      enhancedWeapon.equipmentSkillName.ja
+      enhancedWeapon.equipmentSkillName.ja,
     )}", en: "${this.escapeString(enhancedWeapon.equipmentSkillName.en)}" },
 ${indent}  equipmentSkillDesc: { ja: "${this.escapeString(
-      enhancedWeapon.equipmentSkillDesc.ja
+      enhancedWeapon.equipmentSkillDesc.ja,
     )}", en: "${this.escapeString(enhancedWeapon.equipmentSkillDesc.en)}" },
 ${indent}  rarity: "${enhancedWeapon.rarity}",
 ${indent}  attr: {
@@ -937,7 +943,7 @@ ${indent}    critRate: [${enhancedWeapon.attr.critRate.join(", ")}],
 ${indent}    critDmg: [${enhancedWeapon.attr.critDmg.join(", ")}],
 ${indent}    anomalyMastery: [${enhancedWeapon.attr.anomalyMastery.join(", ")}],
 ${indent}    anomalyProficiency: [${enhancedWeapon.attr.anomalyProficiency.join(
-      ", "
+      ", ",
     )}],
 ${indent}    penRatio: [${enhancedWeapon.attr.penRatio.join(", ")}],
 ${indent}    energy: [${enhancedWeapon.attr.energy.join(", ")}],

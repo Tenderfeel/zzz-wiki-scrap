@@ -31,7 +31,7 @@ export class BompGenerator {
   generateBomp(
     jaData: ProcessedBompData,
     enData: ProcessedBompData | null,
-    bompId: string
+    bompId: string,
   ): Bomp {
     try {
       logger.debug("ボンプオブジェクト生成を開始", { bompId });
@@ -57,19 +57,19 @@ export class BompGenerator {
       const enName = enData?.basicInfo?.name || jaData.basicInfo.name;
       const name = this.dataMapper.createMultiLangName(
         jaData.basicInfo.name,
-        enName
+        enName,
       );
 
       // 属性データの処理
       const attributes = this.attributesProcessor.processAscensionData(
-        jaData.attributesInfo.ascensionData
+        jaData.attributesInfo.ascensionData,
       );
 
       // レア度マッピング（正規化してからマッピング）
       let rarity: "A" | "S" = "A"; // デフォルト値
       try {
         const normalizedRarity = this.bompDataMapper.normalizeRarity(
-          jaData.basicInfo.rarity
+          jaData.basicInfo.rarity,
         );
         rarity = this.dataMapper.mapRarity(normalizedRarity);
         logger.debug("レア度マッピング成功", {
@@ -116,7 +116,7 @@ export class BompGenerator {
       }
       throw new ValidationError(
         "Bompオブジェクトの生成に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -177,11 +177,11 @@ export class BompGenerator {
         errors.push("faction は配列である必要があります");
       } else {
         const invalidFactionIds = bomp.faction.filter(
-          (id) => typeof id !== "number" || id <= 0
+          (id) => typeof id !== "number" || id <= 0,
         );
         if (invalidFactionIds.length > 0) {
           errors.push(
-            `無効な派閥IDが含まれています: ${invalidFactionIds.join(", ")}`
+            `無効な派閥IDが含まれています: ${invalidFactionIds.join(", ")}`,
           );
         }
       }
@@ -235,6 +235,9 @@ export class BompGenerator {
         "electric",
         "frost",
         "auricInk",
+        "lumiflux",
+        "honedEdge",
+        "wind",
       ];
       if (bomp.stats) {
         if (!Array.isArray(bomp.stats) || bomp.stats.length === 0) {
@@ -256,7 +259,7 @@ export class BompGenerator {
         !validRarities.includes(bomp.rarity)
       ) {
         errors.push(
-          `rarity "${bomp.rarity}" は有効な値ではありません（"A"または"S"である必要があります）`
+          `rarity "${bomp.rarity}" は有効な値ではありません（"A"または"S"である必要があります）`,
         );
         logger.warn("レア度検証エラー", {
           bompId: bomp.id,
@@ -354,7 +357,7 @@ ${bompArrayCode}
       } catch (error) {
         throw new ParsingError(
           `ファイル "${outputPath}" の書き込みに失敗しました`,
-          error as Error
+          error as Error,
         );
       }
     } catch (error) {
@@ -406,7 +409,7 @@ ${bompArrayCode}
     return `${indent}{
 ${indent}  id: "${bomp.id}",
 ${indent}  name: { ja: "${this.escapeString(
-      bomp.name.ja
+      bomp.name.ja,
     )}", en: "${this.escapeString(bomp.name.en)}" },
 ${indent}  stats: ${statsArray},
 ${indent}  rarity: "${rarityValue}",

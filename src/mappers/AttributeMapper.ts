@@ -16,6 +16,11 @@ export class AttributeMapper {
     電気属性: "electric",
     物理属性: "physical",
     エーテル属性: "ether",
+    霜烈属性: "frost",
+    玄墨属性: "auricInk",
+    凛刃属性: "honedEdge",
+    流明属性: "lumiflux",
+    風属性: "wind",
   };
 
   /**
@@ -26,7 +31,7 @@ export class AttributeMapper {
    */
   static mapToEnglish(
     japaneseAttribute: string,
-    weaponId?: number
+    weaponId?: number,
   ): Stats | null {
     const logContext = weaponId ? { weaponId } : {};
 
@@ -85,7 +90,7 @@ export class AttributeMapper {
         throw new AttributeExtractionMappingError(
           weaponId,
           `属性マッピング中にエラーが発生: ${errorMessage}`,
-          error instanceof Error ? error : undefined
+          error instanceof Error ? error : undefined,
         );
       }
 
@@ -101,7 +106,7 @@ export class AttributeMapper {
    */
   static mapMultipleToEnglish(
     japaneseAttributes: string[],
-    weaponId?: number
+    weaponId?: number,
   ): Stats[] {
     const logContext = weaponId ? { weaponId } : {};
 
@@ -148,7 +153,7 @@ export class AttributeMapper {
           const errorMessage =
             error instanceof Error ? error.message : String(error);
           errors.push(
-            `インデックス ${i}: "${attr}" の処理でエラー: ${errorMessage}`
+            `インデックス ${i}: "${attr}" の処理でエラー: ${errorMessage}`,
           );
 
           // 個別のエラーはログに記録するが、処理は継続
@@ -192,7 +197,7 @@ export class AttributeMapper {
         throw new AttributeExtractionMappingError(
           weaponId,
           `複数属性マッピング中にエラーが発生: ${errorMessage}`,
-          error instanceof Error ? error : undefined
+          error instanceof Error ? error : undefined,
         );
       }
 

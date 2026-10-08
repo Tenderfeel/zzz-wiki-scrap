@@ -53,7 +53,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
     it("should validate Character type structure for version 2.3 characters", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       expect(version23Characters.length).toBeGreaterThan(0);
@@ -109,6 +109,8 @@ describe("Version 2.3 Character Data Validation Tests", () => {
           "electric",
           "frost",
           "auricInk",
+          "lumiflux",
+          "honedEdge",
         ];
         character.stats.forEach((stat) => {
           expect(validStats).toContain(stat);
@@ -219,7 +221,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
   describe("Required Field Presence and Empty Value Application", () => {
     it("should validate that all version 2.3 characters have required fields", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       const requiredFields = [
@@ -277,7 +279,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
     it("should validate that empty values follow the correct format", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       version23Characters.forEach((character) => {
@@ -348,10 +350,10 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
     it("should validate integration with existing character data", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
       const existingCharacters = characters.filter(
-        (char) => !version23CharacterIds.includes(char.id)
+        (char) => !version23CharacterIds.includes(char.id),
       );
 
       // 既存キャラクターが存在することを確認
@@ -362,7 +364,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
       // 全体のデータ整合性を確認
       expect(version23Characters.length + existingCharacters.length).toBe(
-        characters.length
+        characters.length,
       );
 
       // ID の重複がないことを確認
@@ -395,7 +397,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
         // エラー時のデバッグ情報
         if (version23CharacterIds.includes(character.id)) {
           console.log(
-            `Version 2.3 character validation passed: ${character.id} (index: ${index})`
+            `Version 2.3 character validation passed: ${character.id} (index: ${index})`,
           );
         }
       });
@@ -403,7 +405,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
 
     it("should validate character data consistency across versions", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       version23Characters.forEach((character) => {
@@ -416,7 +418,7 @@ describe("Version 2.3 Character Data Validation Tests", () => {
         const sampleExistingCharacter = characters.find(
           (char) =>
             !version23CharacterIds.includes(char.id) &&
-            char.specialty !== undefined
+            char.specialty !== undefined,
         );
 
         if (sampleExistingCharacter) {
@@ -474,7 +476,7 @@ export default ${JSON.stringify(characters, null, 2)} as Character[];
 
       // バージョン2.3キャラクターのシリアライゼーションを確認
       const version23Characters = deserialized.filter((char: any) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       expect(version23Characters.length).toBeGreaterThan(0);
@@ -491,7 +493,7 @@ export default ${JSON.stringify(characters, null, 2)} as Character[];
   describe("Version 2.3 Specific Validation", () => {
     it("should validate version 2.3 character release versions", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       version23Characters.forEach((character) => {
@@ -531,21 +533,21 @@ export default ${JSON.stringify(characters, null, 2)} as Character[];
 
     it("should validate version 2.3 character data completeness", () => {
       const version23Characters = characters.filter((char) =>
-        version23CharacterIds.includes(char.id)
+        version23CharacterIds.includes(char.id),
       );
 
       const completeCharacters = version23Characters.filter(
         (char) =>
           char.specialty !== undefined &&
           char.rarity !== undefined &&
-          char.attr.hp.some((v) => v > 0)
+          char.attr.hp.some((v) => v > 0),
       );
 
       const partialCharacters = version23Characters.filter(
         (char) =>
           char.specialty === undefined ||
           char.rarity === undefined ||
-          char.attr.hp.every((v) => v === 0)
+          char.attr.hp.every((v) => v === 0),
       );
 
       // 少なくとも一部のキャラクターは完全なデータを持つことを確認
