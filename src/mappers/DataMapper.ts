@@ -3,6 +3,7 @@ import { MappingError } from "../errors";
 import { logger, LogMessages } from "../utils/Logger";
 import { NameResolver } from "./NameResolver";
 import { mapStatsToArray } from "../utils/StatsArrayMapper";
+import { STATS_MAPPING, SPECIALTY_MAPPING, ASSIST_TYPE_MAPPING } from "./MasterMappings";
 
 /**
  * データマッピング機能を提供するクラス
@@ -27,69 +28,11 @@ export class DataMapper {
       });
     }
   }
-  // 特性マッピング
-  private static readonly SPECIALTY_MAPPING: Record<string, Specialty> = {
-    撃破: "stun",
-    強攻: "attack",
-    異常: "anomaly",
-    支援: "support",
-    防護: "defense",
-    命破: "rupture",
-    鋭御: "armorer",
-    // 英語特性名（APIから直接返される場合）
-    Armorer: "armorer",
-  };
-
-  // 属性マッピング
-  private static readonly STATS_MAPPING: Record<string, Stats> = {
-    // 日本語属性名
-    氷属性: "ice",
-    炎属性: "fire",
-    電気属性: "electric",
-    物理属性: "physical",
-    エーテル属性: "ether",
-    霜烈属性: "frost",
-    玄墨属性: "auricInk",
-    凛刃属性: "honedEdge",
-    流明属性: "lumiflux",
-    風属性: "wind",
-    // 英語属性名（APIから直接返される場合）
-    ice: "ice",
-    fire: "fire",
-    electric: "electric",
-    physical: "physical",
-    ether: "ether",
-    frost: "frost",
-    auricInk: "auricInk",
-    honedEdge: "honedEdge",
-    lumiflux: "lumiflux",
-    wind: "wind",
-    // 英語属性名（大文字）
-    Ice: "ice",
-    Fire: "fire",
-    Electric: "electric",
-    Physical: "physical",
-    Ether: "ether",
-    Frost: "frost",
-    "Auric Ink": "auricInk",
-    "Frost Attribute": "frost",
-    "Honed Edge": "honedEdge",
-    Lumiflux: "lumiflux",
-    Wind: "wind",
-  };
 
   // レア度マッピング
   private static readonly RARITY_MAPPING: Record<string, Rarity> = {
     S: "S",
     A: "A",
-  };
-
-  // 支援タイプマッピング
-  private static readonly ASSIST_TYPE_MAPPING: Record<string, AssistType> = {
-    回避支援: "evasive",
-    パリィ支援: "defensive",
-    "Evasive Assist": "evasive",
-    "Defensive Assist": "defensive",
   };
 
   /**
@@ -99,11 +42,11 @@ export class DataMapper {
    * @throws MappingError 未知の特性名の場合
    */
   public mapSpecialty(rawSpecialty: string): Specialty {
-    const mapped = DataMapper.SPECIALTY_MAPPING[rawSpecialty];
+    const mapped = SPECIALTY_MAPPING[rawSpecialty];
     if (!mapped) {
       throw new MappingError(
         `未知の特性値です: "${rawSpecialty}". 有効な値: ${Object.keys(
-          DataMapper.SPECIALTY_MAPPING,
+          SPECIALTY_MAPPING,
         ).join(", ")}`,
       );
     }
@@ -117,11 +60,11 @@ export class DataMapper {
    * @throws MappingError 未知の属性名の場合
    */
   public mapStats(rawStats: string): Stats[] {
-    const mapped = DataMapper.STATS_MAPPING[rawStats];
+    const mapped = STATS_MAPPING[rawStats];
     if (!mapped) {
       throw new MappingError(
         `未知の属性値です: "${rawStats}". 有効な値: ${Object.keys(
-          DataMapper.STATS_MAPPING,
+          STATS_MAPPING,
         ).join(", ")}`,
       );
     }
@@ -168,7 +111,7 @@ export class DataMapper {
     }
 
     // マッピングを試行
-    const mapped = DataMapper.ASSIST_TYPE_MAPPING[trimmedValue];
+    const mapped = ASSIST_TYPE_MAPPING[trimmedValue];
 
     if (mapped) {
       logger.debug("支援タイプマッピング成功", {
@@ -181,7 +124,7 @@ export class DataMapper {
     // 未知の値の場合は警告をログ出力し、undefinedを返す
     logger.warn("未知の支援タイプ値です", {
       rawAssistType: trimmedValue,
-      availableValues: Object.keys(DataMapper.ASSIST_TYPE_MAPPING),
+      availableValues: Object.keys(ASSIST_TYPE_MAPPING),
     });
 
     return undefined;
@@ -593,10 +536,10 @@ export class DataMapper {
    */
   public static getAvailableMappings() {
     return {
-      specialty: Object.keys(DataMapper.SPECIALTY_MAPPING),
-      stats: Object.keys(DataMapper.STATS_MAPPING),
+      specialty: Object.keys(SPECIALTY_MAPPING),
+      stats: Object.keys(STATS_MAPPING),
       rarity: Object.keys(DataMapper.RARITY_MAPPING),
-      assistType: Object.keys(DataMapper.ASSIST_TYPE_MAPPING),
+      assistType: Object.keys(ASSIST_TYPE_MAPPING),
     };
   }
 }
