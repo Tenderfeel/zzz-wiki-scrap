@@ -83,6 +83,64 @@ describe("validate", () => {
     };
     expect(() => validate(data)).toThrow(/重複エイリアス/);
   });
+
+  it("空のカテゴリ配列でエラー", () => {
+    const data: MasterData = { ...minimalData, assistTypes: [] };
+    expect(() => validate(data)).toThrow(/assistTypes が空です/);
+  });
+
+  it("空のfactions配列でエラー", () => {
+    const data: MasterData = { ...minimalData, factions: [] };
+    expect(() => validate(data)).toThrow(/factions が空です/);
+  });
+
+  it("aliasesが空のエントリでエラー", () => {
+    const data: MasterData = {
+      ...minimalData,
+      stats: [{ id: "ice", label: { ja: "氷", en: "Ice" }, aliases: [] }],
+    };
+    expect(() => validate(data)).toThrow(/aliases が空です/);
+  });
+
+  it("aliasesが欠落したエントリでエラー", () => {
+    const data = {
+      ...minimalData,
+      stats: [{ id: "ice", label: { ja: "氷", en: "Ice" } }],
+    } as unknown as MasterData;
+    expect(() => validate(data)).toThrow(/aliases が空です/);
+  });
+
+  it("空のlabelでエラー", () => {
+    const data: MasterData = {
+      ...minimalData,
+      specialties: [{ id: "attack", label: { ja: "", en: "Attack" }, aliases: ["強攻"] }],
+    };
+    expect(() => validate(data)).toThrow(/label が空です/);
+  });
+
+  it("空のfaction nameでエラー", () => {
+    const data: MasterData = {
+      ...minimalData,
+      factions: [{ id: 1, name: { ja: "邪兎屋", en: "" } }],
+    };
+    expect(() => validate(data)).toThrow(/name が空です/);
+  });
+
+  it("識別子として不正なIDでエラー", () => {
+    const data: MasterData = {
+      ...minimalData,
+      stats: [{ id: 'ice"x', label: { ja: "氷", en: "Ice" }, aliases: ["氷属性"] }],
+    };
+    expect(() => validate(data)).toThrow(/不正なID/);
+  });
+
+  it("アンダースコアを含むIDは許可する", () => {
+    const data: MasterData = {
+      ...minimalData,
+      stats: [{ id: "test_element", label: { ja: "テスト", en: "Test" }, aliases: ["テスト属性"] }],
+    };
+    expect(() => validate(data)).not.toThrow();
+  });
 });
 
 describe("generateMasterTypes", () => {

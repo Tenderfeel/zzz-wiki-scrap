@@ -24,9 +24,25 @@ export type MasterData = {
   assistTypes: MasterDataEntry[];
 };
 
+const ID_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
+
 export function validate(data: MasterData): void {
   for (const category of ["stats", "specialties", "assistTypes"] as const) {
     const entries = data[category] as MasterDataEntry[];
+    if (!entries?.length) {
+      throw new Error(`${category} が空です`);
+    }
+    for (const entry of entries) {
+      if (!ID_PATTERN.test(entry.id)) {
+        throw new Error(`${category} に不正なIDがあります: ${JSON.stringify(entry.id)}`);
+      }
+      if (!entry.label?.ja || !entry.label?.en) {
+        throw new Error(`${category} の "${entry.id}" の label が空です`);
+      }
+      if (!entry.aliases?.length) {
+        throw new Error(`${category} の "${entry.id}" の aliases が空です`);
+      }
+    }
     const ids = entries.map((e) => e.id);
     const dupId = ids.find((id, i) => ids.indexOf(id) !== i);
     if (dupId) {
@@ -42,6 +58,14 @@ export function validate(data: MasterData): void {
         }
         seen.add(alias);
       }
+    }
+  }
+  if (!data.factions?.length) {
+    throw new Error("factions が空です");
+  }
+  for (const faction of data.factions) {
+    if (!faction.name?.ja || !faction.name?.en) {
+      throw new Error(`factions の ${faction.id} の name が空です`);
     }
   }
   const factionIds = data.factions.map((f) => f.id);
