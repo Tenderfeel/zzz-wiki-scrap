@@ -10,6 +10,15 @@ import {
 } from "../../src/errors";
 
 // モックデータ
+// 補正定義をモック（補正テスト専用の ID のみ）
+vi.mock("../../json/data-corrections.json", () => ({
+  default: {
+    characters: [
+      { id: "correction-test", path: "attr.hp.1", from: 1967, to: 1976, reason: "テスト用" },
+    ],
+  },
+}));
+
 const mockCharacterEntry: CharacterEntry = {
   id: "lycaon",
   pageId: 28,
@@ -146,6 +155,16 @@ describe("EnhancedDataProcessor", () => {
   });
 
   describe("processEnhancedCharacterData", () => {
+    it("json/data-corrections.json の補正を適用する", async () => {
+      const result = await processor.processEnhancedCharacterData(
+        mockJaApiResponse,
+        mockEnApiResponse,
+        { ...mockCharacterEntry, id: "correction-test" }
+      );
+
+      expect(result.attr.hp[1]).toBe(1976);
+    });
+
     it("正常なAPIレスポンスからCharacterオブジェクトを生成する", async () => {
       // Act
       const result = await processor.processEnhancedCharacterData(
