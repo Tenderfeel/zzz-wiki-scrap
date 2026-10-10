@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import characters from "../../data/characters";
 import statsData from "../../data/stats";
+import specialtiesData from "../../data/specialties";
 import {
   Character,
   AssistType,
@@ -444,14 +445,15 @@ describe("キャラクターデータの整合性テスト", () => {
       const specialtyDistribution: Record<
         Specialty,
         { total: number; evasive: number; defensive: number; undefined: number }
-      > = {
-        attack: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-        stun: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-        anomaly: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-        support: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-        defense: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-        rupture: { total: 0, evasive: 0, defensive: 0, undefined: 0 },
-      };
+      > = Object.fromEntries(
+        specialtiesData.map((s) => [
+          s.id,
+          { total: 0, evasive: 0, defensive: 0, undefined: 0 },
+        ]),
+      ) as Record<
+        Specialty,
+        { total: number; evasive: number; defensive: number; undefined: number }
+      >;
 
       characters.forEach((char) => {
         const dist = specialtyDistribution[char.specialty];
@@ -566,14 +568,12 @@ describe("キャラクターデータの整合性テスト", () => {
           .length,
         defensiveCount: characters.filter((c) => c.assistType === "defensive")
           .length,
-        specialtyDistribution: {
-          attack: characters.filter((c) => c.specialty === "attack").length,
-          stun: characters.filter((c) => c.specialty === "stun").length,
-          anomaly: characters.filter((c) => c.specialty === "anomaly").length,
-          support: characters.filter((c) => c.specialty === "support").length,
-          defense: characters.filter((c) => c.specialty === "defense").length,
-          rupture: characters.filter((c) => c.specialty === "rupture").length,
-        },
+        specialtyDistribution: Object.fromEntries(
+          specialtiesData.map((s) => [
+            s.id,
+            characters.filter((c) => c.specialty === s.id).length,
+          ]),
+        ),
       };
 
       // 基本的な整合性チェック
