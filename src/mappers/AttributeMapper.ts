@@ -1,28 +1,13 @@
 import { Stats } from "../types";
 import { AttributeExtractionMappingError } from "../errors";
 import { logger } from "../utils/Logger";
+import { STATS_MAPPING } from "./MasterMappings";
 
 /**
  * 属性マッピングクラス
  * 日本語属性名から英語属性名への変換を担当
  */
 export class AttributeMapper {
-  /**
-   * 日本語属性名から英語属性名へのマッピング定義
-   */
-  private static readonly ATTRIBUTE_MAPPING: Record<string, Stats> = {
-    炎属性: "fire",
-    氷属性: "ice",
-    電気属性: "electric",
-    物理属性: "physical",
-    エーテル属性: "ether",
-    霜烈属性: "frost",
-    玄墨属性: "auricInk",
-    凛刃属性: "honedEdge",
-    流明属性: "lumiflux",
-    風属性: "wind",
-  };
-
   /**
    * 日本語属性名を英語に変換
    * @param japaneseAttribute 日本語属性名
@@ -59,13 +44,13 @@ export class AttributeMapper {
         return null;
       }
 
-      const result = this.ATTRIBUTE_MAPPING[trimmedAttribute] || null;
+      const result = STATS_MAPPING[trimmedAttribute] ?? null;
 
       if (result === null) {
         logger.debug("未知の日本語属性名です", {
           ...logContext,
           japaneseAttribute: trimmedAttribute,
-          supportedAttributes: Object.keys(this.ATTRIBUTE_MAPPING),
+          supportedAttributes: Object.keys(STATS_MAPPING),
         });
       } else {
         logger.debug("属性マッピング成功", {
@@ -211,7 +196,7 @@ export class AttributeMapper {
    * @returns 有効な属性名の場合true
    */
   static isValidAttribute(attribute: string): attribute is Stats {
-    return Object.values(this.ATTRIBUTE_MAPPING).includes(attribute as Stats);
+    return Object.values(STATS_MAPPING).includes(attribute as Stats);
   }
 
   /**
@@ -219,7 +204,7 @@ export class AttributeMapper {
    * @returns 日本語→英語のマッピングオブジェクト
    */
   static getAttributeMapping(): Record<string, Stats> {
-    return { ...this.ATTRIBUTE_MAPPING };
+    return { ...STATS_MAPPING };
   }
 
   /**
@@ -227,7 +212,8 @@ export class AttributeMapper {
    * @returns 日本語属性名の配列
    */
   static getSupportedJapaneseAttributes(): string[] {
-    return Object.keys(this.ATTRIBUTE_MAPPING);
+    // STATS_MAPPING には英語の別名も含まれるため、日本語のキーだけを返す
+    return Object.keys(STATS_MAPPING).filter((key) => /[^\x00-\x7F]/.test(key));
   }
 
   /**
@@ -235,6 +221,6 @@ export class AttributeMapper {
    * @returns 英語属性名の配列
    */
   static getSupportedEnglishAttributes(): Stats[] {
-    return Object.values(this.ATTRIBUTE_MAPPING);
+    return [...new Set(Object.values(STATS_MAPPING))];
   }
 }

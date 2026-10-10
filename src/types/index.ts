@@ -1,33 +1,13 @@
+import type { Stats, Specialty, AssistType } from "./master-types";
+export type { Stats, Specialty, AssistType } from "./master-types";
+
 // 言語タイプ
 export type Lang = "en" | "ja";
-
-// 特性
-export type Specialty =
-  | "attack" // 強攻
-  | "stun" // 撃破
-  | "anomaly" // 異常
-  | "support" // 支援
-  | "defense" // 防護
-  | "rupture" // 命破
-  | "armorer"; // 鋭御
 
 export type SpecialtyData = {
   id: Specialty;
   label: { [key in Lang]: string };
 };
-
-// 属性
-export type Stats =
-  | "ether" // エーテル
-  | "fire" // 炎
-  | "ice" // 氷
-  | "physical" // 物理
-  | "electric" // 電気
-  | "frost" // 霜烈
-  | "auricInk" // 玄墨
-  | "lumiflux" // 流明
-  | "wind" // 風
-  | "honedEdge"; // 凛刃
 
 export type StatsData = {
   id: Stats;
@@ -131,10 +111,6 @@ export interface ListJsonData {
     list: CharacterListItem[];
   };
 }
-
-export type AssistType =
-  | "evasive" // 回避支援
-  | "defensive"; // パリィ支援
 
 // キャラクター
 export type Character = {
