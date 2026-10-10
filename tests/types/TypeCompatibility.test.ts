@@ -506,7 +506,15 @@ describe("DriverDisc specialty配列形式の互換性", () => {
       fourSetEffect: { ja: "効果", en: "Effect" },
       twoSetEffect: { ja: "効果", en: "Effect" },
       releaseVersion: 1.0,
-      specialty: ["attack", "stun", "anomaly", "support", "defense", "rupture"],
+      specialty: [
+        "attack",
+        "stun",
+        "anomaly",
+        "support",
+        "defense",
+        "rupture",
+        "armorer",
+      ],
     };
 
     const validSpecialties: Specialty[] = [
@@ -520,7 +528,7 @@ describe("DriverDisc specialty配列形式の互換性", () => {
     ];
 
     expect(Array.isArray(allSpecialtiesDisc.specialty)).toBe(true);
-    expect(allSpecialtiesDisc.specialty).toHaveLength(6);
+    expect(allSpecialtiesDisc.specialty).toHaveLength(7);
 
     for (const specialty of validSpecialties) {
       expect(allSpecialtiesDisc.specialty).toContain(specialty);

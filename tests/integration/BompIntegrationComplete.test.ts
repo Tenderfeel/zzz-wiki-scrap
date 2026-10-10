@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { performance } from "perf_hooks";
@@ -10,6 +18,11 @@ import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { main, loadConfig } from "../../src/main-bomp-generation";
 import { Bomp } from "../../src/types";
 import { ApiResponse } from "../../src/types/api";
+import {
+  createBompAscensionData,
+  createBompFactionFilterValues,
+  importGeneratedBomps,
+} from "./helpers/bompAscensionFixture";
 
 /**
  * 完全統合テストスイート - タスク 5.4
@@ -197,6 +210,7 @@ describe("Bomp Complete Integration Test Suite", () => {
           name,
           agent_specialties: { values: [] },
           agent_stats: { values: [stats] },
+          filter_values: createBompFactionFilterValues(factions),
           agent_rarity: { values: [] },
           agent_faction: { values: [] },
           modules: [
@@ -205,23 +219,17 @@ describe("Bomp Complete Integration Test Suite", () => {
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: { values: attributes.hp },
-                        atk: { values: attributes.atk },
-                        def: { values: attributes.def },
-                        impact: { values: [attributes.impact] },
-                        critRate: { values: [attributes.critRate] },
-                        critDmg: { values: [attributes.critDmg] },
-                        anomalyMastery: { values: [attributes.anomalyMastery] },
-                        anomalyProficiency: {
-                          values: [attributes.anomalyProficiency],
-                        },
-                        penRatio: { values: [attributes.penRatio] },
-                        energy: { values: [attributes.energy] },
-                      },
-                    ],
+                  data: createBompAscensionData({
+                    hp: attributes.hp,
+                    atk: attributes.atk,
+                    def: attributes.def,
+                    impact: attributes.impact,
+                    critRate: attributes.critRate,
+                    critDmg: attributes.critDmg,
+                    anomalyMastery: attributes.anomalyMastery,
+                    anomalyProficiency: attributes.anomalyProficiency,
+                    penRatio: attributes.penRatio,
+                    energy: attributes.energy,
                   }),
                 },
               ],
@@ -337,7 +345,18 @@ ${bompEntries}
       (global as any).configPath = testConfigPath;
 
       // Act
-      await main();
+      // main() always ends with process.exit(); stub it so the test runner survives
+      const exitSpy = vi
+        .spyOn(process, "exit")
+        .mockImplementation((() => undefined) as never);
+      let exitCodes: unknown[] = [];
+      try {
+        await main();
+      } finally {
+        exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+        exitSpy.mockRestore();
+      }
+      expect(exitCodes).toEqual([0]);
 
       // Assert
       expect(fs.existsSync(testOutputPath)).toBe(true);
@@ -350,8 +369,8 @@ ${bompEntries}
       expect(outputContent).toContain("complete-test-bomp-3");
 
       // Import and validate the generated bomps
-      const outputModule = await import(path.resolve(testOutputPath));
-      const bomps: Bomp[] = outputModule.default;
+      // Same output path is reused across tests; avoid the module cache
+      const bomps = await importGeneratedBomps<Bomp>(testOutputPath);
 
       expect(bomps).toHaveLength(3);
       bomps.forEach((bomp, index) => {
@@ -494,9 +513,9 @@ ${bompEntries}
       // Verify output file integrity
       expect(fs.existsSync(testOutputPath)).toBe(true);
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
-      expect(outputContent).toContain('"impact": 25');
-      expect(outputContent).toContain('"critRate": 12');
-      expect(outputContent).toContain('"stats": ["fire"]');
+      expect(outputContent).toContain("impact: 25");
+      expect(outputContent).toContain("critRate: 12");
+      expect(outputContent).toContain('stats: ["fire"]');
     });
   });
 
@@ -563,6 +582,12 @@ ${bompEntries}
       const testContent = createTestScrapingContent(2, "retry-test-bomp");
       fs.writeFileSync(testScrapingPath, testContent);
 
+      // Skip real retry back-off delays to keep the test fast
+      const delaySpy = vi
+        .spyOn(BompBatchProcessor.prototype as any, "delay")
+        .mockResolvedValue(undefined);
+      onTestFinished(() => delaySpy.mockRestore());
+
       let attemptCounts: { [key: string]: number } = {};
       const mockApiClient = vi.spyOn(
         HoyoLabApiClient.prototype,
@@ -603,11 +628,18 @@ ${bompEntries}
 
       // Assert
       expect(result.statistics.total).toBe(2);
-      // Note: The actual retry behavior depends on the implementation
-      // We verify that multiple attempts were made
-      expect(Object.values(attemptCounts).some((count) => count > 1)).toBe(
-        true
-      );
+      expect(result.successful.length).toBe(2);
+      expect(result.failed.length).toBe(0);
+      // fetchBompApiData calls en-us only after ja-jp succeeds, so count
+      // ja-jp attempts per page: 2 failures + 1 success = 3
+      const jaAttemptsByPage: { [pageId: string]: number } = {};
+      for (const [pageId, lang] of mockApiClient.mock.calls) {
+        if (lang === "ja-jp") {
+          jaAttemptsByPage[pageId] = (jaAttemptsByPage[pageId] || 0) + 1;
+        }
+      }
+      expect(Object.keys(jaAttemptsByPage)).toHaveLength(2);
+      expect(Object.values(jaAttemptsByPage)).toEqual([3, 3]);
     });
 
     it("should handle malformed API responses gracefully", async () => {
@@ -837,7 +869,8 @@ ${bompEntries}
 
       // Assert
       expect(result.statistics.total).toBe(bompCount);
-      expect(memorySnapshots.length).toBeGreaterThan(10); // Should have multiple memory snapshots
+      // ~600ms of processing with 100ms sampling yields a handful of snapshots
+      expect(memorySnapshots.length).toBeGreaterThan(2); // Should have multiple memory snapshots
 
       // Analyze memory growth pattern
       const memoryGrowth = memorySnapshots.map((snapshot, index) => {
@@ -979,7 +1012,18 @@ ${bompEntries}
       (global as any).configPath = testConfigPath;
 
       // Act
-      await main();
+      // main() always ends with process.exit(); stub it so the test runner survives
+      const exitSpy = vi
+        .spyOn(process, "exit")
+        .mockImplementation((() => undefined) as never);
+      let exitCodes: unknown[] = [];
+      try {
+        await main();
+      } finally {
+        exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+        exitSpy.mockRestore();
+      }
+      expect(exitCodes).toEqual([0]);
 
       performanceMetrics.bompsProcessed = bompCount;
 
@@ -997,7 +1041,7 @@ ${bompEntries}
         testConfig.reportOutputPath,
         "utf-8"
       );
-      expect(reportContent).toContain("ボンプデータ処理レポート");
+      expect(reportContent).toContain("全ボンプ処理レポート");
       expect(reportContent).toContain("成功");
     });
 

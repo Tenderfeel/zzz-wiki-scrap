@@ -650,9 +650,10 @@ describe("Weapon Data Generation Integration", () => {
       expect(weapon.name.ja).toBe("整合性テスト音動機");
 
       // Verify attributes arrays have correct length
-      expect(weapon.attr.hp).toHaveLength(7);
+      // モックにHP/防御力データがないため空配列になる（135176c以降）
+      expect(weapon.attr.hp).toEqual([]);
       expect(weapon.attr.atk).toHaveLength(7);
-      expect(weapon.attr.def).toHaveLength(7);
+      expect(weapon.attr.def).toEqual([]);
 
       // Verify rarity and specialty mapping
       expect(weapon.rarity).toBe("S");

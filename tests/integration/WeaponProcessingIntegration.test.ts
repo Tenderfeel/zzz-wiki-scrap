@@ -484,9 +484,9 @@ describe("WeaponProcessingIntegration", () => {
       expect(averageTime).toBeLessThan(10000); // 平均10秒以内
       expect(maxTime).toBeLessThan(15000); // 最大15秒以内
 
-      // 処理時間の安定性（最大と最小の差が平均の200%以内、または5ms以内）
+      // 処理時間の安定性（最大と最小の差が平均の200%以内、または50ms以内 ※数ms単位の実行ではタイマー/スケジューリングのジッターを許容）
       const timeDifference = maxTime - minTime;
-      const acceptableVariance = Math.max(averageTime * 2, 5);
+      const acceptableVariance = Math.max(averageTime * 2, 50);
       expect(timeDifference).toBeLessThan(acceptableVariance);
     });
 

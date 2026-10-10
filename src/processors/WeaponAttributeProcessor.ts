@@ -709,8 +709,11 @@ export class WeaponAttributeProcessor {
         electric: ["電気属性"],
         physical: ["物理属性"],
         ether: ["エーテル属性"],
+        wind: ["風属性"],
         frost: ["霜烈"],
         auricInk: ["玄墨"],
+        lumiflux: ["流明"],
+        honedEdge: ["凛刃"],
       };
 
       for (const stat of weapon.stats) {

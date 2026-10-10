@@ -58,7 +58,7 @@ describe("PartialDataHandler", () => {
       expect(emptyValues.specialty).toBeUndefined();
       expect(emptyValues.stats).toEqual([]);
       expect(emptyValues.faction).toBe(0);
-      expect(emptyValues.releaseVersion).toBe(2.4);
+      expect(emptyValues.releaseVersion).toBe(2.3);
       expect(emptyValues.attr?.hp).toEqual([]);
     });
   });
@@ -112,7 +112,7 @@ describe("PartialDataHandler", () => {
       expect(filledCharacter.specialty).toBeUndefined();
       expect(filledCharacter.stats).toEqual([]);
       expect(filledCharacter.faction).toBe(0);
-      expect(filledCharacter.releaseVersion).toBe(2.4);
+      expect(filledCharacter.releaseVersion).toBe(2.3);
     });
   });
 

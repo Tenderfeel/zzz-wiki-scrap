@@ -166,7 +166,7 @@ describe("EnhancedDataProcessor", () => {
           en: "Von Lycaon",
         },
         specialty: "stun",
-        stats: "ice",
+        stats: ["ice"],
         faction: 2, // ヴィクトリア家政のID
         rarity: "S",
       });
@@ -290,7 +290,7 @@ describe("EnhancedDataProcessor", () => {
       name: { ja: "テストキャラクター", en: "Test Character" },
       fullName: { ja: "テストキャラクター", en: "Test Character" },
       specialty: "stun",
-      stats: "ice",
+      stats: ["ice"],
       faction: 1,
       rarity: "S",
       attr: {
@@ -515,7 +515,7 @@ describe("EnhancedDataProcessor", () => {
           mockCharacterEntry
         );
 
-        expect(result.stats).toBe(testCase.expected);
+        expect(result.stats).toEqual([testCase.expected]);
       }
     });
 

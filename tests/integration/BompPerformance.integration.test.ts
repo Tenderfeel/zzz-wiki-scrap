@@ -5,6 +5,7 @@ import { performance } from "perf_hooks";
 import { BompBatchProcessor } from "../../src/processors/BompBatchProcessor";
 import { BompGenerator } from "../../src/generators/BompGenerator";
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 /**
  * パフォーマンステストとメモリ使用量測定
@@ -470,7 +471,9 @@ describe("Bomp Performance Integration Tests", () => {
 
     // Memory should not continuously grow (no significant memory leaks)
     const finalMemoryGrowth = memoryEnd.heapUsed - memoryStart.heapUsed;
-    expect(finalMemoryGrowth).toBeLessThan(maxMemoryGrowth * 1.2); // Final memory should be close to peak
+    // (Compared against an absolute bound: relative comparison with the sampled
+    // peak is GC noise at sub-MB scale and uses a different baseline.)
+    expect(finalMemoryGrowth).toBeLessThan(40 * 1024 * 1024);
   });
 
   // Helper functions
@@ -514,44 +517,7 @@ ${bompEntries}
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: {
-                          values: [
-                            "-",
-                            "1000",
-                            "1200",
-                            "1400",
-                            "1600",
-                            "1800",
-                            "2000",
-                          ],
-                        },
-                        atk: {
-                          values: [
-                            "-",
-                            "100",
-                            "120",
-                            "140",
-                            "160",
-                            "180",
-                            "200",
-                          ],
-                        },
-                        def: {
-                          values: ["-", "50", "60", "70", "80", "90", "100"],
-                        },
-                        impact: { values: ["10"] },
-                        critRate: { values: ["5%"] },
-                        critDmg: { values: ["50%"] },
-                        anomalyMastery: { values: ["0"] },
-                        anomalyProficiency: { values: ["0"] },
-                        penRatio: { values: ["0%"] },
-                        energy: { values: ["100"] },
-                      },
-                    ],
-                  }),
+                  data: createBompAscensionData(),
                 },
               ],
             },

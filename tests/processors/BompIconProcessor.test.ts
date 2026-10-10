@@ -8,7 +8,6 @@ import path from "path";
 
 // モック設定
 vi.mock("../../src/clients/HoyoLabApiClient");
-vi.mock("../../src/utils/SecurityValidator");
 vi.mock("fs", () => ({
   promises: {
     access: vi.fn(),
@@ -63,19 +62,6 @@ describe("BompIconProcessor", () => {
   };
 
   beforeEach(async () => {
-    // SecurityValidatorのモックを設定
-    const { SecurityValidator } = await import(
-      "../../src/utils/SecurityValidator"
-    );
-    vi.mocked(SecurityValidator.validateAll).mockReturnValue(true);
-    vi.mocked(SecurityValidator.validateIconUrl).mockReturnValue(true);
-    vi.mocked(SecurityValidator.validateFilePath).mockReturnValue(true);
-    vi.mocked(SecurityValidator.validateFileSize).mockReturnValue(true);
-    vi.mocked(SecurityValidator.validateImageContentType).mockReturnValue(true);
-    vi.mocked(SecurityValidator.sanitizeFileName).mockImplementation(
-      (fileName) => fileName
-    );
-
     mockApiClient = vi.mocked(new HoyoLabApiClient());
     config = {
       outputDirectory: "assets/images/bomps",

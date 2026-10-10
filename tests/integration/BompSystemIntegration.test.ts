@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import {
@@ -8,7 +16,13 @@ import {
 } from "../../src/main-bomp-generation";
 
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
+import { BompBatchProcessor } from "../../src/processors/BompBatchProcessor";
 import { Bomp } from "../../src/types";
+import {
+  createBompAscensionData,
+  createBompFactionFilterValues,
+  importGeneratedBomps,
+} from "./helpers/bompAscensionFixture";
 
 /**
  * システム統合テスト - エンドツーエンド処理のテスト
@@ -106,7 +120,18 @@ describe("Bomp System Integration Tests", () => {
     (global as any).configPath = testConfigPath;
 
     // Act - Execute main function
-    await main();
+    // main() always ends with process.exit(); stub it so the test runner survives
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation((() => undefined) as never);
+    let exitCodes: unknown[] = [];
+    try {
+      await main();
+    } finally {
+      exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+      exitSpy.mockRestore();
+    }
+    expect(exitCodes).toEqual([0]);
 
     // Assert - Verify complete system execution
 
@@ -123,12 +148,12 @@ describe("Bomp System Integration Tests", () => {
     // 3. Verify report was generated
     expect(fs.existsSync(testReportPath)).toBe(true);
     const reportContent = fs.readFileSync(testReportPath, "utf-8");
-    expect(reportContent).toContain("ボンプデータ処理レポート");
+    expect(reportContent).toContain("全ボンプ処理レポート");
     expect(reportContent).toContain("成功: 3");
 
     // 4. Verify output structure by importing and checking
-    const outputModule = await import(path.resolve(testOutputPath));
-    const bomps: Bomp[] = outputModule.default;
+    // Same output path is reused across tests; avoid the module cache
+    const bomps = await importGeneratedBomps<Bomp>(testOutputPath);
 
     expect(bomps).toHaveLength(3);
     bomps.forEach((bomp) => {
@@ -148,7 +173,11 @@ describe("Bomp System Integration Tests", () => {
    */
   it("should handle various configuration scenarios", async () => {
     // Test 1: Default configuration
-    const defaultConfig = loadConfig("non-existent-config.json");
+    // NOTE: a file literally named "non-existent-config.json" exists at the
+    // repo root, so use a path that is guaranteed not to exist.
+    const defaultConfig = loadConfig(
+      path.join(testOutputDir, "missing-config.json")
+    );
     expect(defaultConfig.batchSize).toBe(5);
     expect(defaultConfig.delayMs).toBe(500);
     expect(defaultConfig.maxRetries).toBe(3);
@@ -226,6 +255,12 @@ describe("Bomp System Integration Tests", () => {
 `;
     fs.writeFileSync(testScrapingPath, errorScrapingContent);
 
+    // Skip real retry back-off delays to keep the test fast
+    const delaySpy = vi
+      .spyOn(BompBatchProcessor.prototype as any, "delay")
+      .mockResolvedValue(undefined);
+    onTestFinished(() => delaySpy.mockRestore());
+
     // Mock API with mixed success/failure responses
     let callCount = 0;
     vi.spyOn(
@@ -256,7 +291,18 @@ describe("Bomp System Integration Tests", () => {
     (global as any).configPath = testConfigPath;
 
     // Act
-    await main();
+    // main() always ends with process.exit(); stub it so the test runner survives
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation((() => undefined) as never);
+    let exitCodes: unknown[] = [];
+    try {
+      await main();
+    } finally {
+      exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+      exitSpy.mockRestore();
+    }
+    expect(exitCodes).toEqual([0]);
 
     // Assert
     expect(fs.existsSync(testOutputPath)).toBe(true);
@@ -328,14 +374,25 @@ describe("Bomp System Integration Tests", () => {
     (global as any).configPath = testConfigPath;
 
     // Act
-    await main();
+    // main() always ends with process.exit(); stub it so the test runner survives
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation((() => undefined) as never);
+    let exitCodes: unknown[] = [];
+    try {
+      await main();
+    } finally {
+      exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+      exitSpy.mockRestore();
+    }
+    expect(exitCodes).toEqual([0]);
 
     // Assert
     expect(fs.existsSync(testOutputPath)).toBe(true);
 
     // Import and validate the generated data
-    const outputModule = await import(path.resolve(testOutputPath));
-    const bomps: Bomp[] = outputModule.default;
+    // Same output path is reused across tests; avoid the module cache
+    const bomps = await importGeneratedBomps<Bomp>(testOutputPath);
 
     expect(bomps).toHaveLength(1);
     const bomp = bomps[0];
@@ -422,7 +479,18 @@ ${performanceBomps}
     const startTime = Date.now();
     const memoryStart = process.memoryUsage();
 
-    await main();
+    // main() always ends with process.exit(); stub it so the test runner survives
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation((() => undefined) as never);
+    let exitCodes: unknown[] = [];
+    try {
+      await main();
+    } finally {
+      exitCodes = exitSpy.mock.calls.map((call) => call[0]);
+      exitSpy.mockRestore();
+    }
+    expect(exitCodes).toEqual([0]);
 
     const endTime = Date.now();
     const memoryEnd = process.memoryUsage();
@@ -439,8 +507,8 @@ ${performanceBomps}
     expect(memoryUsed).toBeLessThan(100 * 1024 * 1024); // Should use less than 100MB
 
     // Verify all bomps were processed
-    const outputModule = await import(path.resolve(testOutputPath));
-    const bomps: Bomp[] = outputModule.default;
+    // Same output path is reused across tests; avoid the module cache
+    const bomps = await importGeneratedBomps<Bomp>(testOutputPath);
     expect(bomps).toHaveLength(15);
 
     // Calculate and verify throughput
@@ -490,7 +558,8 @@ ${performanceBomps}
           id,
           name,
           agent_specialties: { values: [] },
-          agent_stats: { values: [`${stats}属性`] },
+          agent_stats: { values: [stats] }, // API may return English stat keys directly
+          filter_values: createBompFactionFilterValues(factions),
           agent_rarity: { values: [] },
           agent_faction: { values: [] },
           modules: [
@@ -499,23 +568,17 @@ ${performanceBomps}
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: { values: attributes.hp },
-                        atk: { values: attributes.atk },
-                        def: { values: attributes.def },
-                        impact: { values: [attributes.impact] },
-                        critRate: { values: [attributes.critRate] },
-                        critDmg: { values: [attributes.critDmg] },
-                        anomalyMastery: { values: [attributes.anomalyMastery] },
-                        anomalyProficiency: {
-                          values: [attributes.anomalyProficiency],
-                        },
-                        penRatio: { values: [attributes.penRatio] },
-                        energy: { values: [attributes.energy] },
-                      },
-                    ],
+                  data: createBompAscensionData({
+                    hp: attributes.hp,
+                    atk: attributes.atk,
+                    def: attributes.def,
+                    impact: attributes.impact,
+                    critRate: attributes.critRate,
+                    critDmg: attributes.critDmg,
+                    anomalyMastery: attributes.anomalyMastery,
+                    anomalyProficiency: attributes.anomalyProficiency,
+                    penRatio: attributes.penRatio,
+                    energy: attributes.energy,
                   }),
                 },
               ],

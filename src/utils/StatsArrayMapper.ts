@@ -55,6 +55,9 @@ export const STATS_ARRAY_MAPPING: Record<Stats, Stats[]> = {
   ice: ["ice"],
   physical: ["physical"],
   ether: ["ether"],
+  wind: ["wind"],
+  lumiflux: ["lumiflux"],
+  honedEdge: ["honedEdge"],
 } as const;
 
 /**

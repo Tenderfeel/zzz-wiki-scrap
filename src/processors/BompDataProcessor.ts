@@ -93,20 +93,7 @@ export class BompDataProcessor extends DataProcessor {
         error: error instanceof Error ? error.message : String(error),
       });
 
-      // グレースフル劣化を試行
-      const degradationResult = await this.attemptGracefulDegradation(
-        bompEntry,
-        error
-      );
-
-      if (degradationResult) {
-        logger.info("グレースフル劣化によりボンプデータを部分的に回復", {
-          bompId: bompEntry.id,
-          recoveredFields: Object.keys(degradationResult),
-        });
-        return degradationResult;
-      }
-
+      // 呼び出し元（BompBatchProcessor）のリトライ処理に委ねる
       throw error;
     }
   }
@@ -344,7 +331,7 @@ export class BompDataProcessor extends DataProcessor {
         }
 
         // レア度データの検証を統合
-        if (data.basicInfo.rarity) {
+        if (data.basicInfo.rarity !== undefined) {
           const rarityValidation = this.validateRarityData(
             data.basicInfo.rarity
           );
@@ -656,76 +643,5 @@ export class BompDataProcessor extends DataProcessor {
    */
   private validateFactionId(factionId: number): boolean {
     return typeof factionId === "number" && factionId > 0 && factionId <= 100;
-  }
-
-  /**
-   * グレースフル劣化を試行
-   */
-  private async attemptGracefulDegradation(
-    bompEntry: BompEntry,
-    originalError: any
-  ): Promise<ProcessedBompData | null> {
-    logger.info("ボンプデータのグレースフル劣化を試行", {
-      bompId: bompEntry.id,
-      originalError:
-        originalError instanceof Error
-          ? originalError.message
-          : String(originalError),
-    });
-
-    try {
-      // 最小限の基本情報を作成（レア度フォールバック処理付き）
-      const basicInfo: BasicBompInfo = {
-        id: bompEntry.id,
-        name: bompEntry.jaName, // Scraping.mdから取得した日本語名を使用
-        stats: ["physical"], // デフォルト属性
-        rarity: "A級", // レア度抽出失敗時のデフォルト値
-        releaseVersion: undefined,
-      };
-
-      // レア度フォールバック処理のログ記録
-      logger.warn("グレースフル劣化でレア度デフォルト値を使用", {
-        bompId: bompEntry.id,
-        fallbackRarity: basicInfo.rarity,
-        originalError:
-          originalError instanceof Error
-            ? originalError.message
-            : String(originalError),
-      });
-
-      // 空の属性情報を作成
-      const attributesInfo = {
-        ascensionData: JSON.stringify({
-          list: [],
-          combatList: {
-            hp: { values: [] },
-            atk: { values: [] },
-            def: { values: [] },
-          },
-        }),
-      };
-
-      const processedData: ProcessedBompData = {
-        basicInfo,
-        attributesInfo,
-        extraAbility: "",
-        factionIds: [],
-      };
-
-      logger.info("グレースフル劣化によるボンプデータ作成完了", {
-        bompId: bompEntry.id,
-      });
-
-      return processedData;
-    } catch (degradationError) {
-      logger.error("グレースフル劣化に失敗しました", {
-        bompId: bompEntry.id,
-        degradationError:
-          degradationError instanceof Error
-            ? degradationError.message
-            : String(degradationError),
-      });
-      return null;
-    }
   }
 }

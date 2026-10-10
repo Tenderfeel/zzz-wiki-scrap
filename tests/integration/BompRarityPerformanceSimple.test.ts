@@ -4,6 +4,20 @@ import * as path from "path";
 import { BompDataMapper } from "../../src/mappers/BompDataMapper";
 import { BompDataProcessor } from "../../src/processors/BompDataProcessor";
 import { BompGenerator } from "../../src/generators/BompGenerator";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
+
+const PROCESSED_ASCENSION_DATA = createBompAscensionData({
+  hp: ["360", "933", "1549", "2166", "2782", "3399", "3827"],
+  atk: ["53", "342", "807", "1568", "3070", "6303", "6570"],
+  def: ["32", "156", "288", "422", "556", "688", "781"],
+  impact: "94",
+  critRate: "5%",
+  critDmg: "50%",
+  anomalyMastery: "0",
+  anomalyProficiency: "100",
+  penRatio: "0%",
+  energy: "0",
+});
 
 /**
  * ボンプレア度統合パフォーマンステスト（簡易版）
@@ -300,17 +314,9 @@ describe("Bomp Rarity Performance Tests (Simple)", () => {
             basicInfo,
             extraAbility: "テスト追加能力",
             factionIds: [],
-            attributes: {
-              hp: [360, 933, 1549, 2166, 2782, 3399, 3827],
-              atk: [53, 342, 807, 1568, 3070, 6303, 6570],
-              def: [32, 156, 288, 422, 556, 688, 781],
-              impact: 94,
-              critRate: 5,
-              critDmg: 50,
-              anomalyMastery: 0,
-              anomalyProficiency: 100,
-              penRatio: 0,
-              energy: 0,
+            // ProcessedBompData carries raw ascension JSON in attributesInfo
+            attributesInfo: {
+              ascensionData: PROCESSED_ASCENSION_DATA,
             },
           };
 
@@ -582,17 +588,9 @@ describe("Bomp Rarity Performance Tests (Simple)", () => {
           basicInfo: data.basicInfo,
           extraAbility: "テスト追加能力",
           factionIds: [],
-          attributes: {
-            hp: [360, 933, 1549, 2166, 2782, 3399, 3827],
-            atk: [53, 342, 807, 1568, 3070, 6303, 6570],
-            def: [32, 156, 288, 422, 556, 688, 781],
-            impact: 94,
-            critRate: 5,
-            critDmg: 50,
-            anomalyMastery: 0,
-            anomalyProficiency: 100,
-            penRatio: 0,
-            energy: 0,
+          // ProcessedBompData carries raw ascension JSON in attributesInfo
+          attributesInfo: {
+            ascensionData: PROCESSED_ASCENSION_DATA,
           },
         };
         processedData.push(processedBompData);

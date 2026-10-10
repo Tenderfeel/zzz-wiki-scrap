@@ -14,7 +14,7 @@ import { main } from "../../src/main-weapon-icon-download";
  * 要件: 4.4, 4.5
  */
 describe("WeaponIconDownload Integration Tests", () => {
-  const testOutputDir = "test-assets/images/weapons";
+  const testOutputDir = "test-assets-weapon-icon-download/images/weapons";
   const testConfigPath = "test-weapon-processing-config.json";
   const testWeaponListPath = "test-weapon-list.json";
 
@@ -624,7 +624,7 @@ describe("WeaponIconDownload Integration Tests", () => {
   async function cleanupTestDirectory(): Promise<void> {
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-      await fs.rm("test-assets", { recursive: true, force: true });
+      await fs.rm("test-assets-weapon-icon-download", { recursive: true, force: true });
       await fs.rm("custom-weapon-output", { recursive: true, force: true });
     } catch {
       // ディレクトリが存在しない場合は無視

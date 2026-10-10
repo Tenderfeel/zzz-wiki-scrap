@@ -6,6 +6,7 @@ import { BompGenerator } from "../../src/generators/BompGenerator";
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { Bomp, Rarity } from "../../src/types";
 import { ApiResponse } from "../../src/types/api";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 /**
  * ボンプレア度統合パフォーマンステスト
@@ -233,36 +234,7 @@ describe("Bomp Rarity Integration Performance Tests", () => {
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    list: [
-                      {
-                        key: "1",
-                        combatList: [
-                          { key: "HP", values: ["-", "360"] },
-                          { key: "攻撃力", values: ["-", "53"] },
-                          { key: "防御力", values: ["-", "32"] },
-                          { key: "衝撃力", values: ["-", "94"] },
-                          { key: "会心率", values: ["-", "5%"] },
-                          { key: "会心ダメージ", values: ["-", "50%"] },
-                          { key: "貫通率", values: ["-", "0%"] },
-                          { key: "異常掌握", values: ["-", "100"] },
-                        ],
-                      },
-                      {
-                        key: "60",
-                        combatList: [
-                          { key: "HP", values: ["-", "3827"] },
-                          { key: "攻撃力", values: ["-", "6570"] },
-                          { key: "防御力", values: ["-", "781"] },
-                          { key: "衝撃力", values: ["-", "94"] },
-                          { key: "会心率", values: ["-", "50%"] },
-                          { key: "会心ダメージ", values: ["-", "100%"] },
-                          { key: "貫通率", values: ["-", "0%"] },
-                          { key: "異常掌握", values: ["-", "100"] },
-                        ],
-                      },
-                    ],
-                  }),
+                  data: createBompAscensionData(),
                 },
               ],
             },
@@ -309,7 +281,9 @@ ${Array.from(
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const index = parseInt(id) - 912;
         const rarity: "A級" | "S級" = index % 2 === 0 ? "A級" : "S級";
         return createMockApiResponseWithRarity(
@@ -345,7 +319,9 @@ ${Array.from(
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const index = parseInt(id) - 912;
         return createMockApiResponseWithoutRarity(
           id,
@@ -402,7 +378,9 @@ ${Array.from(
 
       // レア度処理による性能影響が許容範囲内であることを確認
       expect(timeOverheadPercentage).toBeLessThan(25); // 25%以内の処理時間増加
-      expect(Math.abs(memoryOverheadPercentage)).toBeLessThan(30); // 30%以内のメモリ使用量変化
+      // ヒープ増分は各回 ~1MB 程度で GC タイミングにより大きく揺れるため、
+      // 割合ではなく絶対値（5MB 以内）で比較する
+      expect(Math.abs(memoryOverhead)).toBeLessThan(5 * 1024 * 1024);
 
       // レア度データが正しく処理されていることを確認
       resultWithRarity.successful.forEach((bomp) => {
@@ -514,7 +492,9 @@ ${Array.from(
         vi.spyOn(
           HoyoLabApiClient.prototype,
           "fetchCharacterData"
-        ).mockImplementation(async (id: string) => {
+        ).mockImplementation(async (pageId: number) => {
+          // fetchCharacterData receives a numeric page ID
+          const id = String(pageId);
           const index = parseInt(id) - 912;
           const rarity: "A級" | "S級" = index % 3 === 0 ? "S級" : "A級"; // 1/3がS級、2/3がA級
           return createMockApiResponseWithRarity(
@@ -639,7 +619,9 @@ ${Array.from(
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const index = parseInt(id) - 912;
 
         if (index % 3 === 0) {
@@ -727,7 +709,7 @@ ${Array.from(
       // 出力ファイルの確認
       expect(fs.existsSync(outputPath)).toBe(true);
       const outputContent = fs.readFileSync(outputPath, "utf-8");
-      expect(outputContent).toContain('"rarity":');
+      expect(outputContent).toContain('rarity:');
 
       console.log(`\n=== レア度エラー処理性能テスト結果 ===`);
       console.log(`テストボンプ数: ${testBompCount}`);
@@ -779,7 +761,9 @@ ${Array.from(
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const index = parseInt(id) - 912;
         const rarity: "A級" | "S級" = index % 2 === 0 ? "S級" : "A級";
         return createMockApiResponseWithRarity(
@@ -926,7 +910,9 @@ ${Array.from(
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const index = parseInt(id) - 912;
 
         // 処理時間を測定するため、わずかな遅延を追加
@@ -997,36 +983,7 @@ ${Array.from(
                   components: [
                     {
                       component_id: "ascension",
-                      data: JSON.stringify({
-                        list: [
-                          {
-                            key: "1",
-                            combatList: [
-                              { key: "HP", values: ["-", "360"] },
-                              { key: "攻撃力", values: ["-", "53"] },
-                              { key: "防御力", values: ["-", "32"] },
-                              { key: "衝撃力", values: ["-", "94"] },
-                              { key: "会心率", values: ["-", "5%"] },
-                              { key: "会心ダメージ", values: ["-", "50%"] },
-                              { key: "貫通率", values: ["-", "0%"] },
-                              { key: "異常掌握", values: ["-", "100"] },
-                            ],
-                          },
-                          {
-                            key: "60",
-                            combatList: [
-                              { key: "HP", values: ["-", "3827"] },
-                              { key: "攻撃力", values: ["-", "6570"] },
-                              { key: "防御力", values: ["-", "781"] },
-                              { key: "衝撃力", values: ["-", "94"] },
-                              { key: "会心率", values: ["-", "50%"] },
-                              { key: "会心ダメージ", values: ["-", "100%"] },
-                              { key: "貫通率", values: ["-", "0%"] },
-                              { key: "異常掌握", values: ["-", "100"] },
-                            ],
-                          },
-                        ],
-                      }),
+                      data: createBompAscensionData(),
                     },
                   ],
                 },

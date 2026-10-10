@@ -393,7 +393,24 @@ describe("WeaponDataProcessor", () => {
       const result = processor.validateWeaponData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("属性 hp の配列長が7ではありません: 3");
+      expect(result.errors).toContain(
+        "属性 hp の配列長が0または7ではありません: 3"
+      );
+    });
+
+    it("属性配列が空の場合は値なしとして検証に成功する", () => {
+      const dataWithEmptyAttr = {
+        ...mockProcessedWeaponData,
+        attributesInfo: {
+          ...mockWeaponAttributesInfo,
+          hp: [],
+        },
+      };
+
+      const result = processor.validateWeaponData(dataWithEmptyAttr);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
 
     it("属性値が数値ではない場合は検証に失敗する", () => {
@@ -413,30 +430,31 @@ describe("WeaponDataProcessor", () => {
       );
     });
 
-    it("エージェント情報が存在しない場合は検証に失敗する", () => {
-      const invalidData = {
+    // エージェント情報の検証は意図的に無効化されている（4d35681）
+    it("エージェント情報が存在しない場合でも検証に成功する", () => {
+      const data = {
         ...mockProcessedWeaponData,
         agentInfo: null as any,
       };
 
-      const result = processor.validateWeaponData(invalidData);
+      const result = processor.validateWeaponData(data);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("エージェント情報が存在しません");
+      expect(result.isValid).toBe(true);
+      expect(result.errors).not.toContain("エージェント情報が存在しません");
     });
 
-    it("エージェントIDが無効な場合は検証に失敗する", () => {
-      const invalidData = {
+    it("エージェントIDが空文字列の場合でも検証に成功する", () => {
+      const data = {
         ...mockProcessedWeaponData,
         agentInfo: {
           agentId: "",
         },
       };
 
-      const result = processor.validateWeaponData(invalidData);
+      const result = processor.validateWeaponData(data);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("エージェントIDが無効です");
+      expect(result.isValid).toBe(true);
+      expect(result.errors).not.toContain("エージェントIDが無効です");
     });
 
     it("エージェントIDがundefinedの場合は検証に成功する", () => {
@@ -693,8 +711,8 @@ describe("WeaponDataProcessor", () => {
           equipmentSkillName: "",
           equipmentSkillDesc: "",
         });
-        expect(result.attributesInfo.hp).toEqual(new Array(7).fill(0));
-        expect(result.agentInfo.agentId).toBeUndefined();
+        expect(result.attributesInfo.hp).toEqual([]);
+        expect(result.agentInfo.agentId).toBe("");
       });
 
       it("特性が未定義の場合は空文字列を設定する", () => {
