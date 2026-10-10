@@ -20,6 +20,7 @@ import {
   ProcessingStage,
 } from "../errors";
 import { mapStatsToArray } from "../utils/StatsArrayMapper";
+import { applyDataCorrections } from "../utils/DataCorrections";
 
 /**
  * 拡張データプロセッサー - 複数キャラクターのデータ処理と陣営解決
@@ -84,7 +85,8 @@ export class EnhancedDataProcessor extends DataProcessor {
         attr: processedAttributes,
       };
 
-      return character;
+      // 取得元データの誤りを補正
+      return applyDataCorrections("characters", entry.id, character);
     } catch (error) {
       if (error instanceof ParsingError || error instanceof MappingError) {
         // 元のエラーをAllCharactersErrorでラップ

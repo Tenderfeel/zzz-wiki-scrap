@@ -1,0 +1,27 @@
+{
+  "characters": [],
+  "weapons": [],
+  "bomps": [
+    {
+      "id": "robin",
+      "path": "attr.atk.6",
+      "from": 8261,
+      "to": 8621,
+      "reason": "HoYoLAB wiki のレベル60攻撃力が 8621 の桁入れ替わり。全ボンプ共通のレベル50→60の成長率（約1.042倍）から算出"
+    },
+    {
+      "id": "birkblick",
+      "path": "attr.atk.4",
+      "from": 3961,
+      "to": 3691,
+      "reason": "HoYoLAB wiki のレベル40攻撃力が 3691 の桁入れ替わり。他レベルの値が完全に一致するボンプ（同じ成長曲線）はすべて 3691"
+    },
+    {
+      "id": "overtimeboo",
+      "path": "attr.hp.1",
+      "from": 993,
+      "to": 933,
+      "reason": "HoYoLAB wiki のレベル10HPの誤り。他レベルの強化前後の差は一定（+188）で、745 + 188 = 933"
+    }
+  ]
+}

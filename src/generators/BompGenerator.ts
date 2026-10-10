@@ -5,6 +5,7 @@ import { BompDataMapper } from "../mappers/BompDataMapper";
 import { AttributesProcessor } from "../processors/AttributesProcessor";
 import { ValidationError, ParsingError } from "../errors";
 import { logger } from "../utils/Logger";
+import { applyDataCorrections } from "../utils/DataCorrections";
 import * as fs from "fs";
 
 /**
@@ -88,7 +89,7 @@ export class BompGenerator {
       }
 
       // Bomp オブジェクトを構築
-      const bomp: Bomp = {
+      const generatedBomp: Bomp = {
         id: bompId, // 明示的に受け取ったボンプIDを使用
         name,
         stats,
@@ -98,6 +99,9 @@ export class BompGenerator {
         releaseVersion: jaData.basicInfo.releaseVersion,
         faction: jaData.factionIds || [],
       };
+
+      // 取得元データの誤りを補正
+      const bomp = applyDataCorrections("bomps", bompId, generatedBomp);
 
       logger.debug("ボンプオブジェクト生成完了", {
         bompId: bomp.id,
