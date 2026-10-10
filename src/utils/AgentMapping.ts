@@ -126,7 +126,16 @@ export const AGENT_NAME_TO_ID_MAP: Record<string, string> = {
   瞬光: "shunguang",
   葉瞬光: "shunguang",
 
+  // 2.6追加キャラクター
+  千夏: "sunna",
+  アリア: "aria",
+
+  // 2.7追加キャラクター
+  南宮羽: "nangong",
+  シーシィア: "cissia",
+
   // 2.8追加キャラクター
+  プロメイア: "promeia",
   // 完全一致を優先するため、「ビリー」の部分一致より先に sBilly と判定される
   "S級ビリー": "sBilly",
   "スターライト・ビリー": "sBilly",
@@ -148,6 +157,8 @@ export const AGENT_NAME_TO_ID_MAP: Record<string, string> = {
   // 3.2追加キャラクター
   ロクシー: "roxy",
   "ロクシー・イフリータ・プライス": "roxy",
+  クラレッタ: "claret",
+  "クラレッタ・フリンツ": "claret",
 };
 
 /**
