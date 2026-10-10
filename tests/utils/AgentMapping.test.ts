@@ -339,9 +339,9 @@ describe("AgentMapping", () => {
         });
       });
 
-      it("全てのagentIdが正しい形式（小文字英数字）", () => {
+      it("全てのagentIdが正しい形式（小文字始まりの英数字、sBilly のような camelCase を含む）", () => {
         mappedIds.forEach((agentId) => {
-          expect(agentId).toMatch(/^[a-z0-9_]+$/);
+          expect(agentId).toMatch(/^[a-z][a-zA-Z0-9_]*$/);
           expect(agentId).not.toContain(" "); // スペースは含まない
           expect(agentId).not.toContain("-"); // ハイフンは含まない
         });
@@ -377,6 +377,28 @@ describe("AgentMapping", () => {
         // 新キャラクター（リュシア）も短縮名とフルネームのエントリがあることを確認
         const luciaEntries = agentIds.filter((id) => id === "lucia");
         expect(luciaEntries.length).toBe(2);
+      });
+
+      it("data/characters.ts の全キャラクターがマッピングされている", () => {
+        const unmapped = characters
+          .filter((c) => !mappedIds.has(c.id))
+          .map((c) => c.id);
+        expect(unmapped).toEqual([]);
+      });
+
+      it.each([
+        ["ヴェリナ", "velina"],
+        ["瞬光", "shunguang"],
+        ["照", "zhao"],
+        ["盤岳", "banyue"],
+      ])("新キャラクターの短縮名 %s から %s を取得できる", (name, id) => {
+        expect(getAgentIdByName(name)).toBe(id);
+      });
+
+      it("スターライト・ビリーは通常のビリーと区別される", () => {
+        expect(getAgentIdByName("スターライト・ビリー・キッド")).toBe("sBilly");
+        expect(getAgentIdByName("S級ビリー")).toBe("sBilly");
+        expect(getAgentIdByName("ビリー・キッド")).toBe("billy");
       });
 
       it("各キャラクターに短縮名とフルネームの両方がマッピングされている", () => {
