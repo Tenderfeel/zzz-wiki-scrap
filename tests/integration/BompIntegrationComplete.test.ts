@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { performance } from "perf_hooks";
@@ -574,6 +582,12 @@ ${bompEntries}
       const testContent = createTestScrapingContent(2, "retry-test-bomp");
       fs.writeFileSync(testScrapingPath, testContent);
 
+      // Skip real retry back-off delays to keep the test fast
+      const delaySpy = vi
+        .spyOn(BompBatchProcessor.prototype as any, "delay")
+        .mockResolvedValue(undefined);
+      onTestFinished(() => delaySpy.mockRestore());
+
       let attemptCounts: { [key: string]: number } = {};
       const mockApiClient = vi.spyOn(
         HoyoLabApiClient.prototype,
@@ -614,11 +628,18 @@ ${bompEntries}
 
       // Assert
       expect(result.statistics.total).toBe(2);
-      // Note: The actual retry behavior depends on the implementation
-      // We verify that multiple attempts were made
-      expect(Object.values(attemptCounts).some((count) => count > 1)).toBe(
-        true
-      );
+      expect(result.successful.length).toBe(2);
+      expect(result.failed.length).toBe(0);
+      // fetchBompApiData calls en-us only after ja-jp succeeds, so count
+      // ja-jp attempts per page: 2 failures + 1 success = 3
+      const jaAttemptsByPage: { [pageId: string]: number } = {};
+      for (const [pageId, lang] of mockApiClient.mock.calls) {
+        if (lang === "ja-jp") {
+          jaAttemptsByPage[pageId] = (jaAttemptsByPage[pageId] || 0) + 1;
+        }
+      }
+      expect(Object.keys(jaAttemptsByPage)).toHaveLength(2);
+      expect(Object.values(jaAttemptsByPage)).toEqual([3, 3]);
     });
 
     it("should handle malformed API responses gracefully", async () => {

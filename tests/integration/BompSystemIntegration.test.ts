@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import {
@@ -8,6 +16,7 @@ import {
 } from "../../src/main-bomp-generation";
 
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
+import { BompBatchProcessor } from "../../src/processors/BompBatchProcessor";
 import { Bomp } from "../../src/types";
 import {
   createBompAscensionData,
@@ -245,6 +254,12 @@ describe("Bomp System Integration Tests", () => {
 - [error-test-bomp-4](https://wiki.hoyolab.com/pc/zzz/entry/915) - エラーテストボンプ4
 `;
     fs.writeFileSync(testScrapingPath, errorScrapingContent);
+
+    // Skip real retry back-off delays to keep the test fast
+    const delaySpy = vi
+      .spyOn(BompBatchProcessor.prototype as any, "delay")
+      .mockResolvedValue(undefined);
+    onTestFinished(() => delaySpy.mockRestore());
 
     // Mock API with mixed success/failure responses
     let callCount = 0;
