@@ -76,6 +76,12 @@ describe("BompDataProcessor", () => {
       extractBasicBompInfo: vi.fn(),
       extractBompAttributes: vi.fn(),
       extractExtraAbility: vi.fn(),
+      getRarityExtractionStats: vi.fn().mockReturnValue({
+        successful: 1,
+        failed: 0,
+        total: 1,
+        successRate: 100,
+      }),
     } as any;
 
     processor = new BompDataProcessor(mockApiClient, mockBompDataMapper);

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { promises as fs } from "fs";
+import path from "path";
 import { BompIconProcessor } from "../../src/processors/BompIconProcessor";
 import { BompIconGenerator } from "../../src/generators/BompIconGenerator";
 import { BompListParser } from "../../src/parsers/BompListParser";
@@ -248,7 +249,9 @@ describe("BompIcon Error Scenarios", () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain("セキュリティ検証に失敗");
+      // extractIconUrl rejects non-allowlisted domains by returning null, so
+      // processing fails with the generic "URL not found" validation error
+      expect(result.error).toContain("アイコン URL が見つかりません");
     });
 
     it("ディレクトリトラバーサル攻撃", async () => {
@@ -258,10 +261,12 @@ describe("BompIcon Error Scenarios", () => {
       // 危険なボンプIDを使用
       const dangerousBompId = "../../../etc/passwd";
 
-      expect(() => {
-        const processor = new BompIconProcessor(mockApiClient, config);
-        processor.generateLocalPath(dangerousBompId);
-      }).toThrow();
+      // The ID is sanitized (path separators and dots stripped) rather than
+      // rejected, so the resulting path stays inside the output directory
+      const processor = new BompIconProcessor(mockApiClient, config);
+      const localPath = processor.generateLocalPath(dangerousBompId);
+      expect(localPath).toBe(path.join(config.outputDirectory, "etcpasswd.png"));
+      expect(localPath).not.toContain("..");
     });
 
     it("無効なコンテンツタイプ", async () => {
