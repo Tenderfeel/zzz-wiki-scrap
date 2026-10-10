@@ -15,7 +15,7 @@ import { main } from "../../src/main-bomp-icon-download";
  * 要件: 4.4, 4.5
  */
 describe("BompIconDownload Integration Tests", () => {
-  const testOutputDir = "test-assets/images/bomps";
+  const testOutputDir = "test-assets-bomp-icon-download/images/bomps";
   const testConfigPath = "test-processing-config.json";
   const testScrapingFile = "test-scraping.md";
 
@@ -418,7 +418,7 @@ describe("BompIconDownload Integration Tests", () => {
   async function cleanupTestDirectory(): Promise<void> {
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-      await fs.rm("test-assets", { recursive: true, force: true });
+      await fs.rm("test-assets-bomp-icon-download", { recursive: true, force: true });
     } catch {
       // ディレクトリが存在しない場合は無視
     }
