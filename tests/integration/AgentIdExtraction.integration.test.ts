@@ -287,25 +287,25 @@ describe("Agent ID Extraction Integration Tests", () => {
         {
           weaponId: "76",
           weaponName: "恥じらう悪面",
-          agentName: "ライカオン",
+          agentName: "ライカン",
           expectedAgentId: "lycaon",
         },
         {
           weaponId: "77",
           weaponName: "ストリートスーパースター",
-          agentName: "ニコル・デマラ",
+          agentName: "ニコ・デマラ",
           expectedAgentId: "nicole",
         },
         {
           weaponId: "78",
           weaponName: "スチームオーブン",
-          agentName: "ライカオン",
+          agentName: "ライカン",
           expectedAgentId: "lycaon",
         },
         {
           weaponId: "79",
           weaponName: "ヘルファイア・ガントレット",
-          agentName: "ソウカク",
+          agentName: "蒼角",
           expectedAgentId: "soukaku",
         },
       ];
@@ -453,7 +453,7 @@ describe("Agent ID Extraction Integration Tests", () => {
         {
           weaponId: "203",
           weaponName: "不正データテスト4",
-          malformedValue: '$[{"ep_id":29,"name":"ライカオン","other":"data"}]$',
+          malformedValue: '$[{"ep_id":29,"name":"ライカン","other":"data"}]$',
           expectedAgentId: "lycaon", // Should extract successfully
         },
       ];
@@ -516,7 +516,7 @@ describe("Agent ID Extraction Integration Tests", () => {
         {
           weaponId: "300",
           weaponName: "リュシア専用武器",
-          agentName: "リュシア・プラム",
+          agentName: "リュシア・エロウェン",
           expectedAgentId: "lucia",
         },
         {
@@ -527,9 +527,9 @@ describe("Agent ID Extraction Integration Tests", () => {
         },
         {
           weaponId: "302",
-          weaponName: "Lucia Weapon",
-          agentName: "Lucia Plum",
-          expectedAgentId: "lucia",
+          weaponName: "真斗専用武器",
+          agentName: "狛野真斗",
+          expectedAgentId: "manato",
         },
         {
           weaponId: "303",
@@ -587,7 +587,7 @@ describe("Agent ID Extraction Integration Tests", () => {
       }
 
       // Verify new character mappings work
-      expect(performanceMetrics.successfulExtractions).toBe(3); // Lucia variants
+      expect(performanceMetrics.successfulExtractions).toBe(3); // New character variants
       expect(performanceMetrics.failedExtractions).toBe(1); // Unknown character
     });
   });
@@ -605,7 +605,7 @@ describe("Agent ID Extraction Integration Tests", () => {
         {
           weaponId: "401",
           weaponName: "API変化テスト2",
-          agentName: "ライカオン",
+          agentName: "ライカン",
           useOldFormat: true, // Use 'values' array (legacy)
         },
       ];
@@ -682,7 +682,7 @@ describe("Agent ID Extraction Integration Tests", () => {
       const largeWeaponSet = Array.from({ length: 50 }, (_, i) => ({
         weaponId: (500 + i).toString(),
         weaponName: `大量テスト武器${i + 1}`,
-        agentName: i % 2 === 0 ? "エレン・ジョー" : "ライカオン",
+        agentName: i % 2 === 0 ? "エレン・ジョー" : "ライカン",
         expectedAgentId: i % 2 === 0 ? "ellen" : "lycaon",
       }));
 
@@ -844,21 +844,22 @@ describe("Agent ID Extraction Integration Tests", () => {
     it("should test agent mapping function directly", () => {
       // Test cases for agent mapping
       const mappingTests = [
-        // Exact matches
+        // Exact matches (map keys are Japanese names from data/characters.ts)
         { input: "エレン・ジョー", expected: "ellen" },
-        { input: "Ellen Joe", expected: "ellen" },
-        { input: "ライカオン", expected: "lycaon" },
-        { input: "Von Lycaon", expected: "lycaon" },
+        { input: "ライカン", expected: "lycaon" },
+        { input: "フォン・ライカン", expected: "lycaon" },
 
         // New character mappings
         { input: "リュシア", expected: "lucia" },
-        { input: "リュシア・プラム", expected: "lucia" },
-        { input: "Lucia", expected: "lucia" },
-        { input: "Lucia Plum", expected: "lucia" },
+        { input: "リュシア・エロウェン", expected: "lucia" },
 
         // Partial matches
-        { input: "エレン", expected: "ellen" },
-        { input: "Ellen", expected: "ellen" },
+        { input: "エレン・", expected: "ellen" },
+        { input: "リュシア・エロウェン・テスト", expected: "lucia" },
+
+        // English names are not supported (no English fallback)
+        { input: "Ellen Joe", expected: "" },
+        { input: "Lucia", expected: "" },
 
         // Unknown characters
         { input: "未知のキャラクター", expected: "" },
@@ -884,15 +885,13 @@ describe("Agent ID Extraction Integration Tests", () => {
       });
 
       // Verify that new mappings work correctly
-      const luciaVariants = mappingTests.filter(
-        (t) =>
-          t.input.toLowerCase().includes("lucia") ||
-          t.input.includes("リュシア")
+      const luciaVariants = mappingTests.filter((t) =>
+        t.input.includes("リュシア")
       );
-      const successfulLuciaMappings = luciaVariants.filter(
-        (t) => t.expected === "lucia"
-      );
-      expect(successfulLuciaMappings).toHaveLength(4); // All Lucia variants should map correctly
+      expect(luciaVariants.length).toBeGreaterThan(0);
+      luciaVariants.forEach((t) => {
+        expect(getAgentIdByName(t.input)).toBe("lucia"); // All Japanese Lucia variants should map correctly
+      });
     });
   });
 });

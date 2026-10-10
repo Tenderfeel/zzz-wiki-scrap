@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import characters from "../../data/characters";
+import statsData from "../../data/stats";
 import {
   Character,
   AssistType,
@@ -165,17 +166,8 @@ describe("キャラクターデータの整合性テスト", () => {
     });
 
     it("stats が有効な値の配列であること", () => {
-      const validStats: Stats[] = [
-        "ether",
-        "fire",
-        "ice",
-        "physical",
-        "electric",
-        "frost",
-        "auricInk",
-        "lumiflux",
-        "honedEdge",
-      ];
+      // 属性マスタ (data/stats.ts) を正とする
+      const validStats: Stats[] = statsData.map((stat) => stat.id);
 
       const invalidStats = characters.filter((char) => {
         // stats が配列であることを確認
