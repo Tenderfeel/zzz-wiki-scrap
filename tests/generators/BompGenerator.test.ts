@@ -221,6 +221,22 @@ describe("BompGenerator", () => {
       });
     });
 
+    it("json/data-corrections.json の補正を適用する", () => {
+      // robin のレベル60攻撃力は取得元で 8261 になっているため 8621 に補正される
+      const ascension = JSON.parse(mockJaData.attributesInfo.ascensionData);
+      const level60 = ascension.list.find((l: any) => l.key === "60");
+      level60.combatList.find((c: any) => c.key === "攻撃力").values = ["-", "8261"];
+      const robinData = {
+        ...mockJaData,
+        basicInfo: { ...mockJaData.basicInfo, id: "robin" },
+        attributesInfo: { ascensionData: JSON.stringify(ascension) },
+      };
+
+      const result = bompGenerator.generateBomp(robinData, null, "robin");
+
+      expect(result.attr.atk[6]).toBe(8621);
+    });
+
     it("英語データがない場合、日本語をフォールバックとして使用する", () => {
       const result = bompGenerator.generateBomp(mockJaData, null, "excaliboo");
 
