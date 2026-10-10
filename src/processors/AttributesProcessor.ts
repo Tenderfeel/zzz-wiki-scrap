@@ -253,13 +253,13 @@ export class AttributesProcessor {
 
   /**
    * 文字列値を数値に変換
-   * "-" 値は 0 に変換
+   * "-" 値は 0 に変換、桁区切りのカンマ（"1,820"）は除去
    */
   private parseStatValue(value: string): number {
     if (value === "-" || value === "" || value == null) {
       return 0;
     }
-    const parsed = parseInt(value, 10);
+    const parsed = parseInt(value.replace(/,/g, ""), 10);
     return isNaN(parsed) ? 0 : parsed;
   }
 
@@ -271,7 +271,7 @@ export class AttributesProcessor {
     if (value === "-" || value === "" || value == null) {
       return 0;
     }
-    const cleanValue = value.replace("%", "");
+    const cleanValue = value.replace("%", "").replace(/,/g, "");
     const parsed = parseFloat(cleanValue);
     return isNaN(parsed) ? 0 : parsed;
   }
@@ -284,7 +284,7 @@ export class AttributesProcessor {
     if (value === "-" || value === "" || value == null) {
       return 0;
     }
-    const parsed = parseFloat(value);
+    const parsed = parseFloat(value.replace(/,/g, ""));
     return isNaN(parsed) ? 0 : parsed;
   }
 }

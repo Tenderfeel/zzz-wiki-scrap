@@ -280,6 +280,25 @@ describe("AttributesProcessor", () => {
       expect(result.def[6]).toBe(0); // レベル60の防御力が"-"の場合
     });
 
+    it("桁区切りのカンマを含む値を正しく数値に変換する", () => {
+      // 実際の API レスポンス（velina, pageId 1084）の形式
+      const levels = ["1", "10", "20", "30", "40", "50", "60"];
+      const hpValues = ["626", "1,820", "3,099", "4,379", "5,659", "6,938", "7,788"];
+      const mockDataWithComma = levels.map((key, i) => ({
+        key,
+        combatList: [
+          { key: "HP", values: ["-", hpValues[i]] },
+          { key: "攻撃力", values: ["-", "1,000"] },
+          { key: "防御力", values: ["-", "49"] },
+        ],
+      }));
+
+      const result = processor.extractLevelBasedStats(mockDataWithComma);
+
+      expect(result.hp).toEqual([626, 1820, 3099, 4379, 5659, 6938, 7788]);
+      expect(result.atk[0]).toBe(1000);
+    });
+
     it("レベルデータが見つからない場合はParsingErrorを投げる", () => {
       const incompleteData = [
         { key: "1", combatList: [{ key: "HP", values: ["677", "677"] }] },
