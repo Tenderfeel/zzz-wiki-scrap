@@ -449,6 +449,15 @@ describe("EnhancedDataProcessor", () => {
     });
   });
 
+  describe("数値の解析", () => {
+    it("桁区切りのカンマを含む値を正しく数値に変換する", () => {
+      // 実際の API レスポンスでは "1,820" のような値が返る
+      expect((processor as any).parseNumericValue("1,820")).toBe(1820);
+      expect((processor as any).parsePercentageValue("1,050%")).toBe(1050);
+      expect((processor as any).parseFloatValue("1,234.5")).toBe(1234.5);
+    });
+  });
+
   describe("列挙値マッピング", () => {
     it("特性の日本語名を正しくマッピングする", async () => {
       // 各特性をテスト
