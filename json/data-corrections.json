@@ -1,5 +1,13 @@
 {
-  "characters": [],
+  "characters": [
+    {
+      "id": "promeia",
+      "path": "attr.hp.2",
+      "from": 3009,
+      "to": 3099,
+      "reason": "HoYoLAB wiki のレベル20HPが 3099 の桁入れ替わり。他レベルの値が完全に一致するキャラクター（velina, sigrid）はすべて 3099"
+    }
+  ],
   "weapons": [],
   "bomps": [
     {

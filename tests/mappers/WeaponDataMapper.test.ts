@@ -237,6 +237,35 @@ describe("WeaponDataMapper", () => {
       expect(result.atk).toEqual([1100, 1101, 1102, 1103, 1104, 1105, 1106]);
     });
 
+    it("最初のレベルのキーが \"1\" の場合もレベル0として扱う", () => {
+      // 取得元（正規版変身装置, pageId 65）ではレベル0のキーが "1" になっている
+      const list = LEVELS.map((level, i) => ({
+        key: level === "0" ? "1" : level,
+        combatList: [{ key: "基礎攻撃力", values: ["-", String(40 + i)] }],
+      }));
+
+      const result = weaponDataMapper.extractWeaponAttributes(createModules(list));
+
+      expect(result.atk).toEqual([40, 41, 42, 43, 44, 45, 46]);
+    });
+
+    it("ステータス名が空の行は、他のレベルの同じ位置の行のステータス名で補う", () => {
+      // 取得元（蒼き波の霊器, pageId 984）ではレベル60のHPのキーが空になっている
+      const list = LEVELS.map((level, i) => ({
+        key: level,
+        combatList: [
+          { key: "音動機改造", values: ["前", "後"] },
+          { key: "基礎攻撃力", values: ["-", String(40 + i)] },
+          { key: level === "60" ? "" : "HP", values: ["-", `${10 + i}%`] },
+        ],
+      }));
+
+      const result = weaponDataMapper.extractWeaponAttributes(createModules(list));
+
+      expect(result.hp).toEqual([10, 11, 12, 13, 14, 15, 16]);
+      expect(result.atk).toEqual([40, 41, 42, 43, 44, 45, 46]);
+    });
+
     it("ascensionコンポーネントから突破ステータスの「後」値を正常に抽出する", () => {
       const ascensionData: AscensionData = {
         list: [

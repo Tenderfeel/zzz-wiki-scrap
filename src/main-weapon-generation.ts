@@ -1120,7 +1120,7 @@ class WeaponDataPipeline {
  * 進捗監視とレポート生成機能を実装
  * 要件: 4.1, 4.2, 4.3, 4.4
  */
-async function main(): Promise<void> {
+async function main(configPath?: string): Promise<void> {
   const startTime = new Date();
 
   try {
@@ -1129,7 +1129,11 @@ async function main(): Promise<void> {
     console.log("================================\n");
 
     // 設定を読み込み
-    const configManager = ConfigManager.getInstance();
+    // 明示的に指定された設定ファイルがない場合は、デフォルト設定にフォールバックせず中断する
+    if (configPath && !fs.existsSync(configPath)) {
+      throw new Error(`設定ファイルが見つかりません: ${configPath}`);
+    }
+    const configManager = ConfigManager.getInstance(configPath);
     const config = configManager.getWeaponProcessingConfig();
 
     // 設定概要を表示
@@ -1329,7 +1333,7 @@ if (require.main === module) {
     process.exit(0);
   }
 
-  main().catch((error) => {
+  main(args.configPath).catch((error) => {
     console.error("予期しないエラーが発生しました:", error);
     process.exit(1);
   });

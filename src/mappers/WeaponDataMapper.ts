@@ -145,13 +145,22 @@ export class WeaponDataMapper extends DataMapper {
       // レベル順序（0, 10, 20, 30, 40, 50, 60）
       const levelOrder = ["0", "10", "20", "30", "40", "50", "60"];
 
+      // 取得元によってはレベル0のキーが "1" になっている
+      const findLevelData = (level: string) =>
+        ascensionData.list.find((item) => item.key === level) ||
+        (level === "0"
+          ? ascensionData.list.find((item) => item.key === "1")
+          : undefined);
+
       levelOrder.forEach((level, index) => {
-        const levelData = ascensionData.list.find((item) => item.key === level);
+        const levelData = findLevelData(level);
         if (levelData && levelData.combatList) {
           // 各ステータスを処理
-          levelData.combatList.forEach((combat) => {
-            if (combat.key && combat.values && combat.values.length > 1) {
-              const statName = combat.key;
+          levelData.combatList.forEach((combat, rowIndex) => {
+            // 取得元でステータス名が空になっている行は、他のレベルの同じ位置の行の名前で補う
+            const statName =
+              combat.key || this.findStatNameAtRow(ascensionData, rowIndex);
+            if (statName && combat.values && combat.values.length > 1) {
               const afterValue = combat.values[1]; // 「後」の値
 
               // ステータス名を属性にマッピング
@@ -179,6 +188,25 @@ export class WeaponDataMapper extends DataMapper {
       });
       return this.createEmptyWeaponAttributes();
     }
+  }
+
+  /**
+   * 指定した位置の行のステータス名を、他のレベルから探す
+   * @param ascensionData 突破データ
+   * @param rowIndex combatList 内の行の位置
+   * @returns ステータス名（見つからない場合は undefined）
+   */
+  private findStatNameAtRow(
+    ascensionData: AscensionData,
+    rowIndex: number,
+  ): string | undefined {
+    for (const item of ascensionData.list) {
+      const key = item.combatList?.[rowIndex]?.key;
+      if (key) {
+        return key;
+      }
+    }
+    return undefined;
   }
 
   /**

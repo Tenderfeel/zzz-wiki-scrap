@@ -29,8 +29,8 @@ export class CharacterListParser {
    * @returns キャラクターエントリーの配列
    */
   public extractCharacterEntries(content: string): CharacterEntry[] {
-    // 正規表現パターン: - [キャラクターID](URL) - pageId: 数値
-    const pattern = /- \[([^\]]+)\]\(([^)]+)\) - pageId: (\d+)/g;
+    // 正規表現パターン: - [キャラクターID](URL) - pageId: 数値（コロン後の空白は任意）
+    const pattern = /- \[([^\]]+)\]\(([^)]+)\) - pageId:\s*(\d+)/g;
     const entries: CharacterEntry[] = [];
     let match;
 
