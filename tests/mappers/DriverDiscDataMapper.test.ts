@@ -131,7 +131,7 @@ describe("DriverDiscDataMapperクラス", () => {
       expect(result.twoSetEffect).toBe("HP が10%アップする");
     });
 
-    test("モジュールデータが存在しない場合にエラーが発生すること", () => {
+    test("モジュールデータが存在しない場合に空のセット効果を返すこと", () => {
       const mockApiResponse: ApiResponse = {
         retcode: 0,
         message: "OK",
@@ -148,67 +148,83 @@ describe("DriverDiscDataMapperクラス", () => {
         },
       };
 
-      expect(() => {
-        mapper.extractSetEffects(mockApiResponse);
-      }).toThrow(MappingError);
+      const result = mapper.extractSetEffects(mockApiResponse);
+
+      expect(result.fourSetEffect).toBe("");
+      expect(result.twoSetEffect).toBe("");
     });
   });
 
   describe("特性の抽出", () => {
-    test("4セット効果テキストから撃破特性を抽出できること", () => {
-      const fourSetEffect = "敵を撃破した時、チーム全体の攻撃力が上昇する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("stun");
+    test("[撃破]キーワードから撃破特性を抽出できること", () => {
+      const fourSetEffect = "[撃破]キャラクターが敵をブレイクした時、効果が発動する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("stun");
     });
 
-    test("4セット効果テキストから強攻特性を抽出できること", () => {
-      const fourSetEffect =
-        "強攻ダメージが増加し、敵に与えるダメージが上昇する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("attack");
+    test("[強攻]キーワードから強攻特性を抽出できること", () => {
+      const fourSetEffect = "[強攻]キャラクターのダメージが上昇する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("attack");
     });
 
-    test("4セット効果テキストから異常特性を抽出できること", () => {
-      const fourSetEffect = "異常状態の敵に対してダメージが増加する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("anomaly");
+    test("[異常]キーワードから異常特性を抽出できること", () => {
+      const fourSetEffect = "[異常]キャラクターのダメージが上昇する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("anomaly");
     });
 
-    test("4セット効果テキストから支援特性を抽出できること", () => {
-      const fourSetEffect =
-        "支援スキル使用時にチーム全体のエネルギーが回復する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("support");
+    test("[支援]キーワードから支援特性を抽出できること", () => {
+      const fourSetEffect = "[支援]キャラクターがスキルを使用した時、効果が発動する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("support");
     });
 
-    test("4セット効果テキストから防護特性を抽出できること", () => {
-      const fourSetEffect = "防護スキル使用時にダメージ軽減効果が発動する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("defense");
+    test("[防護]キーワードから防護特性を抽出できること", () => {
+      const fourSetEffect = "[防護]キャラクターがスキルを使用した時、効果が発動する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("defense");
     });
 
-    test("4セット効果テキストから命破特性を抽出できること", () => {
-      const fourSetEffect = "命破攻撃時に追加ダメージが発生する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("rupture");
+    test("[命破]キーワードから命破特性を抽出できること", () => {
+      const fourSetEffect = "[命破]キャラクターの追加ダメージが発生する";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("rupture");
+    });
+
+    test("括弧なしのキーワードはマッチしないこと", () => {
+      const fourSetEffect = "敵を撃破した時、効果が発動する";
+      expect(mapper.extractSpecialties(fourSetEffect, "")).toEqual([]);
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("attack");
     });
 
     test("HTMLタグが含まれるテキストから特性を抽出できること", () => {
       const fourSetEffect =
-        "<p>敵を<strong>撃破</strong>した時、効果が発動する</p>";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("stun");
+        "<p><strong>[撃破]</strong>キャラクターが敵をブレイクした時、効果が発動する</p>";
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("stun");
+    });
+
+    test("効果テキストマッピングが適用され、結果がソートされること", () => {
+      const fourSetEffect = "敵を撃破した時、チーム全体の攻撃力が上昇する";
+      expect(mapper.extractSpecialties(fourSetEffect, "")).toEqual([
+        "anomaly",
+        "attack",
+        "support",
+      ]);
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("anomaly");
+    });
+
+    test("4セットと2セット効果の特性を重複なく統合すること", () => {
+      const result = mapper.extractSpecialties(
+        "[撃破]キャラクターが敵をブレイクした時、効果が発動する",
+        "防御力+16%"
+      );
+      expect(result).toEqual(["defense", "stun"]);
     });
 
     test("特性パターンがマッチしない場合にデフォルト値を返すこと", () => {
       const fourSetEffect = "特殊な効果が発動する";
-      const result = mapper.extractSpecialty(fourSetEffect);
-      expect(result).toBe("attack");
+      expect(mapper.extractSpecialties(fourSetEffect, "")).toEqual([]);
+      expect(mapper.extractSpecialty(fourSetEffect)).toBe("attack");
     });
 
     test("空のテキストでデフォルト値を返すこと", () => {
-      const result = mapper.extractSpecialty("");
-      expect(result).toBe("attack");
+      expect(mapper.extractSpecialties("", "")).toEqual([]);
+      expect(mapper.extractSpecialty("")).toBe("attack");
     });
 
     test("nullまたはundefinedでデフォルト値を返すこと", () => {

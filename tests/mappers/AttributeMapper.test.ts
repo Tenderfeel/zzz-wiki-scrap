@@ -167,7 +167,12 @@ describe("AttributeMapper", () => {
       expect(attributes).toContain("電気属性");
       expect(attributes).toContain("物理属性");
       expect(attributes).toContain("エーテル属性");
-      expect(attributes).toHaveLength(5);
+      expect(attributes).toContain("霜烈属性");
+      expect(attributes).toContain("玄墨属性");
+      expect(attributes).toContain("凛刃属性");
+      expect(attributes).toContain("流明属性");
+      expect(attributes).toContain("風属性");
+      expect(attributes).toHaveLength(10);
     });
   });
 
@@ -179,7 +184,12 @@ describe("AttributeMapper", () => {
       expect(attributes).toContain("electric");
       expect(attributes).toContain("physical");
       expect(attributes).toContain("ether");
-      expect(attributes).toHaveLength(5);
+      expect(attributes).toContain("frost");
+      expect(attributes).toContain("auricInk");
+      expect(attributes).toContain("honedEdge");
+      expect(attributes).toContain("lumiflux");
+      expect(attributes).toContain("wind");
+      expect(attributes).toHaveLength(10);
     });
   });
 });
