@@ -280,9 +280,9 @@ export class WeaponDataProcessor extends DataProcessor {
           const value = (data.attributesInfo as any)[key];
           if (!Array.isArray(value)) {
             errors.push(`属性 ${key} が配列ではありません`);
-          } else if (value.length !== 7) {
+          } else if (value.length !== 0 && value.length !== 7) {
             errors.push(
-              `属性 ${key} の配列長が7ではありません: ${value.length}`
+              `属性 ${key} の配列長が0または7ではありません: ${value.length}`
             );
           } else {
             // 数値の検証
@@ -712,16 +712,16 @@ export class WeaponDataProcessor extends DataProcessor {
    */
   private createEmptyWeaponAttributes(): WeaponAttributesInfo {
     return {
-      hp: new Array(7).fill(0),
-      atk: new Array(7).fill(0),
-      def: new Array(7).fill(0),
-      impact: new Array(7).fill(0),
-      critRate: new Array(7).fill(0),
-      critDmg: new Array(7).fill(0),
-      anomalyMastery: new Array(7).fill(0),
-      anomalyProficiency: new Array(7).fill(0),
-      penRatio: new Array(7).fill(0),
-      energy: new Array(7).fill(0),
+      hp: [],
+      atk: [],
+      def: [],
+      impact: [],
+      critRate: [],
+      critDmg: [],
+      anomalyMastery: [],
+      anomalyProficiency: [],
+      penRatio: [],
+      energy: [],
     };
   }
 
