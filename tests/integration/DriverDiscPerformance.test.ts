@@ -279,6 +279,8 @@ describe("DriverDisc Performance Tests", () => {
       const memoryEnd = process.memoryUsage();
 
       // Find peak memory usage
+      // 処理がスナップショット間隔より短く終わる場合に備え、終了時点も候補に含める
+      memorySnapshots.push(memoryEnd);
       const peakMemory = memorySnapshots.reduce(
         (peak, current) => (current.heapUsed > peak.heapUsed ? current : peak),
         memoryStart

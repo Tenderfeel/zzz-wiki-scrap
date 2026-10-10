@@ -11,7 +11,9 @@ import { WeaponIconConfig } from "../../src/types/processing";
  * 要件: 4.4
  */
 describe("WeaponIcon Performance Tests", () => {
-  const testOutputDir = "test-perf-assets/images/weapons";
+  // 他のパフォーマンステストと並列実行されても衝突しないよう専用ディレクトリを使用
+  const testRootDir = "test-perf-assets-weapon";
+  const testOutputDir = `${testRootDir}/images/weapons`;
   let originalFetch: typeof global.fetch;
 
   beforeEach(async () => {
@@ -570,7 +572,7 @@ describe("WeaponIcon Performance Tests", () => {
 
   async function cleanupTestDirectory(): Promise<void> {
     try {
-      await fs.rm("test-perf-assets", { recursive: true, force: true });
+      await fs.rm(testRootDir, { recursive: true, force: true });
     } catch {
       // ディレクトリが存在しない場合は無視
     }
