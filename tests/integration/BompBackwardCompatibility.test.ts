@@ -6,6 +6,7 @@ import { BompGenerator } from "../../src/generators/BompGenerator";
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { Bomp } from "../../src/types";
 import { ApiResponse } from "../../src/types/api";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 // Helper function to create legacy API response (without rarity information)
 function createLegacyApiResponse(
@@ -182,7 +183,9 @@ describe("Bomp Backward Compatibility Tests", () => {
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const name = id === "912" ? "レガシーボンプ1" : "レガシーボンプ2";
         return createLegacyApiResponse(id, name);
       });
@@ -221,7 +224,7 @@ describe("Bomp Backward Compatibility Tests", () => {
       expect(fs.existsSync(testOutputPath)).toBe(true);
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
       expect(outputContent).toContain("export default");
-      expect(outputContent).toContain('"rarity": "A"'); // Should contain fallback rarity
+      expect(outputContent).toContain('rarity: "A"'); // Should contain fallback rarity
     });
 
     it("should handle data without rarity field appropriately", async () => {
@@ -389,41 +392,7 @@ describe("Bomp Backward Compatibility Tests", () => {
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify({
-                      list: [
-                        {
-                          key: "1",
-                          combatList: [
-                            { key: "HP", values: ["-", "1000"] },
-                            { key: "攻撃力", values: ["-", "100"] },
-                            { key: "防御力", values: ["-", "50"] },
-                            { key: "衝撃力", values: ["-", "10"] },
-                            { key: "会心率", values: ["-", "5%"] },
-                            { key: "会心ダメージ", values: ["-", "50%"] },
-                            { key: "異常マスタリー", values: ["-", "0"] },
-                            { key: "異常掌握", values: ["-", "0"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "エネルギー自動回復", values: ["-", "100"] },
-                          ],
-                        },
-                        // Add other levels...
-                        {
-                          key: "60",
-                          combatList: [
-                            { key: "HP", values: ["-", "2200"] },
-                            { key: "攻撃力", values: ["-", "220"] },
-                            { key: "防御力", values: ["-", "110"] },
-                            { key: "衝撃力", values: ["-", "10"] },
-                            { key: "会心率", values: ["-", "5%"] },
-                            { key: "会心ダメージ", values: ["-", "50%"] },
-                            { key: "異常マスタリー", values: ["-", "0"] },
-                            { key: "異常掌握", values: ["-", "0"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "エネルギー自動回復", values: ["-", "100"] },
-                          ],
-                        },
-                      ],
-                    }),
+                    data: createBompAscensionData(),
                   },
                 ],
               },
@@ -459,8 +428,8 @@ describe("Bomp Backward Compatibility Tests", () => {
       // Verify output file
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
       expect(outputContent).toContain("export default");
-      expect(outputContent).toContain('"id": "test-bomp"');
-      expect(outputContent).toContain('"rarity": "A"');
+      expect(outputContent).toContain('id: "test-bomp"');
+      expect(outputContent).toContain('rarity: "A"');
     });
 
     it("should maintain processing statistics and error handling", async () => {
@@ -523,7 +492,9 @@ describe("Bomp Backward Compatibility Tests", () => {
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         if (id === "912") {
           // Legacy response without rarity
           return createLegacyApiResponse("912", "レガシーボンプ");
@@ -562,8 +533,8 @@ describe("Bomp Backward Compatibility Tests", () => {
       expect(legacyBomp).toBeDefined();
       expect(newBomp).toBeDefined();
 
-      // Legacy bomp should have fallback rarity (both will be S due to mock implementation)
-      expect(legacyBomp!.rarity).toBe("S");
+      // Legacy bomp should have fallback rarity
+      expect(legacyBomp!.rarity).toBe("A");
 
       // New bomp should have extracted rarity
       expect(newBomp!.rarity).toBe("S");

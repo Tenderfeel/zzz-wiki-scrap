@@ -4,6 +4,7 @@ import * as path from "path";
 import { BompBatchProcessor } from "../../src/processors/BompBatchProcessor";
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { ApiResponse } from "../../src/types/api";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 describe("Bomp Debug Tests", () => {
   const testOutputDir = "debug-test-output";
@@ -50,44 +51,7 @@ describe("Bomp Debug Tests", () => {
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: {
-                          values: [
-                            "-",
-                            "1000",
-                            "1200",
-                            "1400",
-                            "1600",
-                            "1800",
-                            "2000",
-                          ],
-                        },
-                        atk: {
-                          values: [
-                            "-",
-                            "100",
-                            "120",
-                            "140",
-                            "160",
-                            "180",
-                            "200",
-                          ],
-                        },
-                        def: {
-                          values: ["-", "50", "60", "70", "80", "90", "100"],
-                        },
-                        impact: { values: ["10"] },
-                        critRate: { values: ["5%"] },
-                        critDmg: { values: ["50%"] },
-                        anomalyMastery: { values: ["0"] },
-                        anomalyProficiency: { values: ["0"] },
-                        penRatio: { values: ["0%"] },
-                        energy: { values: ["100"] },
-                      },
-                    ],
-                  }),
+                  data: createBompAscensionData(),
                 },
               ],
             },
@@ -192,7 +156,7 @@ describe("Bomp Debug Tests", () => {
       basicInfo: {
         id: "generator-test-bomp",
         name: "ジェネレーターテストボンプ",
-        stats: "ice", // Already mapped value from BompDataMapper
+        stats: ["ice"], // Already mapped value from BompDataMapper
         releaseVersion: undefined,
       },
       attributesInfo: {
@@ -305,44 +269,7 @@ describe("Bomp Debug Tests", () => {
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: {
-                          values: [
-                            "-",
-                            "1500",
-                            "1800",
-                            "2100",
-                            "2400",
-                            "2700",
-                            "3000",
-                          ],
-                        },
-                        atk: {
-                          values: [
-                            "-",
-                            "150",
-                            "180",
-                            "210",
-                            "240",
-                            "270",
-                            "300",
-                          ],
-                        },
-                        def: {
-                          values: ["-", "75", "90", "105", "120", "135", "150"],
-                        },
-                        impact: { values: ["15"] },
-                        critRate: { values: ["8%"] },
-                        critDmg: { values: ["60%"] },
-                        anomalyMastery: { values: ["5"] },
-                        anomalyProficiency: { values: ["10"] },
-                        penRatio: { values: ["2%"] },
-                        energy: { values: ["120"] },
-                      },
-                    ],
-                  }),
+                  data: createBompAscensionData(),
                 },
               ],
             },

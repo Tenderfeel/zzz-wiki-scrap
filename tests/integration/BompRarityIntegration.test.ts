@@ -6,6 +6,7 @@ import { BompGenerator } from "../../src/generators/BompGenerator";
 import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { Bomp, Rarity } from "../../src/types";
 import { ApiResponse } from "../../src/types/api";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 // Helper function to create mock API response with rarity information
 function createMockApiResponseWithRarity(
@@ -188,7 +189,9 @@ describe("Bomp Rarity Integration Tests", () => {
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         callCount++;
         if (id === "912") {
           return createMockApiResponseWithRarity(
@@ -235,8 +238,8 @@ describe("Bomp Rarity Integration Tests", () => {
       expect(fs.existsSync(testOutputPath)).toBe(true);
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
 
-      expect(outputContent).toContain('"rarity": "A"');
-      expect(outputContent).toContain('"rarity": "S"');
+      expect(outputContent).toContain('rarity: "A"');
+      expect(outputContent).toContain('rarity: "S"');
       expect(outputContent).toContain("rarity-test-a");
       expect(outputContent).toContain("rarity-test-s");
     });
@@ -261,7 +264,9 @@ describe("Bomp Rarity Integration Tests", () => {
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const rarities: ("A級" | "S級")[] = ["A級", "S級", "A級", "S級"];
         const index = parseInt(id) - 912;
         const rarity = rarities[index] || "A級";
@@ -297,8 +302,8 @@ describe("Bomp Rarity Integration Tests", () => {
       expect(outputContent).toContain("rarity");
 
       // Count rarity occurrences
-      const aRarityCount = (outputContent.match(/"rarity": "A"/g) || []).length;
-      const sRarityCount = (outputContent.match(/"rarity": "S"/g) || []).length;
+      const aRarityCount = (outputContent.match(/rarity: "A"/g) || []).length;
+      const sRarityCount = (outputContent.match(/rarity: "S"/g) || []).length;
       expect(aRarityCount).toBe(2);
       expect(sRarityCount).toBe(2);
     });
@@ -350,14 +355,21 @@ describe("Bomp Rarity Integration Tests", () => {
       expect(outputContent).toMatch(/\] as Bomp\[\]/);
 
       // Check rarity field placement and format
-      expect(outputContent).toMatch(/"id": "format-test-bomp"/);
-      expect(outputContent).toMatch(/"rarity": "S"/);
+      expect(outputContent).toMatch(/id: "format-test-bomp"/);
+      expect(outputContent).toMatch(/rarity: "S"/);
 
-      // Verify proper TypeScript syntax
+      // Verify the object literal is syntactically valid: strip the TS-only
+      // parts (import line, `as Bomp[]` cast) and evaluate as plain JS
+      const jsBody = outputContent
+        .replace(/^import .*$/m, "")
+        .replace("export default", "return")
+        .replace(/\] as Bomp\[\];/, "];");
+      let evaluated: Bomp[] = [];
       expect(() => {
-        // This would throw if there are syntax errors
-        new Function(outputContent.replace(/export default.*/, ""));
+        evaluated = new Function(jsBody)();
       }).not.toThrow();
+      expect(evaluated).toHaveLength(1);
+      expect(evaluated[0].rarity).toBe("S");
     });
   });
 
@@ -416,37 +428,7 @@ describe("Bomp Rarity Integration Tests", () => {
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify({
-                      list: [
-                        {
-                          key: "1",
-                          combatList: [
-                            { key: "HP", values: ["-", "360"] },
-                            { key: "攻撃力", values: ["-", "53"] },
-                            { key: "防御力", values: ["-", "32"] },
-                            { key: "衝撃力", values: ["-", "94"] },
-                            { key: "会心率", values: ["-", "5%"] },
-                            { key: "会心ダメージ", values: ["-", "50%"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "異常掌握", values: ["-", "100"] },
-                          ],
-                        },
-                        // ... other levels
-                        {
-                          key: "60",
-                          combatList: [
-                            { key: "HP", values: ["-", "3827"] },
-                            { key: "攻撃力", values: ["-", "6570"] },
-                            { key: "防御力", values: ["-", "781"] },
-                            { key: "衝撃力", values: ["-", "94"] },
-                            { key: "会心率", values: ["-", "50%"] },
-                            { key: "会心ダメージ", values: ["-", "100%"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "異常掌握", values: ["-", "100"] },
-                          ],
-                        },
-                      ],
-                    }),
+                    data: createBompAscensionData(),
                   },
                 ],
               },
@@ -474,7 +456,7 @@ describe("Bomp Rarity Integration Tests", () => {
       // Generate output and verify fallback is used
       bompGenerator.outputBompFile(result.successful, testOutputPath);
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
-      expect(outputContent).toContain('"rarity": "A"');
+      expect(outputContent).toContain('rarity: "A"');
     });
 
     it("should handle malformed rarity data gracefully", async () => {
@@ -530,36 +512,7 @@ describe("Bomp Rarity Integration Tests", () => {
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify({
-                      list: [
-                        {
-                          key: "1",
-                          combatList: [
-                            { key: "HP", values: ["-", "360"] },
-                            { key: "攻撃力", values: ["-", "53"] },
-                            { key: "防御力", values: ["-", "32"] },
-                            { key: "衝撃力", values: ["-", "94"] },
-                            { key: "会心率", values: ["-", "5%"] },
-                            { key: "会心ダメージ", values: ["-", "50%"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "異常掌握", values: ["-", "100"] },
-                          ],
-                        },
-                        {
-                          key: "60",
-                          combatList: [
-                            { key: "HP", values: ["-", "3827"] },
-                            { key: "攻撃力", values: ["-", "6570"] },
-                            { key: "防御力", values: ["-", "781"] },
-                            { key: "衝撃力", values: ["-", "94"] },
-                            { key: "会心率", values: ["-", "50%"] },
-                            { key: "会心ダメージ", values: ["-", "100%"] },
-                            { key: "貫通率", values: ["-", "0%"] },
-                            { key: "異常掌握", values: ["-", "100"] },
-                          ],
-                        },
-                      ],
-                    }),
+                    data: createBompAscensionData(),
                   },
                 ],
               },
@@ -587,7 +540,7 @@ describe("Bomp Rarity Integration Tests", () => {
       // Generate output and verify fallback is used
       bompGenerator.outputBompFile(result.successful, testOutputPath);
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
-      expect(outputContent).toContain('"rarity": "A"');
+      expect(outputContent).toContain('rarity: "A"');
     });
   });
 
@@ -653,7 +606,9 @@ describe("Bomp Rarity Integration Tests", () => {
       vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
-      ).mockImplementation(async (id: string) => {
+      ).mockImplementation(async (pageId: number) => {
+        // fetchCharacterData receives a numeric page ID
+        const id = String(pageId);
         const rarity = id === "912" ? "A級" : "S級";
         return createMockApiResponseWithRarity(
           id,
@@ -684,7 +639,7 @@ describe("Bomp Rarity Integration Tests", () => {
       const bomp1 = result.successful.find((b) => b.id === "complete-test-1");
       const bomp2 = result.successful.find((b) => b.id === "complete-test-2");
 
-      expect(bomp1?.rarity).toBe("S"); // Both bomps will have S rarity due to mock implementation
+      expect(bomp1?.rarity).toBe("A");
       expect(bomp2?.rarity).toBe("S");
     });
   });

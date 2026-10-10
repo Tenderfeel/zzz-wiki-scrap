@@ -8,6 +8,7 @@ import { HoyoLabApiClient } from "../../src/clients/HoyoLabApiClient";
 import { Bomp } from "../../src/types";
 import { performance } from "perf_hooks";
 import { ApiResponse } from "../../src/types/api";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 
 // Helper function to create proper mock API responses
 function createMockApiResponse(
@@ -517,43 +518,10 @@ ${largeBompList}
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify({
-                      combatList: [
-                        {
-                          hp: {
-                            values: [
-                              "-",
-                              "1000",
-                              "1200",
-                              "1400",
-                              "1600",
-                              "1800",
-                              "2000",
-                            ],
-                          },
-                          atk: {
-                            values: [
-                              "-",
-                              "100",
-                              "120",
-                              "140",
-                              "160",
-                              "180",
-                              "200",
-                            ],
-                          },
-                          def: {
-                            values: ["-", "50", "60", "70", "80", "90", "100"],
-                          },
-                          impact: { values: ["15"] },
-                          critRate: { values: ["8%"] },
-                          critDmg: { values: ["60%"] },
-                          anomalyMastery: { values: ["5"] },
-                          anomalyProficiency: { values: ["10"] },
-                          penRatio: { values: ["2%"] },
-                          energy: { values: ["120"] },
-                        },
-                      ],
+                    data: createBompAscensionData({
+                      impact: "15",
+                      critRate: "8%",
+                      critDmg: "60%",
                     }),
                   },
                 ],
@@ -595,18 +563,18 @@ ${largeBompList}
       expect(bomp.attr.def).toHaveLength(7);
 
       // Verify specific values
-      expect(bomp.attr.hp[1]).toBe(1000);
-      expect(bomp.attr.atk[1]).toBe(100);
-      expect(bomp.attr.def[1]).toBe(50);
+      expect(bomp.attr.hp[0]).toBe(1000);
+      expect(bomp.attr.atk[0]).toBe(100);
+      expect(bomp.attr.def[0]).toBe(50);
       expect(bomp.attr.impact).toBe(15);
       expect(bomp.attr.critRate).toBe(8);
       expect(bomp.attr.critDmg).toBe(60);
 
-      // Verify output file contains correct data
+      // Verify output file contains correct data (TS object literal output)
       const outputContent = fs.readFileSync(testOutputPath, "utf-8");
-      expect(outputContent).toContain('"id": "integrity-test-bomp"');
-      expect(outputContent).toContain('"impact": 15');
-      expect(outputContent).toContain('"critRate": 8');
+      expect(outputContent).toContain('id: "integrity-test-bomp"');
+      expect(outputContent).toContain("impact: 15");
+      expect(outputContent).toContain("critRate: 8");
     });
   });
 
@@ -637,7 +605,17 @@ ${largeBompList}
             agent_stats: { values: ["氷属性"] },
             agent_rarity: { values: [] },
             agent_faction: { values: [] },
-            modules: [],
+            modules: [
+              {
+                name: "ascension",
+                components: [
+                  {
+                    component_id: "ascension",
+                    data: createBompAscensionData(),
+                  },
+                ],
+              },
+            ],
           },
         },
       };
@@ -713,7 +691,17 @@ ${largeBompList}
               agent_stats: { values: ["氷属性"] },
               agent_rarity: { values: [] },
               agent_faction: { values: [] },
-              modules: [],
+              modules: [
+                {
+                  name: "ascension",
+                  components: [
+                    {
+                      component_id: "ascension",
+                      data: createBompAscensionData(),
+                    },
+                  ],
+                },
+              ],
             },
           },
         };
@@ -777,7 +765,10 @@ ${largeBompList}
 
       // Assert
       expect(result.failed.length).toBe(1);
-      expect(result.failed[0].error).toContain("処理中にエラーが発生");
+      // Malformed data degrades gracefully, then fails at Bomp generation
+      expect(result.failed[0].error).toContain(
+        "Bompオブジェクトの生成に失敗しました"
+      );
       expect(result.successful.length).toBe(0);
     });
   });
@@ -814,44 +805,7 @@ ${Array.from(
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify({
-                      combatList: [
-                        {
-                          hp: {
-                            values: [
-                              "-",
-                              "1000",
-                              "1200",
-                              "1400",
-                              "1600",
-                              "1800",
-                              "2000",
-                            ],
-                          },
-                          atk: {
-                            values: [
-                              "-",
-                              "100",
-                              "120",
-                              "140",
-                              "160",
-                              "180",
-                              "200",
-                            ],
-                          },
-                          def: {
-                            values: ["-", "50", "60", "70", "80", "90", "100"],
-                          },
-                          impact: { values: ["10"] },
-                          critRate: { values: ["5%"] },
-                          critDmg: { values: ["50%"] },
-                          anomalyMastery: { values: ["0"] },
-                          anomalyProficiency: { values: ["0"] },
-                          penRatio: { values: ["0%"] },
-                          energy: { values: ["100"] },
-                        },
-                      ],
-                    }),
+                    data: createBompAscensionData(),
                   },
                 ],
               },
@@ -905,20 +859,7 @@ ${Array.from(
       fs.writeFileSync(testScrapingPath, memoryTestContent);
 
       // Create a larger mock response to test memory usage
-      const largeMockData = {
-        combatList: Array.from({ length: 10 }, () => ({
-          hp: { values: ["-", "1000", "1200", "1400", "1600", "1800", "2000"] },
-          atk: { values: ["-", "100", "120", "140", "160", "180", "200"] },
-          def: { values: ["-", "50", "60", "70", "80", "90", "100"] },
-          impact: { values: ["10"] },
-          critRate: { values: ["5%"] },
-          critDmg: { values: ["50%"] },
-          anomalyMastery: { values: ["0"] },
-          anomalyProficiency: { values: ["0"] },
-          penRatio: { values: ["0%"] },
-          energy: { values: ["100"] },
-        })),
-      };
+      const largeMockData = createBompAscensionData();
 
       const mockApiResponse = {
         retcode: 0,
@@ -933,7 +874,7 @@ ${Array.from(
                 components: [
                   {
                     component_id: "ascension",
-                    data: JSON.stringify(largeMockData),
+                    data: largeMockData,
                   },
                 ],
               },
@@ -988,7 +929,17 @@ ${Array.from(
           page: {
             id: "912",
             name: "レポートテストボンプ",
-            modules: [],
+            modules: [
+              {
+                name: "ascension",
+                components: [
+                  {
+                    component_id: "ascension",
+                    data: createBompAscensionData(),
+                  },
+                ],
+              },
+            ],
           },
         },
       };
