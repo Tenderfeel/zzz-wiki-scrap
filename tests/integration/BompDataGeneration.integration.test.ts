@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { main, loadConfig } from "../../src/main-bomp-generation";
@@ -664,6 +672,12 @@ ${largeBompList}
 `;
       fs.writeFileSync(testScrapingPath, testScrapingContent);
 
+      // Skip real retry back-off delays to keep the test fast
+      const delaySpy = vi
+        .spyOn(BompBatchProcessor.prototype as any, "delay")
+        .mockResolvedValue(undefined);
+      onTestFinished(() => delaySpy.mockRestore());
+
       let attemptCount = 0;
       const mockApiClient = vi.spyOn(
         HoyoLabApiClient.prototype,
@@ -717,9 +731,16 @@ ${largeBompList}
       });
 
       // Assert
-      expect(attemptCount).toBe(3); // Should retry twice before succeeding
+      // fetchBompApiData calls ja-jp first and en-us only after ja-jp succeeds,
+      // so count only the ja-jp attempts: 2 failures + 1 success
+      const jaAttempts = mockApiClient.mock.calls.filter(
+        ([pageId, lang]) => pageId === 912 && lang === "ja-jp"
+      );
+      expect(jaAttempts.length).toBe(3); // Should retry twice before succeeding
+      expect(attemptCount).toBe(4); // 3 ja-jp + 1 en-us
       expect(result.successful.length).toBe(1);
       expect(result.failed.length).toBe(0);
+      expect(result.successful[0].id).toBe("error-test-bomp");
     });
 
     it("should handle malformed API responses gracefully", async () => {
@@ -733,8 +754,14 @@ ${largeBompList}
 `;
       fs.writeFileSync(testScrapingPath, testScrapingContent);
 
+      // Skip real retry back-off delays to keep the test fast
+      const delaySpy = vi
+        .spyOn(BompBatchProcessor.prototype as any, "delay")
+        .mockResolvedValue(undefined);
+      onTestFinished(() => delaySpy.mockRestore());
+
       // Mock API with malformed response
-      vi.spyOn(
+      const fetchSpy = vi.spyOn(
         HoyoLabApiClient.prototype,
         "fetchCharacterData"
       ).mockResolvedValue({
@@ -760,14 +787,20 @@ ${largeBompList}
       const result = await batchProcessor.processAllBomps(testScrapingPath, {
         batchSize: 1,
         delayMs: 10,
-        maxRetries: 1,
+        maxRetries: 2,
       });
 
       // Assert
+      // No graceful degradation: the mapping error surfaces from data
+      // processing, is retried, and is reported once all retries fail
+      const jaAttempts = fetchSpy.mock.calls.filter(
+        ([, lang]) => lang === "ja-jp"
+      );
+      expect(jaAttempts.length).toBe(2);
       expect(result.failed.length).toBe(1);
-      // Malformed data degrades gracefully, then fails at Bomp generation
+      expect(result.failed[0].bompId).toBe("malformed-test-bomp");
       expect(result.failed[0].error).toContain(
-        "Bompオブジェクトの生成に失敗しました"
+        "MAPPING: 基本ボンプ情報の抽出に失敗しました (malformed-test-bomp)"
       );
       expect(result.successful.length).toBe(0);
     });

@@ -201,22 +201,16 @@ describe("BompDataProcessor", () => {
       expect(result).toBeDefined();
     });
 
-    it("API エラー時にグレースフル劣化を実行する", async () => {
+    it("API エラー時は元のエラーで reject する（グレースフル劣化なし）", async () => {
       // Arrange
-      vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-        new Error("API Error")
+      const apiError = new Error("API Error");
+      vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(apiError);
+
+      // Act & Assert - 呼び出し元のリトライに委ねるため元のエラーを再スロー
+      await expect(processor.processBompData(mockBompEntry)).rejects.toBe(
+        apiError
       );
-
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
-      expect(result.basicInfo.name).toBe("テストボンプ"); // Scraping.mdからの名前
-      expect(result.basicInfo.stats).toEqual(["physical"]); // デフォルト属性
-      expect(result.extraAbility).toBe("");
-      expect(result.factionIds).toEqual([]);
+      expect(mockBompDataMapper.extractBasicBompInfo).not.toHaveBeenCalled();
     });
 
     it("マッピングエラー時にMappingErrorを投げる", async () => {
@@ -231,12 +225,11 @@ describe("BompDataProcessor", () => {
       );
 
       // Act & Assert
-      const result = await processor.processBompData(mockBompEntry);
-
-      // グレースフル劣化が実行されることを確認
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
-      expect(result.basicInfo.stats).toEqual(["physical"]);
+      const promise = processor.processBompData(mockBompEntry);
+      await expect(promise).rejects.toBeInstanceOf(MappingError);
+      await expect(promise).rejects.toThrow(
+        "基本ボンプ情報の抽出に失敗しました (test-bomp)"
+      );
     });
 
     it("属性抽出エラー時にMappingErrorを投げる", async () => {
@@ -257,11 +250,11 @@ describe("BompDataProcessor", () => {
       );
 
       // Act & Assert
-      const result = await processor.processBompData(mockBompEntry);
-
-      // グレースフル劣化が実行されることを確認
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
+      const promise = processor.processBompData(mockBompEntry);
+      await expect(promise).rejects.toBeInstanceOf(MappingError);
+      await expect(promise).rejects.toThrow(
+        "ボンプ属性情報の抽出に失敗しました"
+      );
     });
 
     it("追加能力抽出エラー時は空文字列を返す", async () => {
@@ -1134,18 +1127,25 @@ describe("BompDataProcessor", () => {
         expect(mockBompDataMapper.getRarityExtractionStats).toHaveBeenCalled();
       });
 
-      it("レア度抽出失敗時にグレースフル劣化が実行される", async () => {
+      it("レア度抽出失敗時はデフォルトレア度を使わずMappingErrorでrejectする", async () => {
         // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-          new Error("API Error")
+        vi.mocked(mockApiClient.fetchCharacterData).mockResolvedValue(
+          mockApiResponse
+        );
+        const rarityError = new MappingError("Rarity extraction failed");
+        vi.mocked(mockBompDataMapper.extractBasicBompInfo).mockImplementation(
+          () => {
+            throw rarityError;
+          }
         );
 
-        // Act
-        const result = await processor.processBompData(mockBompEntry);
-
-        // Assert - グレースフル劣化でデフォルトレア度が設定される
-        expect(result).toBeDefined();
-        expect(result.basicInfo.rarity).toBe("A級"); // デフォルト値
+        // Act & Assert - デフォルトレア度 "A級" で補完せず reject する
+        const promise = processor.processBompData(mockBompEntry);
+        await expect(promise).rejects.toBeInstanceOf(MappingError);
+        await expect(promise).rejects.toMatchObject({
+          details: "基本ボンプ情報の抽出に失敗しました (test-bomp)",
+          originalError: rarityError,
+        });
       });
 
       it("レア度検証エラー時でも処理が継続される", async () => {
@@ -1180,111 +1180,6 @@ describe("BompDataProcessor", () => {
         // Assert - 検証エラーがあっても処理は継続される
         expect(result).toBeDefined();
         expect(result.basicInfo.rarity).toBe("無効なレア度");
-      });
-    });
-
-    describe("グレースフル劣化処理のテスト", () => {
-      it("API エラー時にレア度デフォルト値でグレースフル劣化を実行する", async () => {
-        // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-          new ApiError("API connection failed")
-        );
-
-        // Act
-        const result = await processor.processBompData(mockBompEntry);
-
-        // Assert
-        expect(result).toBeDefined();
-        expect(result.basicInfo.id).toBe("test-bomp");
-        expect(result.basicInfo.name).toBe("テストボンプ");
-        expect(result.basicInfo.rarity).toBe("A級"); // デフォルトレア度
-        expect(result.basicInfo.stats).toEqual(["physical"]); // デフォルト属性
-        expect(result.extraAbility).toBe("");
-        expect(result.factionIds).toEqual([]);
-      });
-
-      it("マッピングエラー時にレア度デフォルト値でグレースフル劣化を実行する", async () => {
-        // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockResolvedValue(
-          mockApiResponse
-        );
-        vi.mocked(mockBompDataMapper.extractBasicBompInfo).mockImplementation(
-          () => {
-            throw new MappingError("Rarity extraction failed");
-          }
-        );
-
-        // Act
-        const result = await processor.processBompData(mockBompEntry);
-
-        // Assert
-        expect(result).toBeDefined();
-        expect(result.basicInfo.rarity).toBe("A級"); // デフォルトレア度
-      });
-
-      it("レア度抽出失敗時の統計が正しく記録される", async () => {
-        // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-          new Error("API Error")
-        );
-
-        // Act
-        await processor.processBompData(mockBompEntry);
-
-        // Assert - グレースフル劣化が実行されることを確認
-        // 実際の統計記録は BompDataMapper で行われるため、
-        // ここではグレースフル劣化が実行されることを確認
-        expect(true).toBe(true); // プレースホルダー
-      });
-
-      it("部分的失敗時にレア度フォールバック処理が動作する", async () => {
-        // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockResolvedValue(
-          mockApiResponse
-        );
-        vi.mocked(mockBompDataMapper.extractBasicBompInfo).mockReturnValue({
-          id: "test-bomp",
-          name: "テストボンプ",
-          stats: ["ice"],
-          rarity: "A級",
-          releaseVersion: 1.0,
-        });
-        vi.mocked(mockBompDataMapper.extractBompAttributes).mockImplementation(
-          () => {
-            throw new Error("Attributes extraction failed");
-          }
-        );
-        vi.mocked(mockBompDataMapper.extractExtraAbility).mockReturnValue("");
-
-        // Act
-        const result = await processor.processBompData(mockBompEntry);
-
-        // Assert - 部分的失敗でもレア度は保持される
-        expect(result).toBeDefined();
-        expect(result.basicInfo.rarity).toBe("A級"); // グレースフル劣化でもデフォルト値
-      });
-
-      it("グレースフル劣化失敗時の処理", async () => {
-        // Arrange
-        vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-          new Error("API Error")
-        );
-
-        // グレースフル劣化処理内でもエラーが発生するようにモック
-        const originalAttemptGracefulDegradation = (processor as any)
-          .attemptGracefulDegradation;
-        (processor as any).attemptGracefulDegradation = vi
-          .fn()
-          .mockResolvedValue(null);
-
-        // Act & Assert
-        await expect(
-          processor.processBompData(mockBompEntry)
-        ).rejects.toThrow();
-
-        // Cleanup
-        (processor as any).attemptGracefulDegradation =
-          originalAttemptGracefulDegradation;
       });
     });
 
@@ -1635,36 +1530,38 @@ describe("BompDataProcessor", () => {
       });
       vi.mocked(mockBompDataMapper.extractExtraAbility).mockReturnValue("");
 
-      // Act
-      const result = await processor.processBompData({
+      // Act & Assert - modules が空のためアセンションデータ抽出で失敗し、
+      // グレースフル劣化せずに MappingError で reject する
+      const promise = processor.processBompData({
         id: "error-bomp",
         pageId: 914,
         wikiUrl: "https://wiki.hoyolab.com/pc/zzz/entry/914",
         jaName: "エラーボンプ",
       });
-
-      // Assert - エラーレスポンスでも処理が継続されることを確認
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("error-bomp");
+      await expect(promise).rejects.toBeInstanceOf(MappingError);
+      await expect(promise).rejects.toThrow(
+        "ボンプ属性情報の抽出に失敗しました"
+      );
     });
   });
 
   describe("エラーケース処理のテスト", () => {
-    it("ApiError を適切に処理する", async () => {
+    it("ApiError はボンプIDを含むApiErrorとして再スローされる", async () => {
       // Arrange
       const apiError = new ApiError("API connection failed");
       vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(apiError);
 
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert - グレースフル劣化が実行される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
-      expect(result.basicInfo.stats).toEqual(["physical"]);
+      // Act & Assert
+      const promise = processor.processBompData(mockBompEntry);
+      await expect(promise).rejects.toBeInstanceOf(ApiError);
+      await expect(promise).rejects.toMatchObject({
+        details:
+          "ボンプAPIデータの取得に失敗しました (test-bomp): API: API connection failed",
+        originalError: apiError,
+      });
     });
 
-    it("MappingError を適切に処理する", async () => {
+    it("MappingError は元のエラーを保持したMappingErrorとして再スローされる", async () => {
       // Arrange
       vi.mocked(mockApiClient.fetchCharacterData).mockResolvedValue(
         mockApiResponse
@@ -1676,67 +1573,40 @@ describe("BompDataProcessor", () => {
         }
       );
 
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert - グレースフル劣化が実行される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
+      // Act & Assert
+      const promise = processor.processBompData(mockBompEntry);
+      await expect(promise).rejects.toBeInstanceOf(MappingError);
+      await expect(promise).rejects.toMatchObject({
+        originalError: mappingError,
+      });
     });
 
-    it("ネットワークタイムアウトエラーを処理する", async () => {
+    it("ネットワークタイムアウトエラーはそのまま再スローされる", async () => {
       // Arrange
       const timeoutError = new Error("ETIMEDOUT");
       vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
         timeoutError
       );
 
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert - グレースフル劣化が実行される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
-      expect(result.basicInfo.name).toBe("テストボンプ");
+      // Act & Assert
+      await expect(processor.processBompData(mockBompEntry)).rejects.toBe(
+        timeoutError
+      );
     });
 
-    it("予期しないエラー形式を処理する", async () => {
+    it("予期しないエラー形式（非Error値）もそのまま再スローされる", async () => {
       // Arrange
       vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
         "string error"
       );
 
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert - グレースフル劣化が実行される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
-    });
-
-    it("グレースフル劣化も失敗した場合の処理", async () => {
-      // Arrange
-      vi.mocked(mockApiClient.fetchCharacterData).mockRejectedValue(
-        new Error("API Error")
-      );
-
-      // グレースフル劣化でもエラーが発生するようにモック
-      const originalProcessor = processor as any;
-      const originalAttemptGracefulDegradation =
-        originalProcessor.attemptGracefulDegradation;
-      originalProcessor.attemptGracefulDegradation = vi
-        .fn()
-        .mockResolvedValue(null);
-
       // Act & Assert
-      await expect(processor.processBompData(mockBompEntry)).rejects.toThrow();
-
-      // Cleanup
-      originalProcessor.attemptGracefulDegradation =
-        originalAttemptGracefulDegradation;
+      await expect(processor.processBompData(mockBompEntry)).rejects.toBe(
+        "string error"
+      );
     });
 
-    it("部分的なデータ損失を適切に処理する", async () => {
+    it("部分的なデータ損失（アセンション欠損）時はMappingErrorでrejectする", async () => {
       // Arrange
       const partialApiResponse: ApiResponse = {
         retcode: 0,
@@ -1787,20 +1657,20 @@ describe("BompDataProcessor", () => {
       );
       vi.mocked(mockBompDataMapper.extractExtraAbility).mockReturnValue("");
 
-      // Act
-      const result = await processor.processBompData({
+      // Act & Assert - 最小限データで補完せず reject する（リトライは呼び出し元）
+      const promise = processor.processBompData({
         id: "partial-bomp",
         pageId: 915,
         wikiUrl: "https://wiki.hoyolab.com/pc/zzz/entry/915",
         jaName: "部分ボンプ",
       });
-
-      // Assert - グレースフル劣化により最小限のデータが返される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("partial-bomp");
+      await expect(promise).rejects.toBeInstanceOf(MappingError);
+      await expect(promise).rejects.toThrow(
+        "ボンプ属性情報の抽出に失敗しました"
+      );
     });
 
-    it("レート制限エラーを適切に処理する", async () => {
+    it("レート制限エラーはApiErrorとして再スローされる", async () => {
       // Arrange
       const rateLimitError = new ApiError(
         "Rate limit exceeded",
@@ -1810,12 +1680,13 @@ describe("BompDataProcessor", () => {
         rateLimitError
       );
 
-      // Act
-      const result = await processor.processBompData(mockBompEntry);
-
-      // Assert - グレースフル劣化が実行される
-      expect(result).toBeDefined();
-      expect(result.basicInfo.id).toBe("test-bomp");
+      // Act & Assert
+      const promise = processor.processBompData(mockBompEntry);
+      await expect(promise).rejects.toBeInstanceOf(ApiError);
+      await expect(promise).rejects.toThrow("Rate limit exceeded");
+      await expect(promise).rejects.toMatchObject({
+        originalError: rateLimitError,
+      });
     });
   });
 });

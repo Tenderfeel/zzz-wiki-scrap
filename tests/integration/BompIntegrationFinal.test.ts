@@ -1,8 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  onTestFinished,
+} from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { performance } from "perf_hooks";
 import { BompBatchProcessor } from "../../src/processors/BompBatchProcessor";
+import { createBompAscensionData } from "./helpers/bompAscensionFixture";
 import { BompGenerator } from "../../src/generators/BompGenerator";
 import { BompDataProcessor } from "../../src/processors/BompDataProcessor";
 import { BompListParser } from "../../src/parsers/BompListParser";
@@ -109,44 +118,7 @@ describe("Bomp Integration Test Suite - Final", () => {
               components: [
                 {
                   component_id: "ascension",
-                  data: JSON.stringify({
-                    combatList: [
-                      {
-                        hp: {
-                          values: [
-                            "-",
-                            "1000",
-                            "1200",
-                            "1400",
-                            "1600",
-                            "1800",
-                            "2000",
-                          ],
-                        },
-                        atk: {
-                          values: [
-                            "-",
-                            "100",
-                            "120",
-                            "140",
-                            "160",
-                            "180",
-                            "200",
-                          ],
-                        },
-                        def: {
-                          values: ["-", "50", "60", "70", "80", "90", "100"],
-                        },
-                        impact: { values: ["10"] },
-                        critRate: { values: ["5%"] },
-                        critDmg: { values: ["50%"] },
-                        anomalyMastery: { values: ["0"] },
-                        anomalyProficiency: { values: ["0"] },
-                        penRatio: { values: ["0%"] },
-                        energy: { values: ["100"] },
-                      },
-                    ],
-                  }),
+                  data: createBompAscensionData(),
                 },
               ],
             },
@@ -284,11 +256,9 @@ ${bompEntries}
 
       // Assert
       expect(result.statistics.total).toBe(bompCount);
-
-      if (result.successful.length > 0) {
-        expect(result.successful.length).toBeGreaterThan(0);
-        expect(result.statistics.successRate).toBeGreaterThan(0);
-      }
+      expect(result.successful.length).toBe(bompCount);
+      expect(result.failed.length).toBe(0);
+      expect(result.statistics.successful).toBe(bompCount);
     });
 
     it("should maintain data integrity in processed bomps", async () => {
@@ -478,6 +448,12 @@ ${bompEntries}
       const testContent = createTestScrapingContent(1);
       fs.writeFileSync(testScrapingPath, testContent);
 
+      // Skip real retry back-off delays to keep the test fast
+      const delaySpy = vi
+        .spyOn(BompBatchProcessor.prototype as any, "delay")
+        .mockResolvedValue(undefined);
+      onTestFinished(() => delaySpy.mockRestore());
+
       let attemptCount = 0;
       const mockApiClient = vi.spyOn(
         HoyoLabApiClient.prototype,
@@ -508,13 +484,13 @@ ${bompEntries}
 
       // Assert
       expect(result.statistics.total).toBe(1);
-      // Note: Retry logic may not work exactly as expected in mocked environment
-      expect(attemptCount).toBeGreaterThanOrEqual(1); // Should make at least one attempt
-
-      if (result.successful.length > 0) {
-        expect(result.successful.length).toBe(1);
-        expect(result.failed.length).toBe(0);
-      }
+      // en-us is fetched only after ja-jp succeeds: 2 failed + 1 successful ja-jp
+      const jaAttempts = mockApiClient.mock.calls.filter(
+        ([, lang]) => lang === "ja-jp"
+      );
+      expect(jaAttempts.length).toBe(3);
+      expect(result.successful.length).toBe(1);
+      expect(result.failed.length).toBe(0);
     });
 
     it("should handle malformed API responses", async () => {
