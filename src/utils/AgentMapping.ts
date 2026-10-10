@@ -116,6 +116,38 @@ export const AGENT_NAME_TO_ID_MAP: Record<string, string> = {
   狛野真斗: "manato",
   イドリー: "yidhari",
   "イドリー・マーフィー": "yidhari",
+
+  // 2.4追加キャラクター
+  ダイアリン: "dialyn",
+  盤岳: "banyue",
+
+  // 2.5追加キャラクター
+  照: "zhao",
+  瞬光: "shunguang",
+  葉瞬光: "shunguang",
+
+  // 2.8追加キャラクター
+  // 完全一致を優先するため、「ビリー」の部分一致より先に sBilly と判定される
+  "S級ビリー": "sBilly",
+  "スターライト・ビリー": "sBilly",
+  "スターライト・ビリー・キッド": "sBilly",
+
+  // 3.0追加キャラクター
+  ピュロイス: "pyrois",
+  ヴェリナ: "velina",
+  "ヴェリナ・エガード": "velina",
+  ノルムー: "norma",
+  "ノルムー・ホローウェル": "norma",
+
+  // 3.1追加キャラクター
+  レミエール: "remielle",
+  "レミエール・ダン": "remielle",
+  シグリッド: "sigrid",
+  "シグリッド・ドゥ・ラズール": "sigrid",
+
+  // 3.2追加キャラクター
+  ロクシー: "roxy",
+  "ロクシー・イフリータ・プライス": "roxy",
 };
 
 /**
