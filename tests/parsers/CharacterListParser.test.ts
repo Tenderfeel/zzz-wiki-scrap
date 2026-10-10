@@ -111,6 +111,21 @@ describe("CharacterListParser", () => {
       });
     });
 
+    it("pageId: の後に空白がないエントリーも抽出する", () => {
+      // Scraping.md には "pageId:995" のように空白なしで書かれた行がある
+      const content = `
+- [sunna](https://wiki.hoyolab.com/pc/zzz/entry/995) - pageId:995
+- [aria](https://wiki.hoyolab.com/pc/zzz/entry/998) - pageId: 998
+`;
+
+      const result = parser.extractCharacterEntries(content);
+
+      expect(result.map((e) => [e.id, e.pageId])).toEqual([
+        ["sunna", 995],
+        ["aria", 998],
+      ]);
+    });
+
     it("特殊文字を含むキャラクターIDを正しく処理する", () => {
       // Arrange
       const content = `
