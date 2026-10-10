@@ -216,6 +216,27 @@ describe("WeaponDataMapper", () => {
   });
 
   describe("extractWeaponAttributes", () => {
+    const LEVELS = ["0", "10", "20", "30", "40", "50", "60"];
+    const createModules = (list: AscensionData["list"]): Module[] => [
+      {
+        name: "test-module",
+        components: [
+          { component_id: "ascension", data: JSON.stringify({ list }) },
+        ],
+      },
+    ];
+
+    it("桁区切りのカンマを含む値を正しく数値に変換する", () => {
+      const list = LEVELS.map((level, i) => ({
+        key: level,
+        combatList: [{ key: "基礎攻撃力", values: ["-", `1,${100 + i}`] }],
+      }));
+
+      const result = weaponDataMapper.extractWeaponAttributes(createModules(list));
+
+      expect(result.atk).toEqual([1100, 1101, 1102, 1103, 1104, 1105, 1106]);
+    });
+
     it("ascensionコンポーネントから突破ステータスの「後」値を正常に抽出する", () => {
       const ascensionData: AscensionData = {
         list: [

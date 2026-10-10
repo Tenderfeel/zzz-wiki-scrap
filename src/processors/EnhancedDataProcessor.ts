@@ -328,7 +328,7 @@ export class EnhancedDataProcessor extends DataProcessor {
   }
 
   /**
-   * 数値文字列を数値に変換（"-"は0に変換）
+   * 数値文字列を数値に変換（"-"は0に変換、桁区切りのカンマは除去）
    */
   private parseNumericValue(value: string): number {
     if (
@@ -339,7 +339,7 @@ export class EnhancedDataProcessor extends DataProcessor {
     ) {
       return 0;
     }
-    const parsed = parseInt(value.toString(), 10);
+    const parsed = parseInt(value.toString().replace(/,/g, ""), 10);
     return isNaN(parsed) ? 0 : parsed;
   }
 
@@ -355,7 +355,7 @@ export class EnhancedDataProcessor extends DataProcessor {
     ) {
       return 0;
     }
-    const cleanValue = value.toString().replace("%", "");
+    const cleanValue = value.toString().replace("%", "").replace(/,/g, "");
     const parsed = parseFloat(cleanValue);
     return isNaN(parsed) ? 0 : parsed;
   }
@@ -372,7 +372,7 @@ export class EnhancedDataProcessor extends DataProcessor {
     ) {
       return 0;
     }
-    const parsed = parseFloat(value.toString());
+    const parsed = parseFloat(value.toString().replace(/,/g, ""));
     return isNaN(parsed) ? 0 : parsed;
   } /**
 
