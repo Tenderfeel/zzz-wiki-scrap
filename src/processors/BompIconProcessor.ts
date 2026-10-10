@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import { createWriteStream } from "fs";
+import { createWriteStream, WriteStream } from "fs";
 import path from "path";
 import { HoyoLabApiClient } from "../clients/HoyoLabApiClient";
 import { ApiResponse } from "../types/api";
@@ -126,6 +126,8 @@ export class BompIconProcessor {
 
           const isValid = await this.validateIconFile(localPath);
           if (!isValid) {
+            // 無効なファイルを残すと、リトライ時に既存ファイルとして扱われてしまう
+            await this.removeFile(localPath);
             throw new BompIconValidationError(
               bompEntry.id,
               "ダウンロードしたファイルの検証に失敗しました",
@@ -266,6 +268,7 @@ export class BompIconProcessor {
    * @returns ダウンロード成功可否
    */
   async downloadIcon(iconUrl: string, outputPath: string): Promise<boolean> {
+    let fileStream: WriteStream | undefined;
     try {
       logger.debug(LogMessages.BOMP_ICON_DOWNLOAD_START, {
         iconUrl,
@@ -307,7 +310,8 @@ export class BompIconProcessor {
       }
 
       // ストリーミングダウンロードでメモリ効率を最適化
-      const fileStream = createWriteStream(outputPath);
+      const stream = createWriteStream(outputPath);
+      fileStream = stream;
 
       if (!response.body) {
         throw new BompIconDownloadError(
@@ -326,7 +330,7 @@ export class BompIconProcessor {
           if (done) break;
 
           // Buffer に変換して書き込み
-          fileStream.write(Buffer.from(value));
+          stream.write(Buffer.from(value));
         }
       } finally {
         reader.releaseLock();
@@ -334,7 +338,7 @@ export class BompIconProcessor {
 
       // ファイルストリームを閉じる
       await new Promise<void>((resolve, reject) => {
-        fileStream.end((error?: Error | null) => {
+        stream.end((error?: Error | null) => {
           if (error) {
             reject(
               new BompIconFileSystemError(
@@ -352,6 +356,13 @@ export class BompIconProcessor {
       logger.debug(LogMessages.BOMP_ICON_DOWNLOAD_SUCCESS, { outputPath });
       return true;
     } catch (error) {
+      // 書き込みを開始していた場合は、ストリームを破棄してから部分的なファイルを削除
+      // （破棄しないと unlink 後にバッファがフラッシュされてファイルが再作成される）
+      if (fileStream) {
+        fileStream.destroy();
+        await this.removeFile(outputPath);
+      }
+
       // 既にBompIconErrorの場合はそのまま再スロー
       if (
         error instanceof BompIconDownloadError ||
@@ -366,13 +377,6 @@ export class BompIconProcessor {
         outputPath,
         error: error instanceof Error ? error.message : String(error),
       });
-
-      // 失敗した場合は部分的なファイルを削除
-      try {
-        await fs.unlink(outputPath);
-      } catch {
-        // ファイル削除エラーは無視
-      }
 
       return false;
     }
@@ -400,6 +404,18 @@ export class BompIconProcessor {
     }
 
     return fullPath;
+  }
+
+  /**
+   * ファイルを削除する（存在しない場合などのエラーは無視）
+   * @param filePath 削除するファイルパス
+   */
+  private async removeFile(filePath: string): Promise<void> {
+    try {
+      await fs.unlink(filePath);
+    } catch {
+      // ファイル削除エラーは無視
+    }
   }
 
   /**
