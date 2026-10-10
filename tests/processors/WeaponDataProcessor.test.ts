@@ -393,7 +393,24 @@ describe("WeaponDataProcessor", () => {
       const result = processor.validateWeaponData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("属性 hp の配列長が7ではありません: 3");
+      expect(result.errors).toContain(
+        "属性 hp の配列長が0または7ではありません: 3"
+      );
+    });
+
+    it("属性配列が空の場合は値なしとして検証に成功する", () => {
+      const dataWithEmptyAttr = {
+        ...mockProcessedWeaponData,
+        attributesInfo: {
+          ...mockWeaponAttributesInfo,
+          hp: [],
+        },
+      };
+
+      const result = processor.validateWeaponData(dataWithEmptyAttr);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
 
     it("属性値が数値ではない場合は検証に失敗する", () => {
