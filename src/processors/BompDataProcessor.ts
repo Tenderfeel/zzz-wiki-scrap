@@ -344,7 +344,7 @@ export class BompDataProcessor extends DataProcessor {
         }
 
         // レア度データの検証を統合
-        if (data.basicInfo.rarity) {
+        if (data.basicInfo.rarity !== undefined) {
           const rarityValidation = this.validateRarityData(
             data.basicInfo.rarity
           );

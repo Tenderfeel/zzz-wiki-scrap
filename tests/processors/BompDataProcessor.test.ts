@@ -1076,9 +1076,7 @@ describe("BompDataProcessor", () => {
 
         // Assert
         expect(result.isValid).toBe(false);
-        expect(
-          result.errors.some((error) => error.includes("レア度データが空です"))
-        ).toBe(true);
+        expect(result.errors).toContain("レア度データが存在しません");
       });
     });
 
