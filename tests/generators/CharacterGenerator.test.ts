@@ -11,6 +11,15 @@ vi.mock("fs");
 // DataMapperをモック
 vi.mock("../../src/mappers/DataMapper");
 
+// 補正定義をモック（補正テスト専用の ID のみ）
+vi.mock("../../json/data-corrections.json", () => ({
+  default: {
+    characters: [
+      { id: "correction-test", path: "attr.hp.1", from: 1967, to: 1976, reason: "テスト用" },
+    ],
+  },
+}));
+
 describe("CharacterGenerator", () => {
   let generator: CharacterGenerator;
   let mockDataMapper: any;
@@ -143,6 +152,21 @@ describe("CharacterGenerator", () => {
         ja: "フォン・ライカン",
         en: "Von Lycaon",
       });
+    });
+
+    it("json/data-corrections.json の補正を適用する", () => {
+      mockDataMapper.createNamesWithFallback.mockReturnValue({
+        ja: "フォン・ライカン",
+        en: "Von Lycaon",
+      });
+
+      const result = generator.generateCharacter(
+        mockJaData,
+        mockEnData,
+        "correction-test"
+      );
+
+      expect(result.attr.hp[1]).toBe(1976);
     });
 
     it("正常なCharacterオブジェクトを生成できる", () => {

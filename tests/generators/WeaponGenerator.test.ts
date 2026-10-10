@@ -14,6 +14,15 @@ import {
 import * as fs from "fs";
 
 // モック設定
+// 補正定義をモック（補正テスト専用の ID のみ）
+vi.mock("../../json/data-corrections.json", () => ({
+  default: {
+    weapons: [
+      { id: "999", path: "attr.atk.1", from: 55, to: 56, reason: "テスト用" },
+    ],
+  },
+}));
+
 vi.mock("../../src/utils/Logger", () => ({
   logger: {
     info: vi.fn(),
@@ -162,6 +171,26 @@ describe("WeaponGenerator", () => {
       );
       expect(mockDataMapper.mapRarity).toHaveBeenCalledWith("S");
       expect(mockDataMapper.mapSpecialty).toHaveBeenCalledWith("attack");
+    });
+
+    it("json/data-corrections.json の補正を適用する", () => {
+      (mockDataMapper.createMultiLangName as Mock)
+        .mockReturnValueOnce({ ja: "テスト音動機", en: "Test Weapon" })
+        .mockReturnValueOnce({ ja: "テストスキル", en: "Test Skill" })
+        .mockReturnValueOnce({
+          ja: "テストスキルの説明",
+          en: "Test skill description",
+        });
+      (mockDataMapper.mapRarity as Mock).mockReturnValue("S");
+      (mockDataMapper.mapSpecialty as Mock).mockReturnValue("attack");
+
+      const result = generator.generateWeapon(
+        mockProcessedWeaponData,
+        mockEnProcessedWeaponData,
+        "999"
+      );
+
+      expect(result.attr.atk[1]).toBe(56);
     });
 
     it("英語データがない場合は日本語データをフォールバックとして使用する", () => {

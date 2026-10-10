@@ -5,6 +5,7 @@ import { AttributesProcessor } from "../processors/AttributesProcessor";
 import { PartialDataHandler } from "../utils/PartialDataHandler";
 import { ValidationError, ParsingError } from "../errors";
 import { logger, LogMessages } from "../utils/Logger";
+import { applyDataCorrections } from "../utils/DataCorrections";
 import * as fs from "fs";
 
 /**
@@ -85,7 +86,7 @@ export class CharacterGenerator {
       );
 
       // Character オブジェクトを構築
-      const character: Character = {
+      const generatedCharacter: Character = {
         id: characterId, // 明示的に受け取ったキャラクターIDを使用
         name,
         fullName,
@@ -96,6 +97,13 @@ export class CharacterGenerator {
         attr: attributes,
         releaseVersion: jaData.basicInfo.releaseVersion || 0, // 実装バージョン（デフォルト: 0）
       };
+
+      // 取得元データの誤りを補正
+      const character = applyDataCorrections(
+        "characters",
+        characterId,
+        generatedCharacter,
+      );
 
       logger.debug(LogMessages.CHARACTER_GENERATION_SUCCESS, {
         characterId: character.id,
@@ -258,9 +266,12 @@ export class CharacterGenerator {
           partialData.basicInfo.releaseVersion || emptyValues.releaseVersion,
       };
 
-      // 欠損フィールドに空の値を適用
-      const filledCharacter =
-        this.partialDataHandler.fillMissingFieldsWithEmpty(character);
+      // 欠損フィールドに空の値を適用し、取得元データの誤りを補正
+      const filledCharacter = applyDataCorrections(
+        "characters",
+        characterId,
+        this.partialDataHandler.fillMissingFieldsWithEmpty(character),
+      );
 
       logger.info("部分データからのCharacter生成完了", {
         characterId,

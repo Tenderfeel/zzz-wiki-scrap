@@ -14,6 +14,7 @@ import { DataMapper } from "../mappers/DataMapper";
 import { ValidationError, ParsingError } from "../errors";
 import { WeaponAttributeProcessor } from "../processors/WeaponAttributeProcessor";
 import { logger } from "../utils/Logger";
+import { applyDataCorrections } from "../utils/DataCorrections";
 import * as fs from "fs";
 
 /**
@@ -172,7 +173,7 @@ export class WeaponGenerator {
       const advancedAttr: Attribute = "critRate"; // 会心率がデフォルト
 
       // Weapon オブジェクトを構築
-      const weapon: Weapon = {
+      const generatedWeapon: Weapon = {
         id: parseInt(weaponId, 10),
         name,
         equipmentSkillName,
@@ -185,6 +186,13 @@ export class WeaponGenerator {
         baseAttr,
         advancedAttr,
       };
+
+      // 取得元データの誤りを補正
+      const weapon = applyDataCorrections(
+        "weapons",
+        weaponId,
+        generatedWeapon,
+      );
 
       logger.debug("音動機オブジェクト生成完了", {
         weaponId: weapon.id,

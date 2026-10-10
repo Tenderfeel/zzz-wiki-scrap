@@ -5,6 +5,8 @@ import {
 } from "../../src/utils/DataCorrections";
 import defaultCorrections from "../../json/data-corrections.json";
 import bomps from "../../data/bomps";
+import characters from "../../data/characters";
+import weapons from "../../data/weapons";
 import { logger } from "../../src/utils/Logger";
 
 describe("applyDataCorrections", () => {
@@ -91,15 +93,33 @@ describe("applyDataCorrections", () => {
 });
 
 describe("json/data-corrections.json", () => {
-  it("すべての補正が data/bomps.ts に反映済みである", () => {
-    for (const correction of defaultCorrections.bomps) {
-      const bomp = bomps.find((b) => b.id === correction.id);
-      expect(bomp, `${correction.id} が data/bomps.ts に存在しない`).toBeDefined();
+  const dataByCategory: Record<string, { id: string | number }[]> = {
+    characters,
+    weapons,
+    bomps,
+  };
 
-      const value = correction.path
-        .split(".")
-        .reduce<any>((obj, key) => obj?.[key], bomp);
-      expect(value, `${correction.id} ${correction.path}`).toBe(correction.to);
-    }
+  it("補正カテゴリはすべて既知のデータファイルに対応している", () => {
+    expect(Object.keys(defaultCorrections).sort()).toEqual(
+      Object.keys(dataByCategory).sort()
+    );
   });
+
+  it.each(Object.keys(dataByCategory))(
+    "%s の補正がすべて data/ に反映済みである",
+    (category) => {
+      const corrections = (defaultCorrections as DataCorrections)[category];
+      for (const correction of corrections) {
+        const item = dataByCategory[category].find(
+          (d) => String(d.id) === correction.id
+        );
+        expect(item, `${correction.id} が data/ に存在しない`).toBeDefined();
+
+        const value = correction.path
+          .split(".")
+          .reduce<any>((obj, key) => obj?.[key], item);
+        expect(value, `${correction.id} ${correction.path}`).toBe(correction.to);
+      }
+    }
+  );
 });
