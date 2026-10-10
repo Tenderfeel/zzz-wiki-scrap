@@ -487,6 +487,7 @@ describe("EnhancedDataProcessor", () => {
         { ja: "支援", expected: "support" },
         { ja: "防護", expected: "defense" },
         { ja: "命破", expected: "rupture" },
+        { ja: "鋭御", expected: "armorer" },
       ];
 
       for (const testCase of testCases) {

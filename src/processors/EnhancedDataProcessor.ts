@@ -135,6 +135,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       支援: "support",
       防護: "defense",
       命破: "rupture",
+      鋭御: "armorer",
       // 英語バージョン（念のため）
       stun: "stun",
       attack: "attack",
@@ -142,6 +143,7 @@ export class EnhancedDataProcessor extends DataProcessor {
       support: "support",
       defense: "defense",
       rupture: "rupture",
+      armorer: "armorer",
     };
 
     const mapped = specialtyMap[specialty];
