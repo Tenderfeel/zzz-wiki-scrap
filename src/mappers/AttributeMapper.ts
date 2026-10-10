@@ -212,7 +212,8 @@ export class AttributeMapper {
    * @returns 日本語属性名の配列
    */
   static getSupportedJapaneseAttributes(): string[] {
-    return Object.keys(STATS_MAPPING);
+    // STATS_MAPPING には英語の別名も含まれるため、日本語のキーだけを返す
+    return Object.keys(STATS_MAPPING).filter((key) => /[^\x00-\x7F]/.test(key));
   }
 
   /**
