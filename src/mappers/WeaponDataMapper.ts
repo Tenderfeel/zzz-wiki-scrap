@@ -560,8 +560,8 @@ export class WeaponDataMapper extends DataMapper {
   private parseNumericValue(value: string): number | null {
     if (!value || value === "-") return null;
 
-    // パーセント記号を除去
-    const cleanedValue = value.replace(/%$/, "");
+    // パーセント記号と桁区切りのカンマを除去
+    const cleanedValue = value.replace(/%$/, "").replace(/,/g, "");
 
     const numericValue = parseFloat(cleanedValue);
     return isNaN(numericValue) ? null : numericValue;

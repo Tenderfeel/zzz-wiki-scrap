@@ -226,6 +226,17 @@ describe("WeaponDataMapper", () => {
       },
     ];
 
+    it("桁区切りのカンマを含む値を正しく数値に変換する", () => {
+      const list = LEVELS.map((level, i) => ({
+        key: level,
+        combatList: [{ key: "基礎攻撃力", values: ["-", `1,${100 + i}`] }],
+      }));
+
+      const result = weaponDataMapper.extractWeaponAttributes(createModules(list));
+
+      expect(result.atk).toEqual([1100, 1101, 1102, 1103, 1104, 1105, 1106]);
+    });
+
     it("最初のレベルのキーが \"1\" の場合もレベル0として扱う", () => {
       // 取得元（正規版変身装置, pageId 65）ではレベル0のキーが "1" になっている
       const list = LEVELS.map((level, i) => ({
