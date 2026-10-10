@@ -69,7 +69,7 @@ const mockSetEffectInfo: SetEffectInfo = {
 const mockProcessedData: ProcessedDriverDiscData = {
   basicInfo: mockBasicInfo,
   setEffectInfo: mockSetEffectInfo,
-  specialty: "attack",
+  specialty: ["attack"],
 };
 
 describe("DriverDiscDataProcessor", () => {
@@ -86,7 +86,7 @@ describe("DriverDiscDataProcessor", () => {
     mockDataMapper = {
       extractBasicDriverDiscInfo: vi.fn(),
       extractSetEffects: vi.fn(),
-      extractSpecialty: vi.fn(),
+      extractSpecialties: vi.fn(),
       createMultiLangSetEffect: vi.fn(),
     } as any;
 
@@ -106,7 +106,7 @@ describe("DriverDiscDataProcessor", () => {
       vi.mocked(mockDataMapper.extractSetEffects).mockReturnValue(
         mockSetEffectInfo
       );
-      vi.mocked(mockDataMapper.extractSpecialty).mockReturnValue("attack");
+      vi.mocked(mockDataMapper.extractSpecialties).mockReturnValue(["attack"]);
 
       // テスト実行
       const result = await processor.processDriverDiscData(mockDriverDiscEntry);
@@ -129,8 +129,9 @@ describe("DriverDiscDataProcessor", () => {
       expect(mockDataMapper.extractSetEffects).toHaveBeenCalledWith(
         mockApiResponse
       );
-      expect(mockDataMapper.extractSpecialty).toHaveBeenCalledWith(
-        "攻撃力が上昇する"
+      expect(mockDataMapper.extractSpecialties).toHaveBeenCalledWith(
+        "攻撃力が上昇する",
+        "HP が上昇する"
       );
     });
 
@@ -146,7 +147,7 @@ describe("DriverDiscDataProcessor", () => {
       vi.mocked(mockDataMapper.extractSetEffects).mockReturnValue(
         mockSetEffectInfo
       );
-      vi.mocked(mockDataMapper.extractSpecialty).mockReturnValue("attack");
+      vi.mocked(mockDataMapper.extractSpecialties).mockReturnValue(["attack"]);
 
       // テスト実行
       const result = await processor.processDriverDiscData(mockDriverDiscEntry);
@@ -265,7 +266,7 @@ describe("DriverDiscDataProcessor", () => {
       vi.mocked(mockDataMapper.extractSetEffects).mockReturnValue(
         mockSetEffectInfo
       );
-      vi.mocked(mockDataMapper.extractSpecialty).mockReturnValue("attack");
+      vi.mocked(mockDataMapper.extractSpecialties).mockReturnValue(["attack"]);
 
       // テスト実行
       const result = await processor.processDriverDiscDataWithRecovery(
@@ -356,7 +357,7 @@ describe("DriverDiscDataProcessor", () => {
       vi.mocked(mockDataMapper.extractSetEffects).mockReturnValue(
         mockSetEffectInfo
       );
-      vi.mocked(mockDataMapper.extractSpecialty).mockReturnValue("attack");
+      vi.mocked(mockDataMapper.extractSpecialties).mockReturnValue(["attack"]);
 
       // テスト実行
       const result = await processor.processDriverDiscDataBatch(
@@ -397,7 +398,7 @@ describe("DriverDiscDataProcessor", () => {
       vi.mocked(mockDataMapper.extractSetEffects).mockReturnValue(
         mockSetEffectInfo
       );
-      vi.mocked(mockDataMapper.extractSpecialty).mockReturnValue("attack");
+      vi.mocked(mockDataMapper.extractSpecialties).mockReturnValue(["attack"]);
 
       // テスト実行
       const result = await processor.processDriverDiscDataBatch(

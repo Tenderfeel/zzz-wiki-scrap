@@ -363,7 +363,7 @@ describe("WeaponDataMapper", () => {
       const result = weaponDataMapper.extractWeaponAttributes(mockModules);
 
       expect(result.hp[0]).toBe(120);
-      expect(result.atk[0]).toBe(0); // デフォルト値
+      expect(result.atk[0]).toBeUndefined(); // 「-」値はスキップされ空配列のまま
       expect(result.def[0]).toBe(36);
     });
 
@@ -382,9 +382,9 @@ describe("WeaponDataMapper", () => {
 
       const result = weaponDataMapper.extractWeaponAttributes(mockModules);
 
-      expect(result.hp).toEqual(new Array(7).fill(0));
-      expect(result.atk).toEqual(new Array(7).fill(0));
-      expect(result.def).toEqual(new Array(7).fill(0));
+      expect(result.hp).toEqual([]);
+      expect(result.atk).toEqual([]);
+      expect(result.def).toEqual([]);
     });
   });
 
